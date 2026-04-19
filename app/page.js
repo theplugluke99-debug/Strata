@@ -664,11 +664,12 @@ export default function StrataPage() {
   }, 0);
   const quoteData = {
     rooms: expandedRooms, propertyType,
-    flooringType: selectedFlooring, flooringGrade,
+    flooringType: flooringDisplay, flooringGrade,
     currentFloor, subfloorType: subfloor,
     extras: selectedExtras, budget, timing, serviceType,
     totalGrossM2: totalGrossM2.toFixed(2),
     roomConfigs,
+    roomFlooringBreakdown: Object.fromEntries(expandedRooms.map(r => [r, roomConfigs[r]?.flooring || selectedFlooring])),
   };
 
   useEffect(() => {
@@ -691,7 +692,14 @@ export default function StrataPage() {
   const postcodeValid  = postcodeClean.length >= 5 && /^[A-Za-z]{1,2}\d/.test(postcodeClean);
   const canSubmit      = nameValid && phoneValid && postcodeValid;
   const roomsToUse     = propertyType === "Commercial" ? COMMERCIAL_ROOMS : RESIDENTIAL_ROOMS;
-  const allRoomsHaveFlooring = expandedRooms.length > 0 && expandedRooms.every(r => !!(roomConfigs[r]?.flooring || selectedFlooring));
+  const allMeasurementsValid = expandedRooms.length > 0 && expandedRooms.every(r => {
+    const d = dimensions[r] || {};
+    if (r === "Stairs") return parseInt(d.treads || 0) > 0;
+    return parseFloat(d.l || 0) > 0 && parseFloat(d.w || 0) > 0;
+  });
+  const allRoomsHaveFlooring = expandedRooms.length > 0 && expandedRooms.every(r => !!roomConfigs[r]?.flooring);
+  const uniqueFloorings      = [...new Set(expandedRooms.map(r => roomConfigs[r]?.flooring || selectedFlooring).filter(Boolean))];
+  const flooringDisplay      = uniqueFloorings.length > 1 ? "Multiple" : (uniqueFloorings[0] || selectedFlooring || "");
   const currentEncouragement =
     step === 0 ? "Most people are done with this in under 2 minutes — let's get you a real price." :
     step === 1 && measureSubStep === "educate" ? "Take your time with this — accurate measurements mean a more accurate quote." :
@@ -997,7 +1005,7 @@ export default function StrataPage() {
                     <div style={{ fontFamily: s.serif, fontSize: "32px", color: s.gold, fontWeight: 300 }}>{totalGrossM2.toFixed(1)} <span style={{ fontSize: "16px" }}>m²</span></div>
                   </div>
                 )}
-                <GoldBtn onClick={() => { setStep(2); setStep2Sub("path"); }}>Continue →</GoldBtn>
+                <GoldBtn onClick={() => { setStep(2); setStep2Sub("path"); }} disabled={!allMeasurementsValid}>Continue →</GoldBtn>
               </>
             )}
 
@@ -1061,7 +1069,13 @@ export default function StrataPage() {
                       </div>
                     ))}
                     <div style={{ marginTop: "16px" }}>
-                      <GoldBtn onClick={() => { setFlooringPath("know"); setStep2Sub("room-config"); }} disabled={!selectedFlooring}>Configure rooms →</GoldBtn>
+                      <GoldBtn onClick={() => {
+                        setFlooringPath("know");
+                        const pre = {};
+                        expandedRooms.forEach(r => { pre[r] = { ...(roomConfigs[r] || {}), flooring: selectedFlooring }; });
+                        setRoomConfigs(p => ({ ...p, ...pre }));
+                        setStep2Sub("room-config");
+                      }} disabled={!selectedFlooring}>Configure rooms →</GoldBtn>
                     </div>
                   </>
                 )}
@@ -1375,7 +1389,9 @@ export default function StrataPage() {
             {step === 5 && (
               <>
                 <BackBtn onClick={() => setStep(4)}/>
-                <Sub>So we can confirm your free survey — someone who actually knows flooring will call you back.</Sub>
+                <div style={{ fontFamily: s.serif, fontSize: "20px", fontStyle: "italic", color: s.gold, lineHeight: 1.45, marginBottom: "24px" }}>
+                  Your indicative estimate is ready — enter your details to reveal it.
+                </div>
                 <div style={{ marginBottom: "28px" }}>
                   <div style={{ marginBottom: "20px" }}>
                     <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.16em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Your name</div>
@@ -1393,26 +1409,6 @@ export default function StrataPage() {
                     {postcode && !postcodeValid && <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.gold, marginTop: "6px" }}>Please enter a valid UK postcode (e.g. SW1A 1AA)</div>}
                   </div>
                 </div>
-                <div style={{ background: s.card, border: `1px solid ${s.border}`, borderRadius: "4px", padding: "14px", marginBottom: "20px" }}>
-                  <div style={{ fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "12px" }}>Your quote summary</div>
-                  {[
-                    ["Type",          propertyType],
-                    ["Rooms",         expandedRooms.join(", ")],
-                    ["Total area",    totalGrossM2 > 0 ? `${totalGrossM2.toFixed(1)} m² (inc. wastage)` : "To confirm"],
-                    ["Flooring",      selectedFlooring + (flooringGrade ? ` — ${flooringGrade}` : "")],
-                    ["Current floor", currentFloor],
-                    ["Subfloor",      subfloor],
-                    ["Extras",        selectedExtras.map(id => EXTRAS_LIST.find(e => e.id === id)?.label).filter(Boolean).join(", ")],
-                    ["Budget",        budget],
-                    ["Timing",        timing],
-                    ["Service",       serviceType],
-                  ].filter(([, v]) => v).map(([label, val]) => (
-                    <div key={label} style={{ display: "flex", justifyContent: "space-between", fontFamily: s.sans, fontSize: "12px", color: s.dim, padding: "6px 0", borderBottom: `1px solid rgba(242,237,224,0.05)` }}>
-                      <span style={{ opacity: 0.5 }}>{label}</span>
-                      <span style={{ textAlign: "right", maxWidth: "60%" }}>{val}</span>
-                    </div>
-                  ))}
-                </div>
                 <GoldBtn onClick={() => {
                   setSubmitted(true);
                   fetch("/api/submit", {
@@ -1423,7 +1419,7 @@ export default function StrataPage() {
                       property_type:    propertyType,
                       rooms:            expandedRooms.join(", "),
                       total_m2:         parseFloat(totalGrossM2),
-                      flooring_type:    selectedFlooring,
+                      flooring_type:    flooringDisplay,
                       flooring_grade:   flooringGrade,
                       current_floor:    currentFloor,
                       subfloor_type:    subfloor,
@@ -1438,7 +1434,7 @@ export default function StrataPage() {
                       status:           "New",
                     }),
                   }).catch(() => {});
-                }} disabled={!canSubmit}>Book my free survey</GoldBtn>
+                }} disabled={!canSubmit}>Book my free survey →</GoldBtn>
                 <div style={{ fontSize: "10px", color: "rgba(242,237,224,0.18)", textAlign: "center", fontFamily: s.sans, marginTop: "10px", lineHeight: 1.6 }}>
                   We'll call you back as soon as possible.<br />No obligation. No hard sell. Ever.
                 </div>
