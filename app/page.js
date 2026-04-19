@@ -138,12 +138,37 @@ const s = {
 const Tag = ({ children }) => <div style={{ fontSize: "9px", letterSpacing: "0.22em", textTransform: "uppercase", color: s.gold, fontFamily: s.sans, marginBottom: "8px" }}>{children}</div>;
 const Divider = () => <div style={{ width: "32px", height: "1px", background: s.gold, margin: "14px 0 18px" }} />;
 const Sub = ({ children }) => <div style={{ fontFamily: s.sans, fontSize: "13px", color: s.dim, lineHeight: 1.65, fontWeight: 300, marginBottom: "16px" }}>{children}</div>;
-const GoldBtn = ({ children, onClick, disabled = false }) => (
-  <button onClick={onClick} disabled={disabled} style={{ width: "100%", background: disabled ? "rgba(201,169,110,0.3)" : s.gold, color: "#111", border: "none", padding: "16px", fontSize: "13px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", borderRadius: "3px", cursor: disabled ? "not-allowed" : "pointer", fontFamily: s.sans, transition: "all 0.2s" }}>{children}</button>
-);
-const BackBtn = ({ onClick }) => (
-  <button onClick={onClick} style={{ background: "none", border: "none", color: "rgba(242,237,224,0.3)", fontFamily: s.sans, fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer", padding: "0", marginBottom: "16px", display: "block" }}>← Back</button>
-);
+const GoldBtn = ({ children, onClick, disabled = false }) => {
+  const [pressed, setPressed] = useState(false);
+  const handleClick = () => {
+    if (disabled || !onClick) return;
+    setPressed(true);
+    setTimeout(() => { setPressed(false); onClick(); }, 180);
+  };
+  return (
+    <button onClick={handleClick} disabled={disabled} style={{ width: "100%", background: disabled ? "rgba(201,169,110,0.3)" : pressed ? "#a07840" : s.gold, color: "#111", border: "none", padding: "16px", fontSize: "13px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", borderRadius: "3px", cursor: disabled ? "not-allowed" : "pointer", fontFamily: s.sans, transition: "background 0.1s" }}>{children}</button>
+  );
+};
+const BackBtn = ({ onClick }) => {
+  const [pressed, setPressed] = useState(false);
+  const handleClick = () => {
+    setPressed(true);
+    setTimeout(() => { setPressed(false); onClick(); }, 180);
+  };
+  return (
+    <button onClick={handleClick} style={{ background: "none", border: "none", color: pressed ? "rgba(242,237,224,0.6)" : "rgba(242,237,224,0.3)", fontFamily: s.sans, fontSize: "11px", letterSpacing: "0.1em", textTransform: "uppercase", cursor: "pointer", padding: "0", marginBottom: "16px", display: "block", transition: "color 0.1s" }}>← Back</button>
+  );
+};
+const NavBtn = ({ children, onClick }) => {
+  const [pressed, setPressed] = useState(false);
+  const handleClick = () => {
+    setPressed(true);
+    setTimeout(() => { setPressed(false); onClick(); }, 180);
+  };
+  return (
+    <button onClick={handleClick} style={{ background: pressed ? "rgba(242,237,224,0.05)" : "none", border: `1px solid ${s.border}`, color: s.dim, padding: "14px", borderRadius: "3px", cursor: "pointer", fontFamily: s.sans, fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase", transition: "background 0.1s", width: "100%" }}>{children}</button>
+  );
+};
 const ProgressBar = ({ current, total }) => (
   <div style={{ display: "flex", gap: "4px", marginBottom: "8px" }}>
     {Array.from({ length: total }).map((_, i) => (
@@ -655,10 +680,6 @@ export default function StrataPage() {
     const t = setInterval(() => setActiveGallery(p => (p + 1) % galleryImages.length), 4500);
     return () => clearInterval(t);
   }, []);
-  useEffect(() => {
-    document.getElementById("quote")?.scrollIntoView({ behavior: "smooth" });
-  }, [step]);
-
   const toggleRoom    = (r)  => setSelectedRooms(p => p.includes(r)  ? p.filter(x => x !== r)  : [...p, r]);
   const toggleExtra   = (id) => setSelectedExtras(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
   const setDim        = (room, data) => setDimensions(p => ({ ...p, [room]: data }));
@@ -690,6 +711,10 @@ export default function StrataPage() {
     "Budget & timing",
     "Almost done.",
   ];
+
+  const scrollToQuote = () => {
+    document.getElementById("quote")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <div style={{ background: s.bg, color: s.text, minHeight: "100vh", overflowX: "hidden", fontFamily: s.sans }}>
@@ -726,9 +751,9 @@ export default function StrataPage() {
         <div className="nav-links">
           <a href="#how" className="nav-link">How it works</a>
           <a href="#about" className="nav-link">About</a>
-          <a href="#quote" style={{ background: s.gold, color: "#111", padding: "9px 20px", fontSize: "11px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", borderRadius: "2px" }}>Free quote</a>
+          <a href="/" onClick={e => { e.preventDefault(); scrollToQuote(); }} style={{ background: s.gold, color: "#111", padding: "9px 20px", fontSize: "11px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", borderRadius: "2px" }}>Free quote</a>
         </div>
-        <a href="#quote" className="nav-cta-mobile" style={{ background: s.gold, color: "#111", padding: "8px 14px", fontSize: "10px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", textDecoration: "none", borderRadius: "2px" }}>Free quote</a>
+        <a href="/" onClick={e => { e.preventDefault(); scrollToQuote(); }} className="nav-cta-mobile" style={{ background: s.gold, color: "#111", padding: "8px 14px", fontSize: "10px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", textDecoration: "none", borderRadius: "2px" }}>Free quote</a>
       </nav>
 
       {/* HERO */}
@@ -749,7 +774,7 @@ export default function StrataPage() {
           <p style={{ fontFamily: s.sans, fontSize: "13px", color: s.dim, lineHeight: 1.7, fontWeight: 300, marginBottom: "20px", maxWidth: "320px" }}>
             Instant estimate. Free home survey with samples. Vetted fitters. The price you're quoted is the price you pay.
           </p>
-          <a href="#quote" style={{ background: s.gold, color: "#111", padding: "16px", fontSize: "13px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", borderRadius: "3px", display: "block", textAlign: "center", marginBottom: "10px" }}>Get my free quote →</a>
+          <a href="/" onClick={e => { e.preventDefault(); scrollToQuote(); }} style={{ background: s.gold, color: "#111", padding: "16px", fontSize: "13px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", borderRadius: "3px", display: "block", textAlign: "center", marginBottom: "10px" }}>Get my free quote →</a>
           <div style={{ fontSize: "10px", color: "rgba(242,237,224,0.2)", textAlign: "center", fontFamily: s.sans }}>Free survey · No obligation · Fair pricing</div>
           <div style={{ display: "flex", gap: "6px", justifyContent: "center", marginTop: "16px" }}>
             {galleryImages.map((_, i) => (
@@ -837,7 +862,7 @@ export default function StrataPage() {
             </div>
           ))}
         </div>
-        <a href="#quote" style={{ display: "block", textAlign: "center", background: s.gold, color: "#111", padding: "16px", fontSize: "13px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", borderRadius: "3px" }}>Get my free quote →</a>
+        <a href="/" onClick={e => { e.preventDefault(); scrollToQuote(); }} style={{ display: "block", textAlign: "center", background: s.gold, color: "#111", padding: "16px", fontSize: "13px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", borderRadius: "3px" }}>Get my free quote →</a>
       </section>
 
       {/* ABOUT */}
@@ -1132,12 +1157,7 @@ export default function StrataPage() {
                           }}>
                             Use these recommendations →
                           </GoldBtn>
-                          <button
-                            onClick={() => { setRecommendations(null); setHelpDescription(""); setStep2Sub("know"); }}
-                            style={{ background: "none", border: `1px solid ${s.border}`, color: s.dim, padding: "14px", borderRadius: "3px", cursor: "pointer", fontFamily: s.sans, fontSize: "12px", letterSpacing: "0.08em", textTransform: "uppercase", transition: "all 0.2s" }}
-                          >
-                            Choose myself
-                          </button>
+                          <NavBtn onClick={() => { setRecommendations(null); setHelpDescription(""); setStep2Sub("know"); }}>Choose myself</NavBtn>
                         </div>
                       </>
                     )}
