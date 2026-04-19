@@ -35,6 +35,12 @@ export const metadata = {
   alternates: {
     canonical: "https://www.stratafloors.co.uk",
   },
+  icons: {
+    icon: [
+      { url: '/favicon-512.png', type: 'image/png', sizes: '512x512' },
+    ],
+    shortcut: '/favicon.ico',
+  },
 };
 
 export default function RootLayout({ children }) {
@@ -45,8 +51,6 @@ export default function RootLayout({ children }) {
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: `if (window.location.hash) { window.history.replaceState(null, '', window.location.pathname); }` }} />
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="icon" href="/favicon.ico" sizes="any" />
       </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
