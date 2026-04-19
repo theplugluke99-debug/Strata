@@ -662,6 +662,8 @@ export default function StrataPage() {
     const roomFlooring = roomConfigs[r]?.flooring || selectedFlooring;
     return acc + getRoomGrossM2(r, dimensions[r], roomFlooring);
   }, 0);
+  const uniqueFloorings = [...new Set(expandedRooms.map(r => roomConfigs[r]?.flooring || selectedFlooring).filter(Boolean))];
+  const flooringDisplay = uniqueFloorings.length > 1 ? "Multiple" : (uniqueFloorings[0] || selectedFlooring || "");
   const quoteData = {
     rooms: expandedRooms, propertyType,
     flooringType: flooringDisplay, flooringGrade,
@@ -698,8 +700,6 @@ export default function StrataPage() {
     return parseFloat(d.l || 0) > 0 && parseFloat(d.w || 0) > 0;
   });
   const allRoomsHaveFlooring = expandedRooms.length > 0 && expandedRooms.every(r => !!roomConfigs[r]?.flooring);
-  const uniqueFloorings      = [...new Set(expandedRooms.map(r => roomConfigs[r]?.flooring || selectedFlooring).filter(Boolean))];
-  const flooringDisplay      = uniqueFloorings.length > 1 ? "Multiple" : (uniqueFloorings[0] || selectedFlooring || "");
   const currentEncouragement =
     step === 0 ? "Most people are done with this in under 2 minutes — let's get you a real price." :
     step === 1 && measureSubStep === "educate" ? "Take your time with this — accurate measurements mean a more accurate quote." :
