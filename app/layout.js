@@ -12,21 +12,21 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  title: "Strata | Carpets & Flooring — Essex & London",
-  description: "Get an instant flooring quote online. Free home survey with samples brought to you. Vetted fitters. Fair transparent pricing with no hidden costs. Carpet, LVT, herringbone, laminate and vinyl specialists covering Essex and London.",
-  keywords: "flooring Essex, carpet fitting London, LVT flooring Essex, herringbone flooring London, supply and fit flooring, free flooring survey Essex, carpet fitter near me, flooring quote online",
+  title: "Strata | Premium Carpets & Flooring — Essex & London",
+  description: "Premium carpet and flooring specialists covering Essex and East London. Instant online quote, free home survey with samples delivered to your door, vetted fitters, no hidden costs. Supply and fit carpet, LVT, herringbone, laminate, vinyl and engineered wood.",
+  keywords: "carpet fitters Essex, carpet fitting East London, flooring Essex, LVT fitting Essex, herringbone flooring Essex, carpet supply and fit London, free flooring survey Essex, flooring quote online, carpet fitter near me Essex, engineered wood flooring London, laminate flooring Essex, vinyl flooring fitting London, flooring specialists Essex, carpet fitting Chelmsford, carpet fitting Basildon, carpet fitting Ilford, flooring company Essex",
   openGraph: {
-    title: "Strata | Carpets & Flooring — Essex & London",
-    description: "Instant quote. Free home survey. Vetted fitters. The price you're quoted is the price you pay.",
+    title: "Strata | Premium Carpets & Flooring — Essex & London",
+    description: "Instant online quote. Free home survey with samples. Vetted fitters. The price you're quoted is the price you pay — no surprises on fitting day.",
     url: "https://www.stratafloors.co.uk",
-    siteName: "Strata",
+    siteName: "Strata Carpets & Flooring",
     locale: "en_GB",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Strata | Carpets & Flooring — Essex & London",
-    description: "Instant quote. Free home survey. Vetted fitters. No hidden costs.",
+    title: "Strata | Premium Carpets & Flooring — Essex & London",
+    description: "Instant quote. Free home survey. Vetted fitters. No hidden costs. Ever.",
   },
   robots: {
     index: true,
