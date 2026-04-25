@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import FloSection from "./components/FloSection";
 
 // ── Gallery ──────────────────────────────────────────────────────
 const galleryImages = [
@@ -873,6 +874,9 @@ export default function StrataPage() {
         <a href="/" onClick={e => { e.preventDefault(); scrollToQuote(); }} style={{ display: "block", textAlign: "center", background: s.gold, color: "#111", padding: "16px", fontSize: "13px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", borderRadius: "3px" }}>Get my free quote →</a>
       </section>
 
+      {/* FLO */}
+      <FloSection />
+
       {/* ABOUT */}
       <section id="about" style={{ padding: "48px 20px", borderTop: `1px solid ${s.border}` }}>
         <Tag>Who we are</Tag>
@@ -1445,9 +1449,15 @@ export default function StrataPage() {
       </section>
 
       {/* FOOTER */}
-      <footer style={{ padding: "40px 20px", borderTop: `1px solid ${s.border}`, display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px" }}>
-        <div style={{ fontFamily: s.serif, fontSize: "20px", fontWeight: 700, letterSpacing: "0.1em" }}>STRATA</div>
-        <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.2)" }}>© 2026 Strata · Essex & London · All rights reserved.</div>
+      <footer style={{ padding: "40px 20px", borderTop: `1px solid ${s.border}` }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px", marginBottom: "28px" }}>
+          <div style={{ fontFamily: s.serif, fontSize: "20px", fontWeight: 700, letterSpacing: "0.1em" }}>STRATA</div>
+          <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.2)" }}>© 2026 Strata · Essex & London · All rights reserved.</div>
+        </div>
+        <div style={{ borderTop: `1px solid ${s.border}`, paddingTop: "20px", display: "flex", flexWrap: "wrap", gap: "16px" }}>
+          <a href="/fitter/apply" style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.2)", textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "rgba(242,237,224,0.4)"} onMouseLeave={e => e.target.style.color = "rgba(242,237,224,0.2)"}>Are you a fitter? Apply to join Strata</a>
+          <a href="/surveyor/apply" style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.2)", textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "rgba(242,237,224,0.4)"} onMouseLeave={e => e.target.style.color = "rgba(242,237,224,0.2)"}>Interested in surveying? Apply here</a>
+        </div>
       </footer>
     </div>
   );
