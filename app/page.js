@@ -81,6 +81,57 @@ const WASTAGE = {
   "Herringbone": 0.15, "Vinyl": 0.10, "Not sure yet": 0.10,
 };
 
+// ── Live Estimate Pricing (Client-side) ────────────────────────
+const ESTIMATE_PRICES = {
+  flooring: {
+    "Carpet":       { Budget: { low: 12, high: 18 }, Mid: { low: 22, high: 32 }, Premium: { low: 35, high: 55 }, default: { low: 15, high: 45 } },
+    "Herringbone":  { Budget: { low: 25, high: 40 }, Mid: { low: 50, high: 80 }, Premium: { low: 85, high: 130 }, default: { low: 50, high: 110 } },
+    "LVT":          { Budget: { low: 20, high: 30 }, Mid: { low: 30, high: 45 }, Premium: { low: 45, high: 65 }, default: { low: 25, high: 55 } },
+    "Laminate":     { Budget: { low: 12, high: 20 }, Mid: { low: 20, high: 30 }, Premium: { low: 30, high: 45 }, default: { low: 15, high: 40 } },
+    "Vinyl":        { Budget: { low: 10, high: 18 }, Mid: { low: 18, high: 28 }, Premium: { low: 28, high: 40 }, default: { low: 12, high: 35 } },
+    "Not sure yet": { default: { low: 20, high: 80 } },
+  },
+  removal: {
+    "Carpet":         { low: 3,  high: 6  },
+    "Hard floor":     { low: 6,  high: 12 },
+    "Tiles":          { low: 10, high: 20 },
+    "Vinyl":          { low: 4,  high: 8  },
+    "Bare / nothing": null,
+  },
+  subfloor: {
+    "Concrete":        { low: 8,  high: 18 },
+    "Timber / boards": { low: 4,  high: 10 },
+  },
+};
+
+const calculateLiveEstimate = (m2, flooringType, flooringGrade, currentFloor, subfloorType) => {
+  if (!m2 || m2 <= 0) return { low: 0, high: 0 };
+
+  const flooringGroup = ESTIMATE_PRICES.flooring[flooringType] || ESTIMATE_PRICES.flooring["Not sure yet"];
+  const flooringPrice = flooringGrade && flooringGroup[flooringGrade] ? flooringGroup[flooringGrade] : flooringGroup.default;
+
+  let totalLow = Math.round(flooringPrice.low * m2);
+  let totalHigh = Math.round(flooringPrice.high * m2);
+
+  if (currentFloor && currentFloor !== "Bare / nothing") {
+    const removalPrice = ESTIMATE_PRICES.removal[currentFloor];
+    if (removalPrice) {
+      totalLow += Math.round(removalPrice.low * m2);
+      totalHigh += Math.round(removalPrice.high * m2);
+    }
+  }
+
+  if (subfloorType) {
+    const subfloorPrice = ESTIMATE_PRICES.subfloor[subfloorType];
+    if (subfloorPrice) {
+      totalLow += Math.round(subfloorPrice.low * m2);
+      totalHigh += Math.round(subfloorPrice.high * m2);
+    }
+  }
+
+  return { low: Math.max(totalLow, 250), high: Math.max(totalHigh, 250) };
+};
+
 // ── Rooms ────────────────────────────────────────────────────────
 const RESIDENTIAL_ROOMS = [
   "Living Room","Bedroom","Hallway","Stairs","Dining Room",
@@ -656,6 +707,17 @@ export default function StrataPage() {
   const [pathChoice,       setPathChoice]       = useState(null);
   const refCode = useRef("STR-2026-" + Math.floor(1000 + Math.random() * 9000));
 
+  // ── Live estimate state
+  const [liveEstimate, setLiveEstimate] = useState({ low: 0, high: 0 });
+
+  // ── Flo intercept state (Step 2 / know sub-step timer)
+  const [floShowingTimer, setFloShowingTimer] = useState(false);
+  const [floExpanded, setFloExpanded] = useState(false);
+  const [floInput, setFloInput] = useState("");
+  const [floLoading, setFloLoading] = useState(false);
+  const [floRecommendation, setFloRecommendation] = useState(null); // { text, flooring }
+  const floTimerRef = useRef(null);
+
   const expandedRooms = selectedRooms.flatMap(r =>
     r === "Bedroom" ? Array.from({ length: bedroomCount }, (_, i) => bedroomCount === 1 ? "Bedroom" : `Bedroom ${i + 1}`) : [r]
   );
@@ -674,6 +736,39 @@ export default function StrataPage() {
     roomConfigs,
     roomFlooringBreakdown: Object.fromEntries(expandedRooms.map(r => [r, roomConfigs[r]?.flooring || selectedFlooring])),
   };
+
+  useEffect(() => {
+    if (!selectedRooms.length) return;
+    // Use actual measurements or fall back to average room size (15 m² per room)
+    const m2 = totalGrossM2 || selectedRooms.reduce((acc, r) => {
+      const avgM2 = { "Living Room": 20, "Bedroom": 14, "Hallway": 8, "Stairs": 10, "Dining Room": 16, "Landing": 6, "Kitchen": 12, "Bathroom": 6, "En-suite": 4, "Conservatory": 14 };
+      return acc + (avgM2[r] || 15);
+    }, 0);
+    const est = calculateLiveEstimate(m2, selectedFlooring, flooringGrade, currentFloor, subfloor);
+    setLiveEstimate(est);
+  }, [selectedFlooring, flooringGrade, currentFloor, subfloor, totalGrossM2, selectedRooms.length, selectedRooms]);
+
+  // ── Flo intercept timer (8 seconds on Step 2 / know sub-step flooring selection)
+  useEffect(() => {
+    if (step === 2 && step2Sub === "know") {
+      if (floTimerRef.current) clearTimeout(floTimerRef.current);
+      floTimerRef.current = setTimeout(() => setFloShowingTimer(true), 8000);
+    } else {
+      if (floTimerRef.current) clearTimeout(floTimerRef.current);
+      setFloShowingTimer(false);
+      setFloExpanded(false);
+      setFloRecommendation(null);
+    }
+    return () => floTimerRef.current && clearTimeout(floTimerRef.current);
+  }, [step, step2Sub]);
+
+  // ── Clear Flo timer if user selects a flooring type
+  useEffect(() => {
+    if (selectedFlooring) {
+      if (floTimerRef.current) clearTimeout(floTimerRef.current);
+      setFloShowingTimer(false);
+    }
+  }, [selectedFlooring]);
 
   useEffect(() => {
     const onScroll = () => setScrollY(window.scrollY);
@@ -721,6 +816,35 @@ export default function StrataPage() {
     "Almost done.",
   ];
 
+  // ── Flo intercept: ask Flo for flooring recommendation
+  const handleFloAsk = async () => {
+    const text = floInput.trim();
+    if (!text || floLoading) return;
+    setFloLoading(true);
+    try {
+      const res = await fetch("/api/flo/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          messages: [{ role: "user", content: `I need a flooring recommendation. ${text}` }],
+          context: "customer",
+          userContext: { rooms: selectedRooms.join(", "), propertyType },
+        }),
+      });
+      const data = await res.json();
+      const responseText = data.response || "I'd suggest LVT for most rooms — it's durable, waterproof, and looks great.";
+      const knownFloorings = ["Carpet", "Herringbone", "LVT", "Laminate", "Vinyl"];
+      const detected = knownFloorings.find(f => responseText.toLowerCase().includes(f.toLowerCase()));
+      setFloInput("");
+      setFloRecommendation({ text: responseText, flooring: detected || null });
+    } catch {
+      setFloInput("");
+      setFloRecommendation({ text: "I'd suggest LVT — it works in almost any room and is very easy to maintain.", flooring: "LVT" });
+    } finally {
+      setFloLoading(false);
+    }
+  };
+
   const scrollToQuote = () => {
     document.getElementById("quote")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
@@ -750,6 +874,8 @@ export default function StrataPage() {
         .nav-link:hover { color: #f2ede0; }
         .nav-links { display: none !important; }
         .nav-cta-mobile { display: block; }
+        .flo-estimate-bar { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(17,17,16,0.98); border-top: 1px solid rgba(201,169,110,0.3); padding: 12px 20px; z-index: 40; display: flex; justify-content: space-between; align-items: center; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @media (min-width: 480px) { .nav-links { display: flex !important; gap: 24px; align-items: center; } .nav-cta-mobile { display: none; } }
         @media (min-width: 640px) { .hero-h1 { font-size: 52px !important; } }
       `}</style>
@@ -760,6 +886,7 @@ export default function StrataPage() {
         <div className="nav-links">
           <a href="#how" className="nav-link">How it works</a>
           <a href="#about" className="nav-link">About</a>
+          <a href="tel:02081234567" className="nav-link" style={{ fontSize: "12px", letterSpacing: "0.05em", color: s.gold }}>020 8123 4567</a>
           <a href="/" onClick={e => { e.preventDefault(); scrollToQuote(); }} style={{ background: s.gold, color: "#111", padding: "9px 20px", fontSize: "11px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", borderRadius: "2px" }}>Free quote</a>
         </div>
         <a href="/" onClick={e => { e.preventDefault(); scrollToQuote(); }} className="nav-cta-mobile" style={{ background: s.gold, color: "#111", padding: "8px 14px", fontSize: "10px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", textDecoration: "none", borderRadius: "2px" }}>Free quote</a>
@@ -853,6 +980,28 @@ export default function StrataPage() {
         ))}
       </section>
 
+      {/* SOCIAL PROOF */}
+      <section style={{ padding: "0 20px 48px" }}>
+        <Tag>Straight with you</Tag>
+        <div style={{ fontFamily: s.serif, fontSize: "26px", fontWeight: 700, color: s.text, lineHeight: 1.1, marginBottom: "16px" }}>
+          We&apos;re new.<br /><span style={{ color: s.gold, fontStyle: "italic" }}>Our work isn&apos;t.</span>
+        </div>
+        <div style={{ background: s.card, borderLeft: `3px solid ${s.gold}`, borderTop: `1px solid ${s.border}`, borderRight: `1px solid ${s.border}`, borderBottom: `1px solid ${s.border}`, borderRadius: "0 4px 4px 0", padding: "20px 16px", marginBottom: "16px" }}>
+          <div style={{ fontFamily: s.sans, fontSize: "13px", color: s.dim, lineHeight: 1.8, fontWeight: 300, marginBottom: "12px" }}>
+            Yes, Strata is brand new. But the people behind us? Over 20 years of hands-on flooring expertise across Essex and London. We&apos;ve measured thousands of rooms, managed every subfloor challenge you can imagine, and learned exactly what matters.
+          </div>
+          <div style={{ fontFamily: s.sans, fontSize: "13px", color: s.dim, lineHeight: 1.8, fontWeight: 300, marginBottom: "12px" }}>
+            We&apos;re not trading on fake reviews or inflated promises. You&apos;ll see real feedback from real customers as we grow. What we&apos;re trading on is straightforward process, transparent pricing, and people who actually know what they&apos;re doing.
+          </div>
+          <div style={{ fontFamily: s.sans, fontSize: "13px", color: s.gold, fontStyle: "italic", fontWeight: 300, marginBottom: "16px" }}>
+            No hidden costs. No callbacks that don&apos;t happen. No surprises on fitting day.
+          </div>
+          <a href="https://g.page/r/strata-flooring/review" target="_blank" rel="noopener noreferrer" style={{ display: "inline-block", fontFamily: s.sans, fontSize: "12px", color: s.gold, border: `1px solid rgba(201,169,110,0.35)`, padding: "8px 16px", borderRadius: "2px", textDecoration: "none", letterSpacing: "0.06em" }}>
+            Leave us a review on Google →
+          </a>
+        </div>
+      </section>
+
       {/* MATERIALS */}
       <section style={{ padding: "0 20px 48px" }}>
         <Tag>What's popular right now</Tag>
@@ -919,6 +1068,12 @@ export default function StrataPage() {
               <p style={{ fontFamily: s.sans, fontSize: "13px", color: s.dim, lineHeight: 1.7, fontWeight: 300, maxWidth: "280px", margin: "0 auto" }}>
                 We'll call you back as soon as we can to confirm your free survey — someone who actually knows flooring will be on the other end of the phone.
               </p>
+            </div>
+
+            <div style={{ background: "rgba(201,169,110,0.06)", border: `1px solid ${s.gold}`, borderRadius: "4px", padding: "18px 16px", marginBottom: "24px", textAlign: "center" }}>
+              <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px", fontWeight: 600 }}>We'll call you</div>
+              <div style={{ fontFamily: s.serif, fontSize: "18px", color: s.text, fontWeight: 700, marginBottom: "4px" }}>Within 2 hours</div>
+              <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, lineHeight: 1.5 }}>Between {new Date(Date.now() + 3600000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} – {new Date(Date.now() + 7200000).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}</div>
             </div>
 
             <AIQuoteBlock quoteData={quoteData} />
@@ -1033,6 +1188,7 @@ export default function StrataPage() {
                         {pathChoice === "help" && <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.gold, marginTop: "8px" }}>✓ Selected</div>}
                       </button>
                     </div>
+
                     {pathChoice && <GoldBtn onClick={() => setStep2Sub(pathChoice)}>Continue →</GoldBtn>}
                   </>
                 )}
@@ -1072,6 +1228,66 @@ export default function StrataPage() {
                         )}
                       </div>
                     ))}
+                    {/* Flo intercept (appears after 8 seconds if no flooring selected) */}
+                    {floShowingTimer && !selectedFlooring && (
+                      <div style={{ background: "rgba(201,169,110,0.08)", border: `1px solid ${s.gold}`, borderRadius: "8px", padding: "18px 20px", marginTop: "16px", animation: "fadeIn 0.5s ease-in" }}>
+                        <div style={{ display: "flex", gap: 12, alignItems: "flex-start", marginBottom: 12 }}>
+                          <div style={{ width: 32, height: 32, borderRadius: "50%", background: s.gold, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                            <span style={{ fontFamily: s.serif, fontStyle: "italic", fontSize: 14, fontWeight: 700, color: "#111" }}>F</span>
+                          </div>
+                          <div>
+                            <div style={{ fontFamily: s.serif, fontSize: 16, fontWeight: 600, color: s.text, marginBottom: 4 }}>Not sure which to pick?</div>
+                            <div style={{ fontFamily: s.sans, fontSize: 13, color: s.dim, lineHeight: 1.5 }}>Tell me about the room and I&apos;ll choose for you.</div>
+                          </div>
+                        </div>
+
+                        {!floExpanded && !floRecommendation && (
+                          <button onClick={() => setFloExpanded(true)} style={{ background: s.gold, border: "none", borderRadius: "4px", padding: "10px 16px", color: "#111", fontFamily: s.sans, fontSize: "13px", fontWeight: 600, cursor: "pointer", width: "100%" }}>
+                            Ask Flo
+                          </button>
+                        )}
+
+                        {floExpanded && !floRecommendation && (
+                          <div style={{ display: "flex", gap: 8 }}>
+                            <input
+                              value={floInput}
+                              onChange={e => setFloInput(e.target.value)}
+                              placeholder="e.g. It's a kitchen, we have a dog, underfloor heating..."
+                              disabled={floLoading}
+                              style={{ flex: 1, background: "rgba(242,237,224,0.05)", border: `1px solid ${s.border}`, borderRadius: "4px", padding: "10px 12px", color: s.text, fontFamily: s.sans, fontSize: "12px", outline: "none" }}
+                              onKeyDown={e => { if (e.key === "Enter" && !floLoading) handleFloAsk(); }}
+                            />
+                            <button onClick={handleFloAsk} disabled={!floInput.trim() || floLoading} style={{ background: s.gold, border: "none", borderRadius: "4px", padding: "10px 16px", color: "#111", fontFamily: s.sans, fontSize: "12px", fontWeight: 600, cursor: floLoading ? "default" : "pointer", opacity: floLoading || !floInput.trim() ? 0.5 : 1 }}>
+                              {floLoading ? "…" : "→"}
+                            </button>
+                          </div>
+                        )}
+
+                        {floRecommendation && (
+                          <div>
+                            <div style={{ fontFamily: s.sans, fontSize: 13, color: s.text, lineHeight: 1.6, marginBottom: 14, padding: "10px 14px", background: "rgba(242,237,224,0.04)", borderRadius: 6, border: `1px solid ${s.border}` }}>
+                              {floRecommendation.text}
+                            </div>
+                            <div style={{ display: "flex", gap: 10 }}>
+                              {floRecommendation.flooring && (
+                                <button onClick={() => {
+                                  setSelectedFlooring(floRecommendation.flooring);
+                                  setFlooringGrade("");
+                                  setFloShowingTimer(false);
+                                  setFloRecommendation(null);
+                                }} style={{ flex: 2, padding: "12px", background: s.gold, color: "#111", border: "none", borderRadius: "4px", fontSize: "13px", fontWeight: 600, fontFamily: s.sans, cursor: "pointer" }}>
+                                  Use {floRecommendation.flooring}
+                                </button>
+                              )}
+                              <button onClick={() => { setFloShowingTimer(false); setFloRecommendation(null); }} style={{ flex: 1, padding: "12px", background: "transparent", color: s.dim, border: `1px solid ${s.border}`, borderRadius: "4px", fontSize: "13px", fontFamily: s.sans, cursor: "pointer" }}>
+                                See all options
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
                     <div style={{ marginTop: "16px" }}>
                       <GoldBtn onClick={() => {
                         setFlooringPath("know");
@@ -1413,6 +1629,12 @@ export default function StrataPage() {
                     {postcode && !postcodeValid && <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.gold, marginTop: "6px" }}>Please enter a valid UK postcode (e.g. SW1A 1AA)</div>}
                   </div>
                 </div>
+
+                {/* Zero commitment statement */}
+                <div style={{ fontFamily: s.sans, fontSize: "12px", fontStyle: "italic", color: s.gold, textAlign: "center", marginBottom: "20px", lineHeight: 1.6 }}>
+                  The survey is completely free. No obligation to go ahead. We'll call to arrange a time that suits you.
+                </div>
+
                 <GoldBtn onClick={() => {
                   setSubmitted(true);
                   fetch("/api/submit", {
@@ -1438,6 +1660,15 @@ export default function StrataPage() {
                       status:           "New",
                     }),
                   }).catch(() => {});
+
+                  // Schedule WhatsApp follow-up for 30 minutes later
+                  setTimeout(() => {
+                    fetch("/api/leads/whatsapp-followup", {
+                      method: "POST",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ name, phone, reference: refCode.current }),
+                    }).catch(() => {});
+                  }, 1800000); // 30 minutes
                 }} disabled={!canSubmit}>Book my free survey →</GoldBtn>
                 <div style={{ fontSize: "10px", color: "rgba(242,237,224,0.18)", textAlign: "center", fontFamily: s.sans, marginTop: "10px", lineHeight: 1.6 }}>
                   We'll call you back as soon as possible.<br />No obligation. No hard sell. Ever.
@@ -1447,6 +1678,21 @@ export default function StrataPage() {
           </>
         )}
       </section>
+
+      {/* LIVE ESTIMATE BAR */}
+      {!submitted && selectedRooms.length > 0 && liveEstimate.low > 0 && (
+        <div className="flo-estimate-bar" style={{ paddingBottom: step === 5 ? "20px" : "12px", paddingTop: step === 5 ? "16px" : "12px" }}>
+          <div>
+            <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "3px" }}>Estimated total</div>
+            <div style={{ fontFamily: s.serif, fontSize: "20px", color: s.text, fontWeight: 700, transition: "all 0.4s ease" }}>£{liveEstimate.low.toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} – £{liveEstimate.high.toLocaleString('en-GB', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</div>
+            {step === 5 && <div style={{ fontFamily: s.sans, fontSize: "10px", color: "rgba(201,169,110,0.6)", marginTop: "4px", fontStyle: "italic" }}>Full itemised breakdown on the next screen</div>}
+          </div>
+          <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim, textAlign: "right", lineHeight: 1.5 }}>
+            <div>Incl. removal &amp; prep</div>
+            <div style={{ color: "rgba(242,237,224,0.25)", fontSize: "9px", marginTop: "2px" }}>{totalGrossM2 > 0 ? "based on your measurements" : "rough estimate"}</div>
+          </div>
+        </div>
+      )}
 
       {/* FOOTER */}
       <footer style={{ padding: "40px 20px", borderTop: `1px solid ${s.border}` }}>

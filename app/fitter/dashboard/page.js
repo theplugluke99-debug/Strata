@@ -148,6 +148,224 @@ function ScoreDisplay({ score, summary, positives, improvements, flaggedAreas })
   );
 }
 
+// ── UK tax bands 2025/26 ─────────────────────────────────────────
+function calcTax(grossIncome, mileageDeduction) {
+  const taxableProfit = Math.max(0, grossIncome - mileageDeduction);
+  const personalAllowance = 12570;
+  const basicRateLimit = 50270;
+  const higherRateLimit = 125140;
+
+  let incomeTax = 0;
+  if (taxableProfit > personalAllowance) {
+    const basicBand = Math.min(taxableProfit, basicRateLimit) - personalAllowance;
+    incomeTax += Math.max(0, basicBand) * 0.20;
+  }
+  if (taxableProfit > basicRateLimit) {
+    const higherBand = Math.min(taxableProfit, higherRateLimit) - basicRateLimit;
+    incomeTax += Math.max(0, higherBand) * 0.40;
+  }
+  if (taxableProfit > higherRateLimit) {
+    incomeTax += (taxableProfit - higherRateLimit) * 0.45;
+  }
+
+  // Class 4 NI: 9% on £12,570–£50,270, 2% above
+  let ni = 0;
+  if (taxableProfit > personalAllowance) {
+    const niBasic = Math.min(taxableProfit, basicRateLimit) - personalAllowance;
+    ni += Math.max(0, niBasic) * 0.09;
+  }
+  if (taxableProfit > basicRateLimit) {
+    ni += (taxableProfit - basicRateLimit) * 0.02;
+  }
+
+  return { taxableProfit, incomeTax: Math.round(incomeTax), ni: Math.round(ni), totalLiability: Math.round(incomeTax + ni) };
+}
+
+// Rough straight-line distance between two UK outcode centroids (very approximate)
+const OUTCODE_COORDS = {
+  RM: [51.552, 0.170], E: [51.520, -0.044], IG: [51.558, 0.083], CM: [51.735, 0.470],
+  SS: [51.558, 0.710], EN: [51.652, -0.082], N: [51.558, -0.108], NW: [51.545, -0.185],
+  W: [51.509, -0.203], WC: [51.518, -0.120], EC: [51.516, -0.092], SE: [51.475, -0.049],
+  SW: [51.466, -0.178], CR: [51.374, -0.099], BR: [51.404, 0.017], DA: [51.442, 0.218],
+};
+function roughMiles(postA, postB) {
+  if (!postA || !postB) return null;
+  const outA = (postA.match(/^[A-Za-z]{1,2}/) || [])[0]?.toUpperCase();
+  const outB = (postB.match(/^[A-Za-z]{1,2}/) || [])[0]?.toUpperCase();
+  const cA = OUTCODE_COORDS[outA];
+  const cB = OUTCODE_COORDS[outB];
+  if (!cA || !cB) return null;
+  const R = 3959;
+  const dLat = ((cB[0] - cA[0]) * Math.PI) / 180;
+  const dLon = ((cB[1] - cA[1]) * Math.PI) / 180;
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos((cA[0] * Math.PI) / 180) * Math.cos((cB[0] * Math.PI) / 180) * Math.sin(dLon / 2) ** 2;
+  return Math.round(R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+}
+
+const TAX_KEY_DATES = [
+  { date: "5 April", label: "End of tax year", note: "Last day of the 2025/26 tax year. Any remaining allowances or deductions expire." },
+  { date: "6 April", label: "New tax year begins", note: "Your personal allowance and NI thresholds reset for 2026/27." },
+  { date: "31 July", label: "Second payment on account", note: "If you pay tax by instalments, your second payment on account is due." },
+  { date: "5 October", label: "Self Assessment registration", note: "Deadline to register for Self Assessment if this is your first year as self-employed." },
+  { date: "31 January", label: "Tax return & balancing payment", note: "File your Self Assessment return and pay any balancing payment plus first payment on account for next year." },
+];
+
+function EarningsTab({ allJobs, fitterPostcode }) {
+  const now = new Date();
+  const taxYearStart = now.getMonth() >= 3 ? new Date(now.getFullYear(), 3, 6) : new Date(now.getFullYear() - 1, 3, 6);
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+  const paidJobs = allJobs.filter((j) => j.fields?.Status === "Paid");
+  const monthJobs = paidJobs.filter((j) => {
+    const d = j.fields?.["Completion Date"] || j.fields?.["Created"] || "";
+    return d ? new Date(d) >= monthStart : false;
+  });
+  const taxYearJobs = paidJobs.filter((j) => {
+    const d = j.fields?.["Completion Date"] || j.fields?.["Created"] || "";
+    return d ? new Date(d) >= taxYearStart : false;
+  });
+
+  const monthGross = monthJobs.reduce((s, j) => s + (parseFloat(j.fields?.Earnings) || 0), 0);
+  const taxYearGross = taxYearJobs.reduce((s, j) => s + (parseFloat(j.fields?.Earnings) || 0), 0);
+
+  // Mileage
+  const jobsWithMileage = paidJobs.map((j) => {
+    const miles = roughMiles(fitterPostcode, j.fields?.Postcode || j.fields?.["Job Postcode"] || "");
+    return { ...j, miles: miles ? miles * 2 : null }; // round trip
+  });
+  const monthMiles = jobsWithMileage.filter((j) => {
+    const d = j.fields?.["Completion Date"] || j.fields?.["Created"] || "";
+    return d ? new Date(d) >= monthStart : false;
+  }).reduce((s, j) => s + (j.miles || 0), 0);
+  const taxYearMiles = jobsWithMileage.filter((j) => {
+    const d = j.fields?.["Completion Date"] || j.fields?.["Created"] || "";
+    return d ? new Date(d) >= taxYearStart : false;
+  }).reduce((s, j) => s + (j.miles || 0), 0);
+
+  const mileageAllowance = taxYearMiles <= 10000
+    ? taxYearMiles * 0.45
+    : 10000 * 0.45 + (taxYearMiles - 10000) * 0.25;
+
+  const tax = calcTax(taxYearGross, mileageAllowance);
+
+  const downloadSummary = () => {
+    const lines = [
+      "STRATA — TAX YEAR SUMMARY",
+      `Tax year: ${taxYearStart.getFullYear()}/${taxYearStart.getFullYear() + 1}`,
+      `Generated: ${now.toLocaleDateString("en-GB")}`,
+      "",
+      "EARNINGS",
+      `Gross income from Strata: £${taxYearGross.toFixed(2)}`,
+      `Jobs completed: ${taxYearJobs.length}`,
+      "",
+      "MILEAGE",
+      `Total miles (tax year): ${taxYearMiles} miles`,
+      `Mileage allowance (HMRC 45p/mile first 10k): £${mileageAllowance.toFixed(2)}`,
+      "",
+      "TAX ESTIMATE",
+      `Taxable profit: £${tax.taxableProfit.toFixed(2)}`,
+      `Estimated income tax: £${tax.incomeTax}`,
+      `Estimated Class 4 NI: £${tax.ni}`,
+      `Total estimated liability: £${tax.totalLiability}`,
+      "",
+      "DISCLAIMER",
+      "This is an estimate only. Figures do not account for other income, expenses, or pension contributions.",
+      "Please consult an accountant or HMRC for your actual tax liability.",
+      "Self Assessment: www.gov.uk/self-assessment-tax-returns",
+    ];
+    const blob = new Blob([lines.join("\n")], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `strata-tax-summary-${taxYearStart.getFullYear()}-${taxYearStart.getFullYear() + 1}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const row = (label, value, highlight) => (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", padding: "10px 0", borderBottom: `1px solid ${BORDER}` }}>
+      <span style={{ color: TEXT_MUTED, fontSize: 13 }}>{label}</span>
+      <span style={{ color: highlight ? GOLD : TEXT, fontSize: highlight ? 18 : 15, fontFamily: highlight ? "'Cormorant Garamond', Georgia, serif" : "system-ui" }}>{value}</span>
+    </div>
+  );
+
+  return (
+    <div>
+      <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 28, fontWeight: 400, color: TEXT, marginBottom: 6 }}>Earnings & tax</h2>
+      <p style={{ color: TEXT_MUTED, fontSize: 14, marginBottom: 28 }}>A running picture of your income and what you might owe.</p>
+
+      {/* Month summary */}
+      <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 12, padding: "20px 20px", marginBottom: 24 }}>
+        <p style={{ color: TEXT_MUTED, fontSize: 11, letterSpacing: 1.5, textTransform: "uppercase", margin: "0 0 16px" }}>This month</p>
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 4 }}>
+          <div>
+            <p style={{ color: TEXT_MUTED, fontSize: 12, margin: "0 0 4px" }}>Gross earnings</p>
+            <p style={{ color: GOLD, fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 32, margin: 0 }}>£{monthGross.toFixed(2)}</p>
+          </div>
+          <div>
+            <p style={{ color: TEXT_MUTED, fontSize: 12, margin: "0 0 4px" }}>Jobs completed</p>
+            <p style={{ color: TEXT, fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 32, margin: 0 }}>{monthJobs.length}</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Mileage tracker */}
+      <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 12, padding: "20px", marginBottom: 24 }}>
+        <p style={{ color: TEXT_MUTED, fontSize: 11, letterSpacing: 1.5, textTransform: "uppercase", margin: "0 0 16px" }}>Mileage tracker</p>
+        <p style={{ color: TEXT_MUTED, fontSize: 12, marginBottom: 16, lineHeight: 1.5 }}>
+          Approximate return mileage home→job using postcode district centroids. Confirm exact mileage in your own records.
+        </p>
+        {row("Miles this month", `${monthMiles} miles`)}
+        {row("Miles this tax year", `${taxYearMiles} miles`)}
+        {row("Mileage allowance (45p/mile)", `£${mileageAllowance.toFixed(2)}`, true)}
+        <p style={{ color: TEXT_MUTED, fontSize: 11, marginTop: 10, lineHeight: 1.5 }}>
+          HMRC: 45p per mile for first 10,000 miles, then 25p. Deducted from taxable profit.
+        </p>
+      </div>
+
+      {/* Tax summary */}
+      <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 12, padding: "20px", marginBottom: 24 }}>
+        <p style={{ color: TEXT_MUTED, fontSize: 11, letterSpacing: 1.5, textTransform: "uppercase", margin: "0 0 16px" }}>
+          Tax estimate — {taxYearStart.getFullYear()}/{String(taxYearStart.getFullYear() + 1).slice(2)}
+        </p>
+        {row("Gross income (Strata only)", `£${taxYearGross.toFixed(2)}`)}
+        {row("Mileage deduction", `– £${mileageAllowance.toFixed(2)}`)}
+        {row("Estimated taxable profit", `£${tax.taxableProfit.toFixed(2)}`, true)}
+        {row("Income tax estimate", `£${tax.incomeTax.toLocaleString("en-GB")}`)}
+        {row("Class 4 NI estimate", `£${tax.ni.toLocaleString("en-GB")}`)}
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", padding: "12px 0 4px" }}>
+          <span style={{ color: TEXT, fontSize: 14, fontWeight: 600 }}>Total estimated liability</span>
+          <span style={{ color: "#e0a050", fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 22 }}>£{tax.totalLiability.toLocaleString("en-GB")}</span>
+        </div>
+        <div style={{ background: "rgba(224,160,80,0.07)", border: "1px solid rgba(224,160,80,0.2)", borderRadius: 8, padding: "10px 14px", marginTop: 12 }}>
+          <p style={{ color: TEXT_MUTED, fontSize: 12, margin: 0, lineHeight: 1.6 }}>
+            <strong style={{ color: "#e0a050" }}>Disclaimer:</strong> This is a rough estimate based on Strata income only. It doesn&apos;t account for other income sources, other business expenses, pension contributions, or personal circumstances. Speak to an accountant or visit <span style={{ color: GOLD }}>gov.uk/self-assessment</span> for your actual liability.
+          </p>
+        </div>
+      </div>
+
+      {/* Key dates */}
+      <p style={{ color: TEXT_MUTED, fontSize: 11, letterSpacing: 1.5, textTransform: "uppercase", margin: "0 0 12px" }}>Key dates</p>
+      {TAX_KEY_DATES.map((item, i) => (
+        <GoldCard key={i} style={{ marginBottom: 10 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 12 }}>
+            <div>
+              <p style={{ color: GOLD, fontSize: 13, fontWeight: 600, margin: "0 0 4px" }}>{item.label}</p>
+              <p style={{ color: TEXT_MUTED, fontSize: 13, margin: 0, lineHeight: 1.5 }}>{item.note}</p>
+            </div>
+            <span style={{ color: GOLD, fontSize: 12, fontFamily: "'Cormorant Garamond', Georgia, serif", flexShrink: 0, fontWeight: 600 }}>{item.date}</span>
+          </div>
+        </GoldCard>
+      ))}
+
+      {/* Download */}
+      <button onClick={downloadSummary} style={{ width: "100%", marginTop: 8, padding: "16px", background: "transparent", color: GOLD, borderRadius: 10, border: `1px solid rgba(201,169,110,0.4)`, fontSize: 15, fontWeight: 600, cursor: "pointer", fontFamily: "system-ui" }}>
+        Download tax year summary
+      </button>
+    </div>
+  );
+}
+
 export default function FitterDashboard() {
   const router = useRouter();
   const [fitter, setFitter] = useState(null);
@@ -165,6 +383,9 @@ export default function FitterDashboard() {
   const [startTime, setStartTime] = useState(null);
   const [elapsed, setElapsed] = useState("0:00");
   const [monthEarnings, setMonthEarnings] = useState(null);
+  const [materialsSpec, setMaterialsSpec] = useState(null);
+  const [activeTab, setActiveTab] = useState("jobs");
+  const [allJobs, setAllJobs] = useState([]);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -196,12 +417,31 @@ export default function FitterDashboard() {
         const activeStatuses = ["Available", "Accepted", "Pre-Start", "In Progress", "Awaiting Sign Off", "Paid"];
         const active = data.data.find((r) => activeStatuses.includes(r.fields?.Status));
         setJob(active || null);
+        setAllJobs(data.data);
+        if (active?.fields?.Status === "Accepted") {
+          fetchMaterialsSpec(active.fields);
+        }
         const paid = data.data.filter((r) => r.fields?.Status === "Paid");
         const total = paid.reduce((s, r) => s + (parseFloat(r.fields?.Earnings) || 0), 0);
         setMonthEarnings(total.toFixed(2));
       }
     } catch { setError("Couldn't load your jobs right now."); }
     setLoading(false);
+  };
+
+  const fetchMaterialsSpec = async (fields) => {
+    try {
+      const rooms = fields["Room Names"]
+        ? fields["Room Names"].split(",").map((n, i) => ({ name: n.trim(), subfloorType: fields["Subfloor Type"] || "", existingFlooring: fields["Existing Flooring"] || "", grossM2: (parseFloat(fields["Approximate M2"]) || 20) / (fields["Room Names"].split(",").length || 1) }))
+        : [{ name: "Main area", grossM2: parseFloat(fields["Approximate M2"]) || 20, subfloorType: fields["Subfloor Type"] || "", existingFlooring: fields["Existing Flooring"] || "" }];
+      const res = await fetch("/api/materials/spec", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ flooringType: fields["Flooring Type"] || "LVT", rooms, serviceType: "Supply and fit" }),
+      });
+      const data = await res.json();
+      if (data.success) setMaterialsSpec(data.data);
+    } catch { /* silent — spec card is supplementary */ }
   };
 
   const updateJob = async (fields) => {
@@ -305,6 +545,14 @@ export default function FitterDashboard() {
           </GoldCard>
         )}
 
+        {/* Tab navigation */}
+        <div style={{ display: "flex", borderBottom: `1px solid ${BORDER}`, marginBottom: 28 }}>
+          <button onClick={() => setActiveTab("jobs")} style={{ flex: 1, padding: "12px 0", background: "transparent", border: "none", borderBottom: activeTab === "jobs" ? `2px solid ${GOLD}` : "2px solid transparent", color: activeTab === "jobs" ? GOLD : TEXT_MUTED, fontSize: 14, cursor: "pointer", fontFamily: "system-ui" }}>Jobs</button>
+          <button onClick={() => setActiveTab("earnings")} style={{ flex: 1, padding: "12px 0", background: "transparent", border: "none", borderBottom: activeTab === "earnings" ? `2px solid ${GOLD}` : "2px solid transparent", color: activeTab === "earnings" ? GOLD : TEXT_MUTED, fontSize: 14, cursor: "pointer", fontFamily: "system-ui" }}>Earnings</button>
+        </div>
+
+        {activeTab === "jobs" && (<>
+
         {/* STATE 1 — No active job */}
         {(!job || status === "none" || status === "Passed") && (
           <div>
@@ -403,6 +651,38 @@ export default function FitterDashboard() {
                 </GoldCard>
               )}
             </div>
+
+            {/* Materials spec card */}
+            {materialsSpec && (
+              <GoldCard style={{ marginBottom: 24 }}>
+                <p style={{ color: GOLD, fontSize: 12, fontWeight: 600, margin: "0 0 12px", fontFamily: "system-ui", letterSpacing: 1 }}>MATERIALS SPEC</p>
+                {materialsSpec.doorBars?.length > 0 && (
+                  <div style={{ marginBottom: 12 }}>
+                    <p style={{ color: TEXT_MUTED, fontSize: 11, margin: "0 0 6px", fontFamily: "system-ui", letterSpacing: 1, textTransform: "uppercase" }}>Door bars</p>
+                    {materialsSpec.doorBars.map((bar, i) => (
+                      <div key={i} style={{ marginBottom: 6 }}>
+                        <span style={{ color: TEXT, fontSize: 13, fontFamily: "system-ui" }}>{bar.type}</span>
+                        <span style={{ color: TEXT_MUTED, fontSize: 12, fontFamily: "system-ui" }}> — {bar.location} ({bar.widthMM}mm)</span>
+                        <p style={{ color: TEXT_MUTED, fontSize: 11, margin: "2px 0 0", fontFamily: "system-ui", lineHeight: 1.5 }}>{bar.reason}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {materialsSpec.underlay && (
+                  <div style={{ marginBottom: 12 }}>
+                    <p style={{ color: TEXT_MUTED, fontSize: 11, margin: "0 0 6px", fontFamily: "system-ui", letterSpacing: 1, textTransform: "uppercase" }}>Underlay</p>
+                    <p style={{ color: TEXT, fontSize: 13, fontFamily: "system-ui", margin: 0 }}>{materialsSpec.underlay.type} — {materialsSpec.underlay.m2Required} m²</p>
+                    <p style={{ color: TEXT_MUTED, fontSize: 11, fontFamily: "system-ui", margin: "2px 0 0" }}>{materialsSpec.gripperRods?.linearMetres > 0 && `${materialsSpec.gripperRods.linearMetres}m gripper rods`}</p>
+                  </div>
+                )}
+                {materialsSpec.plyBoarding?.required && (
+                  <div>
+                    <p style={{ color: TEXT_MUTED, fontSize: 11, margin: "0 0 4px", fontFamily: "system-ui", letterSpacing: 1, textTransform: "uppercase" }}>Ply boarding</p>
+                    <p style={{ color: "#e0a050", fontSize: 13, fontFamily: "system-ui", margin: 0 }}>Required — {materialsSpec.plyBoarding.reason}</p>
+                  </div>
+                )}
+              </GoldCard>
+            )}
 
             {/* Fitting tips */}
             <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 12, marginBottom: 24, overflow: "hidden" }}>
@@ -601,6 +881,11 @@ export default function FitterDashboard() {
               )}
             </div>
           </div>
+        )}
+        </>)}
+
+        {activeTab === "earnings" && (
+          <EarningsTab allJobs={allJobs} fitterPostcode={fitter?.homePostcode} />
         )}
 
       </div>

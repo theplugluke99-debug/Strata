@@ -91,17 +91,21 @@ export default function FloSection() {
       setLoading(true);
 
       try {
-        const res = await fetch("/api/flo", {
+        const res = await fetch("/api/flo/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ message: text, context: "customer", history }),
+          body: JSON.stringify({
+            messages: [...history, { role: "user", content: text }],
+            context: "customer",
+            userContext: {},
+          }),
         });
         const data = await res.json();
         setMessages((prev) => {
           const copy = [...prev];
           copy[copy.length - 1] = {
             role: "assistant",
-            content: data.reply || "Something went wrong. Give it another try.",
+            content: data.response || "Something went wrong. Give it another try.",
           };
           return copy;
         });
@@ -183,65 +187,38 @@ export default function FloSection() {
     <section style={{ background: BG_DEEP, borderTop: `1px solid rgba(201,169,110,0.28)` }}>
       {/* ── Always-visible closed header ─────────────────────────── */}
       <div style={{ padding: "20px 20px", maxWidth: 1200, margin: "0 auto" }}>
-        <div style={{ display: "flex", gap: 20, alignItems: "center", flexWrap: "wrap" }}>
-
-          {/* Identity */}
-          <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
-            <div style={{
-              width: 44, height: 44, borderRadius: "50%",
-              background: GOLD, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-            }}>
-              <span style={{ fontFamily: "var(--font-cormorant,'Cormorant Garamond',Georgia,serif)", fontStyle: "italic", fontSize: 22, fontWeight: 600, color: "#111", lineHeight: 1 }}>F</span>
+        <div style={{ display: "flex", justifyContent: "center", padding: "0 20px" }}>
+        <button
+          onClick={() => setIsOpen(true)}
+          style={{
+            width: "100%",
+            maxWidth: 820,
+            textAlign: "left",
+            display: "flex",
+            alignItems: "center",
+            gap: 16,
+            background: SURFACE,
+            border: `1px solid ${BORDER}`,
+            borderRadius: 16,
+            padding: "18px 22px",
+            cursor: "pointer",
+            color: TEXT,
+          }}
+        >
+          <div style={{ width: 44, height: 44, borderRadius: "50%", background: GOLD, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+            <span style={{ fontFamily: "var(--font-cormorant,'Cormorant Garamond',Georgia,serif)", fontStyle: "italic", fontSize: 20, fontWeight: 700, color: "#111" }}>F</span>
+          </div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ fontFamily: "var(--font-cormorant,'Cormorant Garamond',Georgia,serif)", fontSize: 18, fontWeight: 600, color: TEXT, lineHeight: 1.2, marginBottom: 4 }}>
+              Got a question about flooring? Ask Flo.
             </div>
-            <div>
-              <div style={{ fontFamily: "var(--font-cormorant,'Cormorant Garamond',Georgia,serif)", fontSize: 18, fontWeight: 600, color: TEXT, lineHeight: 1.2 }}>Hi, I'm Flo</div>
-              <div style={{ fontFamily: "var(--font-outfit,'Outfit',system-ui,sans-serif)", fontSize: 11, fontWeight: 300, color: "rgba(242,237,224,0.45)", marginTop: 2 }}>
-                Your flooring expert — here whenever you need her
-              </div>
+            <div style={{ fontFamily: "var(--font-outfit,'Outfit',system-ui,sans-serif)", fontSize: 12, color: TEXT_MUTED, lineHeight: 1.5 }}>
+              Tap anywhere to expand.
             </div>
           </div>
-
-          {/* Chips + input */}
-          <div style={{ flex: 1, minWidth: 260 }}>
-            <div style={{ display: "flex", gap: 7, flexWrap: "wrap", marginBottom: 10 }}>
-              {CLOSED_CHIPS.map((c) => (
-                <button key={c} onClick={() => handleChip(c)} className="flo-chip-closed">
-                  {c}
-                </button>
-              ))}
-            </div>
-            {!isOpen ? (
-              <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                {speechOk && (
-                  <button onClick={toggleSpeech} className="flo-mic-btn" aria-label="Voice input">
-                    <MicIcon listening={isListening} />
-                  </button>
-                )}
-                <input
-                  value={input}
-                  onChange={(e) => setInput(e.target.value)}
-                  onFocus={() => setIsOpen(true)}
-                  onKeyDown={handleKey}
-                  placeholder="Or ask me anything…"
-                  className="flo-input-bare"
-                />
-                <button
-                  onClick={() => sendMessage()}
-                  disabled={!input.trim()}
-                  className="flo-send-btn"
-                  style={{ opacity: !input.trim() ? 0.4 : 1 }}
-                  aria-label="Send"
-                >
-                  <SendIcon color="#111" />
-                </button>
-              </div>
-            ) : (
-              <button onClick={() => setIsOpen(false)} className="flo-collapse-inline">
-                ↑ Close Flo
-              </button>
-            )}
-          </div>
-        </div>
+          <div style={{ color: GOLD, fontSize: 20, fontWeight: 700 }}>→</div>
+        </button>
+      </div>
       </div>
 
       {/* ── Expandable drawer ────────────────────────────────────── */}
