@@ -1,5 +1,6 @@
+import { floLexicons } from './lexicons/index.js';
 import Anthropic from "@anthropic-ai/sdk";
-import { FLO_SYSTEM_PROMPT } from "@/lib/floPrompt";
+import { FLO_SYSTEM_PROMPT } from "@/lib/flo-prompt";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -25,7 +26,7 @@ export async function POST(req) {
       context && CONTEXT_NOTE[context] ? context : "customer";
 
     const systemPrompt =
-      FLO_SYSTEM_PROMPT + "\n\n---\n\n" + CONTEXT_NOTE[activeContext];
+      FLO_SYSTEM_PROMPT + "\n\n---\n\n" + floLexicons + "\n\n---\n\n" + CONTEXT_NOTE[activeContext];
 
     const historyMessages = Array.isArray(history)
       ? history

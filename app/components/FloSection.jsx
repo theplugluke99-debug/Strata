@@ -7,6 +7,7 @@ const BG_DEEP = "#0e0e0c";
 const SURFACE = "#1a1a18";
 const BORDER = "#2a2a28";
 const TEXT = "#f2ede0";
+const TEXT_MUTED = "rgba(242,237,224,0.45)";
 const GREEN = "#6ec97a";
 
 const CLOSED_CHIPS = [
@@ -43,7 +44,7 @@ export default function FloSection() {
   const [speechOk, setSpeechOk]       = useState(false);
 
   const inputRef         = useRef(null);
-  const messagesEndRef   = useRef(null);
+  const floMessagesRef   = useRef(null);
   const recognitionRef   = useRef(null);
   const autoSendRef      = useRef(null);
   const latestTextRef    = useRef("");
@@ -62,7 +63,9 @@ export default function FloSection() {
   }, [isOpen]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (floMessagesRef.current) {
+      floMessagesRef.current.scrollTop = floMessagesRef.current.scrollHeight;
+    }
   }, [messages]);
 
   useEffect(() => {
@@ -311,7 +314,7 @@ export default function FloSection() {
             </div>
 
             {/* Scrollable content */}
-            <div style={{ flex: 1, overflowY: "auto", padding: "18px 20px", scrollbarWidth: "none" }}>
+            <div ref={floMessagesRef} style={{ height: 320, overflowY: "auto", padding: "18px 20px", scrollbarWidth: "none" }}>
               {showCategories ? (
                 <>
                   <div style={{ fontFamily: "var(--font-cormorant,'Cormorant Garamond',Georgia,serif)", fontSize: 22, fontWeight: 600, color: TEXT, marginBottom: 14 }}>
@@ -356,7 +359,6 @@ export default function FloSection() {
                       </div>
                     </div>
                   ))}
-                  <div ref={messagesEndRef} />
                 </>
               )}
             </div>

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { FLO_SYSTEM_PROMPT } from "@/lib/flo-prompt";
+import { floLexicons } from "../lexicons/index.js";
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
@@ -42,7 +43,7 @@ export async function POST(req) {
       return NextResponse.json({ success: false, error: "Missing messages" }, { status: 400 });
     }
 
-    const prompt = `${FLO_SYSTEM_PROMPT}\n\n${contextPrompt(context, userContext)}`;
+    const prompt = `${FLO_SYSTEM_PROMPT}\n\n${floLexicons}\n\n${contextPrompt(context, userContext)}`;
 
     const response = await client.messages.create({
       model: "claude-haiku-4-5-20251001",
