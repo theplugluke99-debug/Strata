@@ -1,64 +1,125 @@
-import { NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
-import { FLO_SYSTEM_PROMPT } from "@/lib/flo-prompt";
-import { floLexicons } from "../lexicons/index.js";
+import { FLO_SYSTEM_PROMPT } from '@/lib/floPrompt';
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_KEY;
+const OPENAI_KEY = process.env.OPENAI_API_KEY;
+const ANTHROPIC_KEY = process.env.ANTHROPIC_API_KEY;
 
-function contextPrompt(context, userContext = {}) {
-  const common = [];
-  if (context === "fitter") {
-    common.push(
-      "You are speaking to a fitter on site. Keep the tone professional but friendly, and answer like a colleague who knows flooring and installation details.",
-      "Be especially helpful with subfloor prep, door bars, transitions, materials, and earnings when asked.",
-      "If current job details are provided, use them to ground your advice."
-    );
-  }
-  if (context === "surveyor") {
-    common.push(
-      "You are speaking to a surveyor preparing for or submitting a survey. Focus on what samples to bring, what subfloor details matter, and how to capture the right information in the report.",
-      "If the customer is interested in specific flooring types, mention the implications for survey and installation.",
-      "Keep the tone warm but practical."
-    );
-  }
-  if (context === "customer") {
-    common.push(
-      "You are speaking to a customer who wants simple, clear flooring advice. Avoid technical jargon unless it helps, and always explain the practical outcome.");
-  }
+async function embedQuery(text) {
+  const res = await fetch('https://api.openai.com/v1/embeddings', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${OPENAI_KEY}`,
+    },
+    body: JSON.stringify({
+      model: 'text-embedding-3-small',
+      input: text.slice(0, 8000),
+    }),
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return data.data[0].embedding;
+}
 
-  const contextLines = [
-    `Conversation context: ${context || "customer"}`,
-    `User context: ${JSON.stringify(userContext || {}, null, 0)}`,
-    ...common,
-  ];
-  return contextLines.join(" \n");
+async function searchLexicons(embedding, topK = 6) {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/match_lexicon_chunks`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+      'apikey': SUPABASE_SERVICE_KEY,
+    },
+    body: JSON.stringify({
+      query_embedding: embedding,
+      match_threshold: 0.5,
+      match_count: topK,
+    }),
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`Supabase search failed: ${err}`);
+  }
+  return res.json();
+}
+
+function buildContext(chunks) {
+  if (!chunks || chunks.length === 0) return '';
+  return chunks
+    .map(c => `[${c.lexicon_name}]\n${c.content}`)
+    .join('\n\n---\n\n');
 }
 
 export async function POST(req) {
   try {
     const body = await req.json();
-    const { messages, userContext, context = "customer" } = body;
+    const { message, context = {}, history = [] } = body;
 
-    if (!Array.isArray(messages) || messages.length === 0) {
-      return NextResponse.json({ success: false, error: "Missing messages" }, { status: 400 });
+    if (!message || typeof message !== 'string' || message.trim().length === 0) {
+      return Response.json({ success: false, error: 'message is required' }, { status: 400 });
     }
 
-    const prompt = `${FLO_SYSTEM_PROMPT}\n\n${floLexicons}\n\n${contextPrompt(context, userContext)}`;
+    console.log('[flo/chat] message:', message.slice(0, 100));
 
-    const response = await client.messages.create({
-      model: "claude-haiku-4-5-20251001",
-      max_tokens: 800,
-      system: prompt,
-      messages: messages.map((message) => ({
-        role: message.role,
-        content: message.content,
+    let relevantContext = '';
+    try {
+      const embedding = await embedQuery(message);
+      const chunks = await searchLexicons(embedding, 6);
+      relevantContext = buildContext(chunks);
+      console.log('[flo/chat] retrieved', chunks?.length || 0, 'chunks from RAG');
+    } catch (ragErr) {
+      console.warn('[flo/chat] RAG retrieval failed, continuing without:', ragErr.message);
+    }
+
+    const contextNote = context.role === 'fitter'
+      ? 'You are speaking with a fitter.'
+      : context.role === 'surveyor'
+      ? 'You are speaking with a surveyor.'
+      : 'You are speaking with a customer.';
+
+    const ragSection = relevantContext
+      ? `\n\nRELEVANT KNOWLEDGE FROM YOUR FLOORING DATABASE:\n${relevantContext}`
+      : '';
+
+    const systemPrompt = `${FLO_SYSTEM_PROMPT}\n\n${contextNote}${ragSection}`;
+
+    const messages = [
+      ...history.slice(-10).map(m => ({
+        role: m.role,
+        content: m.content,
       })),
+      { role: 'user', content: message },
+    ];
+
+    const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_KEY,
+        'anthropic-version': '2023-06-01',
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 1024,
+        system: systemPrompt,
+        messages,
+      }),
     });
 
-    const text = response?.content?.[0]?.text || "Sorry, I couldn't generate a response right now.";
-    return NextResponse.json({ success: true, response: text });
+    const anthropicData = await anthropicRes.json();
+
+    if (anthropicData.error) {
+      console.error('[flo/chat] Anthropic error:', anthropicData.error);
+      return Response.json({ success: false, error: 'Flo is unavailable right now' }, { status: 500 });
+    }
+
+    const response = anthropicData.content?.[0]?.text || '';
+    console.log('[flo/chat] response length:', response.length);
+
+    return Response.json({ success: true, response });
+
   } catch (err) {
-    console.error("[flo/chat]", err);
-    return NextResponse.json({ success: false, error: "Flo is unavailable right now." }, { status: 500 });
+    console.error('[flo/chat] error:', err.message);
+    return Response.json({ success: false, error: 'Something went wrong' }, { status: 500 });
   }
 }

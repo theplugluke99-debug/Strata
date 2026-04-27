@@ -1,4 +1,3 @@
-import { floLexicons } from './lexicons/index.js';
 import Anthropic from "@anthropic-ai/sdk";
 import { FLO_SYSTEM_PROMPT } from "@/lib/flo-prompt";
 
@@ -14,8 +13,10 @@ const CONTEXT_NOTE = {
 };
 
 export async function POST(req) {
+  console.log("[flo] POST called");
   try {
     const body = await req.json();
+    console.log("[flo] body:", JSON.stringify(body).slice(0, 200));
     const { message, context, history } = body;
 
     if (!message || typeof message !== "string" || !message.trim()) {
@@ -25,8 +26,9 @@ export async function POST(req) {
     const activeContext =
       context && CONTEXT_NOTE[context] ? context : "customer";
 
-    const systemPrompt =
-      FLO_SYSTEM_PROMPT + "\n\n---\n\n" + floLexicons + "\n\n---\n\n" + CONTEXT_NOTE[activeContext];
+    const systemPrompt = `${FLO_SYSTEM_PROMPT}\n\n---\n\n${CONTEXT_NOTE[activeContext]}`;
+
+    console.log("[flo] system prompt length:", systemPrompt.length);
 
     const historyMessages = Array.isArray(history)
       ? history
@@ -45,7 +47,7 @@ export async function POST(req) {
     ];
 
     const response = await client.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-haiku-4-5-20251001",
       max_tokens: 1024,
       system: [
         {
@@ -61,7 +63,7 @@ export async function POST(req) {
 
     return Response.json({ reply });
   } catch (err) {
-    console.error("[flo] error:", err);
+    console.error("[flo] error:", err?.message || err);
     return Response.json(
       { error: "Something went wrong. Please try again." },
       { status: 500 }
