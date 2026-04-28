@@ -846,22 +846,29 @@ export default function StrataPage() {
     if (!text || interceptLoading) return;
     setInterceptLoading(true);
     try {
-      const res = await fetch("/api/flo/chat", {
+      const res = await fetch("https://www.stratafloors.co.uk/api/flo/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          messages: [{ role: "user", content: `I need a flooring recommendation. ${text}` }],
-          context: "customer",
-          userContext: { rooms: selectedRooms.join(", "), propertyType },
+          message: `I need a flooring recommendation. ${text}. Property: ${propertyType}. Rooms: ${selectedRooms.join(", ")}`,
+          context: { role: "customer" },
+          history: [],
         }),
       });
+      console.log('[Flo] Status:', res.status);
+      if (!res.ok) {
+        const errText = await res.text();
+        console.error('[Flo] Error body:', errText);
+        throw new Error(`HTTP ${res.status}: ${errText}`);
+      }
       const data = await res.json();
       const responseText = data.response || "I'd suggest LVT for most rooms — it's durable, waterproof, and looks great.";
       const knownFloorings = ["Carpet", "Herringbone", "LVT", "Laminate", "Vinyl"];
       const detected = knownFloorings.find(f => responseText.toLowerCase().includes(f.toLowerCase()));
       setInterceptInput("");
       setInterceptResponse({ text: responseText, flooring: detected || null });
-    } catch {
+    } catch (err) {
+      console.error('[Flo] Fetch error:', err.message);
       setInterceptInput("");
       setInterceptResponse({ text: "I'd suggest LVT — it works in almost any room and is very easy to maintain.", flooring: "LVT" });
     } finally {

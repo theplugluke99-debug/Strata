@@ -94,15 +94,21 @@ export default function FloSection() {
       setLoading(true);
 
       try {
-        const res = await fetch("/api/flo/chat", {
+        const res = await fetch("https://www.stratafloors.co.uk/api/flo/chat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            messages: [...history, { role: "user", content: text }],
-            context: "customer",
-            userContext: {},
+            message: text,
+            context: { role: "customer" },
+            history: history,
           }),
         });
+        console.log('[Flo] Status:', res.status);
+        if (!res.ok) {
+          const errText = await res.text();
+          console.error('[Flo] Error body:', errText);
+          throw new Error(`HTTP ${res.status}: ${errText}`);
+        }
         const data = await res.json();
         setMessages((prev) => {
           const copy = [...prev];
@@ -113,7 +119,8 @@ export default function FloSection() {
           return copy;
         });
         setSuggIdx((i) => (i + 1) % SUGGESTIONS.length);
-      } catch {
+      } catch (err) {
+        console.error('[Flo] Fetch error:', err.message);
         setMessages((prev) => {
           const copy = [...prev];
           copy[copy.length - 1] = {
