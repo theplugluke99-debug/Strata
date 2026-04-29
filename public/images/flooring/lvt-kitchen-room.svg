@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-label="Kitchen with practical LVT flooring">
+  <rect width="1200" height="800" fill="#111110"/>
+  <linearGradient id="kWall" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0" stop-color="#2b2a25"/>
+    <stop offset="1" stop-color="#161512"/>
+  </linearGradient>
+  <rect width="1200" height="455" fill="url(#kWall)"/>
+  <rect y="455" width="1200" height="345" fill="#8c806c"/>
+  <g stroke="#4d463b" stroke-width="4" opacity=".62">
+    <path d="M0 520h1200M0 585h1200M0 655h1200M0 730h1200"/>
+    <path d="M120 455 40 800M310 455 245 800M505 455 470 800M700 455 700 800M895 455 930 800M1085 455 1160 800"/>
+  </g>
+  <path d="M0 455h1200" stroke="#c9a96e" stroke-opacity=".25" stroke-width="2"/>
+  <rect x="70" y="260" width="430" height="185" rx="4" fill="#1f1e1b"/>
+  <rect x="95" y="286" width="86" height="130" fill="#f2ede0" opacity=".12"/>
+  <rect x="198" y="286" width="86" height="130" fill="#f2ede0" opacity=".09"/>
+  <rect x="301" y="286" width="86" height="130" fill="#f2ede0" opacity=".12"/>
+  <rect x="407" y="286" width="68" height="130" fill="#c9a96e" opacity=".16"/>
+  <rect x="610" y="228" width="420" height="58" rx="4" fill="#26241f"/>
+  <rect x="640" y="286" width="360" height="155" rx="4" fill="#1c1b18"/>
+  <rect x="690" y="318" width="108" height="74" rx="6" fill="#f2ede0" opacity=".1"/>
+  <rect x="825" y="318" width="108" height="74" rx="6" fill="#f2ede0" opacity=".1"/>
+  <path d="M0 800 455 455h290l455 345Z" fill="#f2ede0" opacity=".05"/>
+</svg>

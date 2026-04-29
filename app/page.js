@@ -3,12 +3,24 @@
 import { useState, useEffect, useRef } from "react";
 import FloSection from "./components/FloSection";
 
+const floorImages = {
+  carpetRoom: "/images/flooring/carpet-room.svg",
+  herringboneRoom: "/images/flooring/herringbone-room.svg",
+  lvtKitchenRoom: "/images/flooring/lvt-kitchen-room.svg",
+  engineeredWoodRoom: "/images/flooring/engineered-wood-room.svg",
+  carpetCloseup: "/images/flooring/carpet-closeup.svg",
+  herringboneCloseup: "/images/flooring/herringbone-closeup.svg",
+  lvtCloseup: "/images/flooring/lvt-closeup.svg",
+  laminateCloseup: "/images/flooring/laminate-closeup.svg",
+  vinylCloseup: "/images/flooring/vinyl-closeup.svg",
+};
+
 // ── Gallery ──────────────────────────────────────────────────────
 const galleryImages = [
-  { url: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1200&q=90&fit=crop&crop=center", label: "Bedroom · Carpet", sub: "Warm & comfortable" },
-  { url: "https://images.unsplash.com/photo-1562113530-57ba467cea38?w=1200&q=90&fit=crop&crop=center", label: "Living Room · Herringbone", sub: "Statement oak pattern" },
-  { url: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&q=90&fit=crop&crop=center", label: "Kitchen · LVT", sub: "Waterproof & practical" },
-  { url: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=90&fit=crop&crop=center", label: "Living Room · Engineered Wood", sub: "Timeless & durable" },
+  { url: floorImages.carpetRoom, label: "Bedroom · Carpet", sub: "Warm & comfortable", position: "center 70%" },
+  { url: floorImages.herringboneRoom, label: "Living Room · Herringbone", sub: "Statement oak pattern", position: "center 74%" },
+  { url: floorImages.lvtKitchenRoom, label: "Kitchen · LVT", sub: "Waterproof & practical", position: "center 76%" },
+  { url: floorImages.engineeredWoodRoom, label: "Living Room · Engineered Wood", sub: "Timeless & durable", position: "center 72%" },
 ];
 
 // ── Flooring types ───────────────────────────────────────────────
@@ -16,7 +28,7 @@ const flooringTypes = [
   {
     name: "Carpet", tag: "Most popular", grade: true,
     desc: "Warm, textured, and making a serious comeback. Available in budget twist to premium wool-blend.",
-    img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=85&fit=crop",
+    img: floorImages.carpetCloseup,
     subfloorNote: null,
     grades: [
       { label: "Budget",  desc: "Hard-wearing twist pile. Great for rentals, stairs, and high-traffic areas." },
@@ -27,7 +39,7 @@ const flooringTypes = [
   {
     name: "Herringbone", tag: "Trending now", grade: true,
     desc: "The V-shaped pattern that makes any room look considered. Engineered wood, LVT, or laminate.",
-    img: "https://images.unsplash.com/photo-1562113530-57ba467cea38?w=400&q=85&fit=crop",
+    img: floorImages.herringboneCloseup,
     subfloorNote: "Herringbone is unforgiving of an uneven subfloor — any dips or ridges will show in the pattern. Timber subfloors usually need ply boarding first. We'll check this at survey.",
     grades: [
       { label: "Budget",  desc: "Laminate herringbone. Realistic look, very affordable." },
@@ -38,7 +50,7 @@ const flooringTypes = [
   {
     name: "LVT", tag: "Best for wet rooms", grade: true,
     desc: "Luxury Vinyl Tile — fully waterproof, incredibly durable, and works in every room including kitchens and bathrooms.",
-    img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&q=85&fit=crop",
+    img: floorImages.lvtCloseup,
     subfloorNote: "LVT must go down on a perfectly flat surface — it's unforgiving of lumps. Concrete subfloors often need latex levelling compound. Timber subfloors usually need ply boarding. We'll assess and quote for this at survey.",
     grades: [
       { label: "Budget",  desc: "Glue-down LVT. Thin, flat, and practical." },
@@ -49,7 +61,7 @@ const flooringTypes = [
   {
     name: "Laminate", tag: "Great value", grade: true,
     desc: "Modern laminate is surprisingly good. Durable, clean lines, and a fraction of the cost of real wood.",
-    img: "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&q=85&fit=crop",
+    img: floorImages.laminateCloseup,
     subfloorNote: "Laminate needs a flat, dry base. Concrete may need latex levelling. Timber boards should be screwed down with no flex or bounce before we start.",
     grades: [
       { label: "Budget",  desc: "8mm standard. Gets the job done well." },
@@ -60,7 +72,7 @@ const flooringTypes = [
   {
     name: "Vinyl", tag: "Practical & affordable", grade: true,
     desc: "Sheet vinyl or vinyl planks. Fully waterproof, soft underfoot, very easy to maintain.",
-    img: "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?w=400&q=85&fit=crop",
+    img: floorImages.vinylCloseup,
     subfloorNote: "Vinyl is thin, which means any bumps or old adhesive residue underneath will show through over time. The subfloor needs to be smooth and clean before we lay it.",
     grades: [
       { label: "Budget",  desc: "Sheet vinyl. Practical, hygienic, and very cost-effective." },
@@ -931,7 +943,7 @@ export default function StrataPage() {
       {/* HERO */}
       <section style={{ minHeight: "100vh", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0 }}>
-          {galleryImages.map((img, i) => <img key={i} src={img.url} alt={img.label} className="gi" style={{ opacity: i === activeGallery ? 1 : 0 }}/>)}
+          {galleryImages.map((img, i) => <img key={i} src={img.url} alt={img.label} className="gi" style={{ opacity: i === activeGallery ? 1 : 0, objectPosition: img.position }}/>)}
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg, rgba(17,17,16,0.1) 0%, rgba(17,17,16,0.7) 45%, rgba(17,17,16,1) 88%)" }}/>
         </div>
         <div style={{ position: "relative", zIndex: 2, minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: "0 20px 80px" }}>
