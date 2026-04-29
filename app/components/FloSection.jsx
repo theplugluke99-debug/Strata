@@ -10,6 +10,19 @@ const TEXT = "#f2ede0";
 const TEXT_MUTED = "rgba(242,237,224,0.45)";
 const GREEN = "#6ec97a";
 
+const stripMarkdown = (text) => {
+  if (!text) return text;
+  return text
+    .replace(/\*\*(.*?)\*\*/gs, '$1')
+    .replace(/\*(.*?)\*/gs, '$1')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/^[ \t]*[-*+]\s+/gm, '')
+    .replace(/^[ \t]*\d+\.\s+/gm, '')
+    .replace(/`{1,3}(.*?)`{1,3}/gs, '$1')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+};
+
 const CLOSED_CHIPS = [
   "Help me choose a floor",
   "I have a problem with my floor",
@@ -114,7 +127,7 @@ export default function FloSection() {
           const copy = [...prev];
           copy[copy.length - 1] = {
             role: "assistant",
-            content: data.response || "Something went wrong. Give it another try.",
+            content: stripMarkdown(data.response) || "Something went wrong. Give it another try.",
           };
           return copy;
         });

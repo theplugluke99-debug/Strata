@@ -10,6 +10,19 @@ const BORDER  = "#2a2a28";
 const TEXT    = "#f2ede0";
 const GREEN   = "#6ec97a";
 
+const stripMarkdown = (text) => {
+  if (!text) return text;
+  return text
+    .replace(/\*\*(.*?)\*\*/gs, '$1')
+    .replace(/\*(.*?)\*/gs, '$1')
+    .replace(/^#{1,6}\s+/gm, '')
+    .replace(/^[ \t]*[-*+]\s+/gm, '')
+    .replace(/^[ \t]*\d+\.\s+/gm, '')
+    .replace(/`{1,3}(.*?)`{1,3}/gs, '$1')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+};
+
 const OPENING = {
   customer: "Hi — I'm Flo. Tell me about your space and I'll help you figure out exactly what you need. No pressure, no sales pitch.",
   fitter:   (name) => `Morning${name ? " " + name : ""}. I've got your job details loaded up. Ask me anything — fitting techniques, subfloor questions, anything you need on site.`,
@@ -96,7 +109,7 @@ export default function FloChat({ context = "customer", userName, jobDetails, vi
           const copy = [...prev];
           copy[copy.length - 1] = {
             role: "assistant",
-            content: data.reply || "Something went wrong. Try again.",
+            content: stripMarkdown(data.reply) || "Something went wrong. Try again.",
           };
           return copy;
         });

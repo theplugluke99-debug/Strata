@@ -3,12 +3,11 @@
 import { useState, useEffect, useRef } from "react";
 import FloSection from "./components/FloSection";
 
-// ── Gallery ──────────────────────────────────────────────────────
+// ── Gallery — close-up photorealistic texture shots ───────────────
 const galleryImages = [
-  { url: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=1200&q=90&fit=crop&crop=center", label: "Bedroom · Carpet", sub: "Warm & comfortable" },
-  { url: "https://images.unsplash.com/photo-1562113530-57ba467cea38?w=1200&q=90&fit=crop&crop=center", label: "Living Room · Herringbone", sub: "Statement oak pattern" },
-  { url: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&q=90&fit=crop&crop=center", label: "Kitchen · LVT", sub: "Waterproof & practical" },
-  { url: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=1200&q=90&fit=crop&crop=center", label: "Living Room · Engineered Wood", sub: "Timeless & durable" },
+  { url: "https://images.unsplash.com/photo-1581539250439-c96689b516dd?w=1600&q=95&fit=crop&crop=center", label: "Warm Oak LVT", sub: "Waterproof · Durable · Underfloor heating compatible" },
+  { url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=95&fit=crop&crop=center", label: "Cream Saxony Carpet", sub: "Deeply soft · Bedroom perfection · Warm underfoot" },
+  { url: "https://images.unsplash.com/photo-1562113530-57ba467cea38?w=1600&q=95&fit=crop&crop=center", label: "Charcoal Herringbone", sub: "Bold geometric pattern · Statement flooring" },
 ];
 
 // ── Flooring types ───────────────────────────────────────────────
@@ -26,13 +25,13 @@ const flooringTypes = [
   },
   {
     name: "Herringbone", tag: "Trending now", grade: true,
-    desc: "The V-shaped pattern that makes any room look considered. Engineered wood, LVT, or laminate.",
+    desc: "The classic V-shaped pattern that makes any room look considered. Available in laminate, LVT, or solid hardwood.",
     img: "https://images.unsplash.com/photo-1562113530-57ba467cea38?w=400&q=85&fit=crop",
     subfloorNote: "Herringbone is unforgiving of an uneven subfloor — any dips or ridges will show in the pattern. Timber subfloors usually need ply boarding first. We'll check this at survey.",
     grades: [
-      { label: "Budget",  desc: "Laminate herringbone. Realistic look, very affordable." },
-      { label: "Mid",     desc: "Engineered wood. Real oak surface, more dimensionally stable than solid." },
-      { label: "Premium", desc: "Solid hardwood. The real thing. Sanded and refinishable for decades." },
+      { label: "Budget",  desc: "Laminate herringbone. Realistic look, very affordable, and easy to maintain." },
+      { label: "Mid",     desc: "LVT herringbone. Waterproof, durable, and works beautifully in kitchens and hallways." },
+      { label: "Premium", desc: "Solid hardwood. The real thing — sanded and refinishable for decades." },
     ],
   },
   {
@@ -107,12 +106,12 @@ const WASTAGE = {
 // ── Live Estimate Pricing ────────────────────────────────────────
 const ESTIMATE_PRICES = {
   flooring: {
-    "Carpet":       { Budget: { low: 12, high: 18 }, Mid: { low: 22, high: 32 }, Premium: { low: 35, high: 55 }, default: { low: 15, high: 45 } },
-    "Herringbone":  { Budget: { low: 25, high: 40 }, Mid: { low: 50, high: 80 }, Premium: { low: 85, high: 130 }, default: { low: 50, high: 110 } },
-    "LVT":          { Budget: { low: 20, high: 30 }, Mid: { low: 30, high: 45 }, Premium: { low: 45, high: 65 }, default: { low: 25, high: 55 } },
-    "Laminate":     { Budget: { low: 12, high: 20 }, Mid: { low: 20, high: 30 }, Premium: { low: 30, high: 45 }, default: { low: 15, high: 40 } },
-    "Vinyl":        { Budget: { low: 10, high: 18 }, Mid: { low: 18, high: 28 }, Premium: { low: 28, high: 40 }, default: { low: 12, high: 35 } },
-    "Not sure yet": { default: { low: 20, high: 80 } },
+    "Carpet":       { Budget: { low: 15, high: 19 }, Mid: { low: 28, high: 35 }, Premium: { low: 48, high: 58 }, default: { low: 28, high: 35 } },
+    "Herringbone":  { Budget: { low: 28, high: 36 }, Mid: { low: 52, high: 62 }, Premium: { low: 88, high: 108 }, default: { low: 52, high: 62 } },
+    "LVT":          { Budget: { low: 24, high: 30 }, Mid: { low: 36, high: 44 }, Premium: { low: 54, high: 64 }, default: { low: 36, high: 44 } },
+    "Laminate":     { Budget: { low: 15, high: 19 }, Mid: { low: 24, high: 30 }, Premium: { low: 32, high: 40 }, default: { low: 24, high: 30 } },
+    "Vinyl":        { Budget: { low: 12, high: 16 }, Mid: { low: 20, high: 25 }, Premium: { low: 28, high: 36 }, default: { low: 20, high: 25 } },
+    "Not sure yet": { default: { low: 28, high: 44 } },
   },
   removal: {
     "Carpet":         { low: 3,  high: 6  },
@@ -157,6 +156,17 @@ const calculateLiveEstimate = ({ m2, selectedFlooring, flooringGrade, selectedEx
   totalHigh = Math.round(totalHigh / 10) * 10;
 
   return { low: Math.max(totalLow, 250), high: Math.max(totalHigh, 250), breakdown, m2 };
+};
+
+// ── Room icons ──────────────────────────────────────────────────
+const ROOM_ICONS = {
+  "Living Room": "🛋", "Bedroom": "🛏", "Hallway": "🚪", "Stairs": "🪜",
+  "Dining Room": "🍽", "Landing": "↕", "Playroom": "🎨", "Home Office": "💻",
+  "Kitchen": "🍳", "Bathroom": "🛁", "En-suite": "🚿", "Conservatory": "☀",
+  "Garage": "🚗", "Office Space": "🏢", "Reception": "🖥", "Meeting Room": "📋",
+  "Corridor / Hallway": "🚶", "Retail Floor": "🛒", "Warehouse": "📦",
+  "Showroom": "✨", "Gym / Studio": "💪", "Restaurant / Café": "☕",
+  "Hotel Room": "🛌", "Bathroom / WC": "🚻", "Staff Room": "🧑‍🤝‍🧑",
 };
 
 // ── Rooms ────────────────────────────────────────────────────────
@@ -255,9 +265,50 @@ const ProgressBar = ({ current, total }) => (
     ))}
   </div>
 );
-const Chip = ({ label, selected, onClick }) => (
-  <button onClick={onClick} style={{ background: selected ? s.gold : "transparent", border: `1px solid ${selected ? s.gold : s.border}`, color: selected ? "#111" : s.dim, padding: "11px 12px", borderRadius: "3px", fontSize: "13px", fontFamily: s.sans, cursor: "pointer", textAlign: "left", fontWeight: selected ? "600" : "400", transition: "all 0.2s" }}>{label}</button>
-);
+const Chip = ({ label, selected, onClick }) => {
+  const [pressed, setPressed] = useState(false);
+  return (
+    <button
+      onClick={() => { setPressed(true); setTimeout(() => { setPressed(false); onClick(); }, 120); }}
+      style={{
+        background: selected ? s.gold : "transparent",
+        border: `1px solid ${selected ? s.gold : s.border}`,
+        color: selected ? "#111" : s.dim,
+        padding: "11px 12px",
+        borderRadius: "3px", fontSize: "13px", fontFamily: s.sans,
+        cursor: "pointer", textAlign: "left",
+        fontWeight: selected ? "600" : "400",
+        transition: "all 0.18s",
+        transform: pressed ? "scale(0.95)" : "scale(1)",
+      }}
+    >{label}</button>
+  );
+};
+
+const RoomChip = ({ label, selected, onClick }) => {
+  const [pressed, setPressed] = useState(false);
+  const icon = ROOM_ICONS[label];
+  return (
+    <button
+      onClick={() => { setPressed(true); setTimeout(() => { setPressed(false); onClick(); }, 120); }}
+      style={{
+        background: selected ? s.gold : "transparent",
+        border: `1px solid ${selected ? s.gold : s.border}`,
+        color: selected ? "#111" : s.dim,
+        padding: "10px 12px",
+        borderRadius: "3px", fontSize: "12px", fontFamily: s.sans,
+        cursor: "pointer", textAlign: "left",
+        fontWeight: selected ? "600" : "400",
+        transition: "all 0.18s",
+        transform: pressed ? "scale(0.95)" : "scale(1)",
+        display: "flex", alignItems: "center", gap: "7px",
+      }}
+    >
+      {icon && <span style={{ fontSize: "14px", lineHeight: 1 }}>{icon}</span>}
+      {label}
+    </button>
+  );
+};
 const GoldNote = ({ children }) => (
   <div style={{ display: "flex", gap: "10px", alignItems: "flex-start", padding: "10px 14px", marginBottom: "14px", background: "rgba(201,169,110,0.07)", borderLeft: `2px solid ${s.gold}` }}>
     <span style={{ color: s.gold, fontSize: "7px", marginTop: "4px", flexShrink: 0 }}>◆</span>
@@ -703,6 +754,78 @@ function AIQuoteBlock({ quoteData }) {
   );
 }
 
+// ── Intersection observer hook ───────────────────────────────────
+function useInView(threshold = 0.18) {
+  const ref = useRef(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => { if (entry.isIntersecting) { setInView(true); obs.unobserve(el); } }, { threshold });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [threshold]);
+  return [ref, inView];
+}
+
+// ── Animated step card ───────────────────────────────────────────
+function StepCard({ num, title, body, delay = 0 }) {
+  const [ref, inView] = useInView(0.15);
+  return (
+    <div ref={ref} className="step-card" style={{ opacity: inView ? 1 : 0, transform: inView ? "translateY(0)" : "translateY(22px)", transition: `opacity 0.55s ${delay}ms, transform 0.55s ${delay}ms` }}>
+      <div style={{ fontFamily: s.serif, fontSize: "52px", fontWeight: 700, color: "rgba(201,169,110,0.08)", position: "absolute", top: "-4px", left: "8px", lineHeight: 1, userSelect: "none" }}>{num}</div>
+      <div style={{ fontSize: "10px", color: s.gold, letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "5px" }}>Step {num}</div>
+      <div style={{ fontFamily: s.serif, fontSize: "18px", fontWeight: 700, color: s.text, marginBottom: "6px" }}>{title}</div>
+      <div style={{ fontSize: "12px", color: s.dim, lineHeight: 1.6, fontWeight: 300, fontFamily: s.sans }}>{body}</div>
+    </div>
+  );
+}
+
+// ── Animated stat box ────────────────────────────────────────────
+function StatBox({ value, label }) {
+  const [ref, inView] = useInView(0.2);
+  return (
+    <div ref={ref} className="stat-box" style={{ opacity: inView ? 1 : 0, transform: inView ? "translateY(0)" : "translateY(16px)", transition: "opacity 0.5s, transform 0.5s" }}>
+      <div style={{ fontFamily: s.serif, fontSize: "32px", fontWeight: 700, color: s.gold, lineHeight: 1 }}>{value}</div>
+      <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, marginTop: "4px" }}>{label}</div>
+    </div>
+  );
+}
+
+// ── Animated checkmark ───────────────────────────────────────────
+function AnimatedCheck() {
+  const [drawn, setDrawn] = useState(false);
+  useEffect(() => { const t = setTimeout(() => setDrawn(true), 200); return () => clearTimeout(t); }, []);
+  return (
+    <svg width="54" height="54" viewBox="0 0 54 54" fill="none" style={{ display: "block", margin: "0 auto 16px" }}>
+      <circle cx="27" cy="27" r="26" stroke={s.gold} strokeWidth="1.5"
+        strokeDasharray="163.4" strokeDashoffset={drawn ? 0 : 163.4}
+        style={{ transition: "stroke-dashoffset 0.7s cubic-bezier(0.4,0,0.2,1)", transitionDelay: "0.1s" }} />
+      <polyline points="16,27 24,35 38,19" stroke={s.gold} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"
+        strokeDasharray="40" strokeDashoffset={drawn ? 0 : 40}
+        style={{ transition: "stroke-dashoffset 0.5s cubic-bezier(0.4,0,0.2,1)", transitionDelay: "0.6s" }} />
+    </svg>
+  );
+}
+
+// ── Typewriter for reference number ─────────────────────────────
+function Typewriter({ text, delay = 400 }) {
+  const [displayed, setDisplayed] = useState("");
+  useEffect(() => {
+    let i = 0;
+    const t = setTimeout(() => {
+      const iv = setInterval(() => {
+        i++;
+        setDisplayed(text.slice(0, i));
+        if (i >= text.length) clearInterval(iv);
+      }, 60);
+      return () => clearInterval(iv);
+    }, delay);
+    return () => clearTimeout(t);
+  }, [text, delay]);
+  return <span>{displayed}</span>;
+}
+
 // ════════════════════════════════════════════════════════════════
 export default function StrataPage() {
   const [activeGallery,    setActiveGallery]    = useState(0);
@@ -739,6 +862,14 @@ export default function StrataPage() {
   const [estimateExpanded, setEstimateExpanded] = useState(false);
   const [isCalculating,   setIsCalculating]   = useState(false);
 
+  // ── Phone intercept modal
+  const [showPhoneModal, setShowPhoneModal] = useState(false);
+
+  const handlePhoneClick = (e) => {
+    e.preventDefault();
+    setShowPhoneModal(true);
+  };
+
   // ── Flo intercept state (Step 2 / know sub-step timer)
   const [showFloIntercept,  setShowFloIntercept]  = useState(false);
   const [interceptOpen,     setInterceptOpen]     = useState(false);
@@ -766,12 +897,20 @@ export default function StrataPage() {
     roomFlooringBreakdown: Object.fromEntries(expandedRooms.map(r => [r, roomConfigs[r]?.flooring || selectedFlooring])),
   };
 
+  const allMeasurementsValid = expandedRooms.length > 0 && expandedRooms.every(r => {
+    const d = dimensions[r] || {};
+    if (r === "Stairs") return parseInt(d.treads || 0) > 0;
+    return parseFloat(d.l || 0) > 0 && parseFloat(d.w || 0) > 0;
+  });
+
   useEffect(() => {
-    if (!selectedRooms.length) { setLiveEstimate({ low: 0, high: 0, breakdown: [], m2: 0 }); return; }
-    const m2 = totalGrossM2 || selectedRooms.reduce((acc, r) => acc + (ROOM_AVG_M2[r] || 15), 0);
-    const est = calculateLiveEstimate({ m2, selectedFlooring, flooringGrade, selectedExtras });
+    if (!selectedRooms.length || !allMeasurementsValid || totalGrossM2 <= 0) {
+      setLiveEstimate({ low: 0, high: 0, breakdown: [], m2: 0 });
+      return;
+    }
+    const est = calculateLiveEstimate({ m2: totalGrossM2, selectedFlooring, flooringGrade, selectedExtras });
     setLiveEstimate(est);
-  }, [selectedFlooring, flooringGrade, totalGrossM2, selectedRooms, selectedExtras]);
+  }, [selectedFlooring, flooringGrade, totalGrossM2, selectedRooms, selectedExtras, allMeasurementsValid]);
 
   useEffect(() => {
     if (!selectedRooms.length) return;
@@ -814,22 +953,17 @@ export default function StrataPage() {
   const postcodeValid  = postcodeClean.length >= 5 && /^[A-Za-z]{1,2}\d/.test(postcodeClean);
   const canSubmit      = nameValid && phoneValid && postcodeValid;
   const roomsToUse     = propertyType === "Commercial" ? COMMERCIAL_ROOMS : RESIDENTIAL_ROOMS;
-  const allMeasurementsValid = expandedRooms.length > 0 && expandedRooms.every(r => {
-    const d = dimensions[r] || {};
-    if (r === "Stairs") return parseInt(d.treads || 0) > 0;
-    return parseFloat(d.l || 0) > 0 && parseFloat(d.w || 0) > 0;
-  });
   const allRoomsHaveFlooring = expandedRooms.length > 0 && expandedRooms.every(r => !!roomConfigs[r]?.flooring);
   const currentEncouragement =
-    step === 0 ? "Most people are done with this in under 2 minutes — let's get you a real price." :
-    step === 1 && measureSubStep === "educate" ? "Take your time with this — accurate measurements mean a more accurate quote." :
-    step === 1 && measureSubStep === "measure" ? "Rough figures are completely fine. Our surveyor confirms everything in person." :
-    step === 2 && step2Sub === "path" ? "No wrong answer here — if you're not sure what you want, we'll figure it out together." :
-    step === 2 && step2Sub === "help" ? "The more detail you give us, the better we can match you to the right floor." :
-    step === 2 && step2Sub === "room-config" ? "You're doing brilliantly. This is the last detailed bit — nearly at your estimate." :
-    step === 3 ? "This helps us bring exactly the right crew and materials on the day." :
-    step === 4 ? "Almost there — just a couple more quick questions." :
-    step === 5 ? "Last step. Your estimate is waiting on the other side of this." : null;
+    step === 0 ? "Most people are done in under 2 minutes. No phone calls. No waiting. Just a real price." :
+    step === 1 && measureSubStep === "educate" ? "No tape measure? Your phone has one built in. We'll walk you through it." :
+    step === 1 && measureSubStep === "measure" ? "Rough is fine — our surveyor confirms every measurement in person before anything is ordered." :
+    step === 2 && step2Sub === "path" ? "No wrong answer. If you're not sure what you want, we love helping figure that out." :
+    step === 2 && step2Sub === "help" ? "The more you tell us, the better. Lifestyle details matter as much as room size." :
+    step === 2 && step2Sub === "room-config" ? "Nearly there — this is the last detailed section before your estimate." :
+    step === 3 ? "This takes 30 seconds and helps us bring exactly what's needed on the day. No surprises." :
+    step === 4 ? "Two more quick questions and you're done." :
+    step === 5 ? "Last step. Your personalised estimate is ready and waiting." : null;
 
   const stepTitles = [
     "Your project",
@@ -894,6 +1028,7 @@ export default function StrataPage() {
         .mat-card { border-radius: 6px; overflow: hidden; position: relative; height: 110px; cursor: pointer; }
         .mat-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s; display: block; }
         .mat-card:hover img { transform: scale(1.05); }
+        .mat-card-tier:hover img { transform: scale(1.06); }
         .lbl { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(17,17,16,0.95) 0%, transparent 100%); padding: 10px 12px; }
         .stat-box { background: #1a1a18; border: 1px solid #2a2a28; padding: 18px 14px; transition: border-color 0.3s; }
         .stat-box:hover { border-color: rgba(201,169,110,0.25); }
@@ -909,21 +1044,26 @@ export default function StrataPage() {
         .nav-phone-mobile { display: flex; align-items: center; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes calcPulse { 0%,100%{opacity:0.35} 50%{opacity:0.85} }
+        @keyframes slideUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes progressIn { from { transform:scaleX(0); } to { transform:scaleX(1); } }
         @media (min-width: 480px) { .nav-links { display: flex !important; gap: 24px; align-items: center; } .nav-cta-mobile { display: none; } .nav-phone-mobile { display: none !important; } }
         @media (min-width: 640px) { .hero-h1 { font-size: 52px !important; } }
       `}</style>
 
       {/* NAV */}
       <nav style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 50, background: scrollY > 60 ? "rgba(17,17,16,0.95)" : "transparent", backdropFilter: scrollY > 60 ? "blur(16px)" : "none", borderBottom: scrollY > 60 ? `1px solid ${s.border}` : "none", transition: "all 0.4s", padding: "16px 20px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <div style={{ fontFamily: s.serif, fontSize: "20px", fontWeight: 700, letterSpacing: "0.12em", color: s.text }}>STRATA</div>
+        <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} style={{ background: "none", border: "none", cursor: "pointer", padding: 0, textAlign: "left" }}>
+          <div style={{ fontFamily: s.serif, fontSize: "20px", fontWeight: 700, letterSpacing: "0.12em", color: s.text, lineHeight: 1.1 }}>STRATA</div>
+          <div style={{ fontFamily: "var(--font-outfit,'Outfit',system-ui,sans-serif)", fontSize: "8.5px", fontWeight: 300, letterSpacing: "0.2em", color: "rgba(242,237,224,0.3)", textTransform: "uppercase", marginTop: "1px" }}>Superior Flooring</div>
+        </button>
         <div className="nav-links">
           <a href="#how" className="nav-link">How it works</a>
           <a href="#about" className="nav-link">About</a>
-          <a href="tel:01234567890" className="nav-link" style={{ fontSize: "12px", letterSpacing: "0.05em", color: s.gold }}>01234 567890</a>
+          <a href="tel:01234567890" onClick={handlePhoneClick} className="nav-link" style={{ fontSize: "12px", letterSpacing: "0.05em", color: s.gold }}>01234 567890</a>
           <a href="/" onClick={e => { e.preventDefault(); scrollToQuote(); }} style={{ background: s.gold, color: "#111", padding: "9px 20px", fontSize: "11px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", borderRadius: "2px" }}>Free quote</a>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <a href="tel:01234567890" className="nav-phone-mobile" style={{ color: s.gold, textDecoration: "none", fontSize: "17px", lineHeight: 1 }}>📞</a>
+          <a href="tel:01234567890" onClick={handlePhoneClick} className="nav-phone-mobile" style={{ color: s.gold, textDecoration: "none", fontSize: "17px", lineHeight: 1 }}>📞</a>
           <a href="/" onClick={e => { e.preventDefault(); scrollToQuote(); }} className="nav-cta-mobile" style={{ background: s.gold, color: "#111", padding: "8px 14px", fontSize: "10px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", textDecoration: "none", borderRadius: "2px" }}>Free quote</a>
         </div>
       </nav>
@@ -991,12 +1131,7 @@ export default function StrataPage() {
       <section style={{ padding: "0 20px 48px" }}>
         <Tag>By the numbers</Tag>
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2px" }}>
-          {stats.map((st, i) => (
-            <div key={i} className="stat-box">
-              <div style={{ fontFamily: s.serif, fontSize: "32px", fontWeight: 700, color: s.gold, lineHeight: 1 }}>{st.value}</div>
-              <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, marginTop: "4px" }}>{st.label}</div>
-            </div>
-          ))}
+          {stats.map((st, i) => <StatBox key={i} value={st.value} label={st.label} />)}
         </div>
       </section>
 
@@ -1007,12 +1142,7 @@ export default function StrataPage() {
           Straightforward from<br /><span style={{ color: s.gold, fontStyle: "italic" }}>start to finish</span>
         </div>
         {howItWorksSteps.map((st, i) => (
-          <div key={i} className="step-card">
-            <div style={{ fontFamily: s.serif, fontSize: "52px", fontWeight: 700, color: "rgba(201,169,110,0.08)", position: "absolute", top: "-4px", left: "8px", lineHeight: 1, userSelect: "none" }}>{st.num}</div>
-            <div style={{ fontSize: "10px", color: s.gold, letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "5px" }}>Step {st.num}</div>
-            <div style={{ fontFamily: s.serif, fontSize: "18px", fontWeight: 700, color: s.text, marginBottom: "6px" }}>{st.title}</div>
-            <div style={{ fontSize: "12px", color: s.dim, lineHeight: 1.6, fontWeight: 300, fontFamily: s.sans }}>{st.body}</div>
-          </div>
+          <StepCard key={i} num={st.num} title={st.title} body={st.body} delay={i * 100} />
         ))}
       </section>
 
@@ -1035,27 +1165,80 @@ export default function StrataPage() {
 
       {/* MATERIALS */}
       <section style={{ padding: "0 20px 48px" }}>
-        <Tag>What's popular right now</Tag>
-        <div style={{ fontFamily: s.serif, fontSize: "26px", fontWeight: 700, color: s.text, lineHeight: 1.1, marginBottom: "16px" }}>
-          The floors people <span style={{ color: s.gold, fontStyle: "italic" }}>actually</span> want
+        <Tag>Our materials</Tag>
+        <div style={{ fontFamily: s.serif, fontSize: "26px", fontWeight: 700, color: s.text, lineHeight: 1.1, marginBottom: "6px" }}>
+          Carpet. LVT. Laminate.<br /><span style={{ color: s.gold, fontStyle: "italic" }}>Every grade.</span>
         </div>
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "20px" }}>
-          {flooringTypes.filter(f => f.img).map((f, i) => (
-            <div key={i} className="mat-card">
-              <img src={f.img} alt={f.name}/>
-              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(17,17,16,0.95) 0%, transparent 55%)" }}/>
-              <div className="lbl">
-                <div style={{ fontFamily: s.serif, fontSize: "15px", fontWeight: 700, color: s.text }}>{f.name}</div>
-                <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, marginTop: "2px" }}>{f.tag}</div>
+        <Divider />
+
+        {/* CARPET */}
+        <div style={{ marginBottom: "28px" }}>
+          <div style={{ fontFamily: s.sans, fontSize: "10px", letterSpacing: "0.18em", color: s.gold, textTransform: "uppercase", marginBottom: "10px" }}>Carpet</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px" }}>
+            {[
+              { tier: "Budget", img: "https://images.unsplash.com/photo-1589834390005-5d4d9a9571e2?w=400&q=85&fit=crop&crop=center", desc: "Polypropylene twist. Hard-wearing and practical." },
+              { tier: "Mid", img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=85&fit=crop&crop=center", desc: "Nylon blend. The sweet spot of comfort and durability." },
+              { tier: "Premium", img: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&q=85&fit=crop&crop=top", desc: "Wool-blend saxony. Deep, soft, and completely luxurious." },
+            ].map(({ tier, img, desc }) => (
+              <div key={tier} style={{ position: "relative", borderRadius: "3px", overflow: "hidden", cursor: "default" }} className="mat-card-tier">
+                <img src={img} alt={`${tier} carpet`} style={{ width: "100%", height: "120px", objectFit: "cover", display: "block", transition: "transform 0.5s" }} />
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(17,17,16,0.96) 0%, rgba(17,17,16,0.3) 60%, transparent 100%)" }} />
+                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "8px 10px" }}>
+                  <div style={{ fontFamily: s.sans, fontSize: "8px", letterSpacing: "0.14em", color: s.gold, textTransform: "uppercase", marginBottom: "2px" }}>{tier}</div>
+                  <div style={{ fontFamily: s.sans, fontSize: "9px", color: "rgba(242,237,224,0.55)", lineHeight: 1.4, fontWeight: 300 }}>{desc}</div>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
+
+        {/* LVT */}
+        <div style={{ marginBottom: "28px" }}>
+          <div style={{ fontFamily: s.sans, fontSize: "10px", letterSpacing: "0.18em", color: s.gold, textTransform: "uppercase", marginBottom: "10px" }}>LVT — Luxury Vinyl Tile</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px" }}>
+            {[
+              { tier: "Budget", img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&q=85&fit=crop&crop=center", desc: "Glue-down LVT. Slim, flat, and fully waterproof." },
+              { tier: "Mid", img: "https://images.unsplash.com/photo-1581539250439-c96689b516dd?w=400&q=85&fit=crop&crop=center", desc: "Click SPC with built-in underlay. Easy to replace individual planks." },
+              { tier: "Premium", img: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400&q=85&fit=crop&crop=center", desc: "Karndean or Amtico equivalent. Thick wear layer, extended warranty." },
+            ].map(({ tier, img, desc }) => (
+              <div key={tier} style={{ position: "relative", borderRadius: "3px", overflow: "hidden" }} className="mat-card-tier">
+                <img src={img} alt={`${tier} LVT`} style={{ width: "100%", height: "120px", objectFit: "cover", display: "block", transition: "transform 0.5s" }} />
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(17,17,16,0.96) 0%, rgba(17,17,16,0.3) 60%, transparent 100%)" }} />
+                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "8px 10px" }}>
+                  <div style={{ fontFamily: s.sans, fontSize: "8px", letterSpacing: "0.14em", color: s.gold, textTransform: "uppercase", marginBottom: "2px" }}>{tier}</div>
+                  <div style={{ fontFamily: s.sans, fontSize: "9px", color: "rgba(242,237,224,0.55)", lineHeight: 1.4, fontWeight: 300 }}>{desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* LAMINATE */}
+        <div style={{ marginBottom: "24px" }}>
+          <div style={{ fontFamily: s.sans, fontSize: "10px", letterSpacing: "0.18em", color: s.gold, textTransform: "uppercase", marginBottom: "10px" }}>Laminate</div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px" }}>
+            {[
+              { tier: "Budget", img: "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&q=85&fit=crop&crop=center", desc: "8mm standard. Gets the job done with clean lines." },
+              { tier: "Mid", img: "https://images.unsplash.com/photo-1567361808960-571157eded78?w=400&q=85&fit=crop&crop=center", desc: "10–12mm with acoustic underlay. Quieter and more solid underfoot." },
+              { tier: "Premium", img: "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?w=400&q=85&fit=crop&crop=center", desc: "12mm+ premium. The closest thing to real wood without the price tag." },
+            ].map(({ tier, img, desc }) => (
+              <div key={tier} style={{ position: "relative", borderRadius: "3px", overflow: "hidden" }} className="mat-card-tier">
+                <img src={img} alt={`${tier} laminate`} style={{ width: "100%", height: "120px", objectFit: "cover", display: "block", transition: "transform 0.5s" }} />
+                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(17,17,16,0.96) 0%, rgba(17,17,16,0.3) 60%, transparent 100%)" }} />
+                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "8px 10px" }}>
+                  <div style={{ fontFamily: s.sans, fontSize: "8px", letterSpacing: "0.14em", color: s.gold, textTransform: "uppercase", marginBottom: "2px" }}>{tier}</div>
+                  <div style={{ fontFamily: s.sans, fontSize: "9px", color: "rgba(242,237,224,0.55)", lineHeight: 1.4, fontWeight: 300 }}>{desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         <a href="/" onClick={e => { e.preventDefault(); scrollToQuote(); }} style={{ display: "block", textAlign: "center", background: s.gold, color: "#111", padding: "16px", fontSize: "13px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", borderRadius: "3px" }}>Get my free quote →</a>
       </section>
 
       {/* FLO */}
-      <FloSection />
+      <div id="flo-section"><FloSection /></div>
 
       {/* ABOUT */}
       <section id="about" style={{ padding: "48px 20px", borderTop: `1px solid ${s.border}` }}>
@@ -1092,7 +1275,7 @@ export default function StrataPage() {
         {submitted ? (
           <div style={{ paddingTop: "20px" }}>
             <div style={{ textAlign: "center", marginBottom: "28px" }}>
-              <div style={{ width: "54px", height: "54px", borderRadius: "50%", border: `1.5px solid ${s.gold}`, display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px", fontSize: "22px", color: s.gold }}>✓</div>
+              <AnimatedCheck />
               <div style={{ fontFamily: s.serif, fontSize: "32px", fontWeight: 700, color: s.text, lineHeight: 1.05, marginBottom: "10px" }}>
                 You're in,<br /><span style={{ color: s.gold, fontStyle: "italic" }}>{name.split(" ")[0]}.</span>
               </div>
@@ -1135,7 +1318,7 @@ export default function StrataPage() {
 
             <div style={{ background: s.card, border: `1px solid ${s.border}`, borderRadius: "4px", padding: "16px", marginTop: "24px", textAlign: "center" }}>
               <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim, marginBottom: "6px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Your reference</div>
-              <div style={{ fontFamily: s.serif, fontSize: "22px", color: s.gold, letterSpacing: "0.1em" }}>{refCode.current}</div>
+              <div style={{ fontFamily: s.serif, fontSize: "22px", color: s.gold, letterSpacing: "0.1em" }}><Typewriter text={refCode.current} delay={600} /></div>
             </div>
           </div>
 
@@ -1153,15 +1336,37 @@ export default function StrataPage() {
               <>
                 <Sub>First — is this a home or a commercial space?</Sub>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "20px" }}>
-                  {["Residential","Commercial"].map(type => (
-                    <button key={type} onClick={() => { setPropertyType(type); setSelectedRooms([]); }} style={{ background: propertyType === type ? s.gold : "transparent", border: `1px solid ${propertyType === type ? s.gold : s.border}`, color: propertyType === type ? "#111" : s.dim, padding: "16px 12px", borderRadius: "3px", fontSize: "14px", fontFamily: s.serif, fontWeight: 700, cursor: "pointer", transition: "all 0.2s", letterSpacing: "0.04em" }}>{type}</button>
+                  {[
+                    { type: "Residential", icon: (
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V12h6v9"/>
+                      </svg>
+                    )},
+                    { type: "Commercial", icon: (
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="2" y="3" width="20" height="18" rx="1"/><path d="M8 21V7M16 21V7M2 11h20M2 15h20"/>
+                      </svg>
+                    )},
+                  ].map(({ type, icon }) => (
+                    <button key={type} onClick={() => { setPropertyType(type); setSelectedRooms([]); }} style={{ background: propertyType === type ? s.gold : "transparent", border: `1px solid ${propertyType === type ? s.gold : s.border}`, color: propertyType === type ? "#111" : s.dim, padding: "18px 12px", borderRadius: "3px", fontSize: "14px", fontFamily: s.serif, fontWeight: 700, cursor: "pointer", transition: "all 0.2s", letterSpacing: "0.04em", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
+                      <span style={{ opacity: propertyType === type ? 1 : 0.45 }}>{icon}</span>
+                      {type}
+                    </button>
                   ))}
                 </div>
                 {propertyType && (
                   <>
                     <div style={{ fontSize: "10px", color: s.gold, letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "10px" }}>Which {propertyType === "Commercial" ? "spaces" : "rooms"} need new flooring?</div>
+                    {propertyType === "Commercial" && (
+                      <div style={{ background: "rgba(201,169,110,0.06)", border: `1px solid rgba(201,169,110,0.2)`, borderRadius: "4px", padding: "12px 16px", marginBottom: "14px" }}>
+                        <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.gold, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "6px" }}>Commercial measuring tip</div>
+                        <div style={{ fontFamily: s.sans, fontSize: "12px", color: "rgba(242,237,224,0.55)", lineHeight: 1.65, fontWeight: 300 }}>
+                          For large spaces, measure the longest length and widest width of each area. Include columns, reception desks, and fixed furniture in your footprint — we always account for cut-outs at survey. Rough figures are fine.
+                        </div>
+                      </div>
+                    )}
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "16px" }}>
-                      {roomsToUse.map(r => <Chip key={r} label={r} selected={selectedRooms.includes(r)} onClick={() => toggleRoom(r)}/>)}
+                      {roomsToUse.map(r => <RoomChip key={r} label={r} selected={selectedRooms.includes(r)} onClick={() => toggleRoom(r)}/>)}
                     </div>
                     {propertyType === "Residential" && selectedRooms.includes("Bedroom") && (
                       <div style={{ background: s.card, border: `1px solid ${s.border}`, borderRadius: "4px", padding: "14px 16px", marginBottom: "16px" }}>
@@ -1279,63 +1484,78 @@ export default function StrataPage() {
                         )}
                       </div>
                     ))}
-                    {/* Flo intercept (appears after 8 seconds if no flooring selected) */}
+                    {/* Flo intercept — warm split layout (appears after 9 seconds) */}
                     {showFloIntercept && !selectedFlooring && (
-                      <div style={{ background: "rgba(201,169,110,0.06)", border: `1px solid rgba(201,169,110,0.3)`, borderRadius: "6px", padding: "16px 18px", marginTop: "16px", opacity: 1, transition: "opacity 0.6s" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                          <div style={{ width: 18, height: 18, borderRadius: "50%", border: `1px solid ${s.gold}`, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                            <span style={{ fontFamily: s.serif, fontStyle: "italic", fontSize: 10, fontWeight: 700, color: s.gold }}>F</span>
+                      <div style={{ border: `1px solid rgba(201,169,110,0.3)`, borderRadius: "8px", overflow: "hidden", marginTop: "20px", animation: "slideUp 0.5s cubic-bezier(0.4,0,0.2,1)" }}>
+                        {/* Left-right split header */}
+                        <div style={{ display: "flex", background: "#0e0e0c" }}>
+                          {/* Left — Flo identity */}
+                          <div style={{ width: "100px", flexShrink: 0, background: "rgba(201,169,110,0.06)", borderRight: `1px solid rgba(201,169,110,0.15)`, padding: "20px 14px", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, position: "relative", overflow: "hidden" }}>
+                            <div style={{ position: "absolute", inset: 0, backgroundImage: `repeating-linear-gradient(45deg,rgba(201,169,110,0.08) 0,rgba(201,169,110,0.08) 1px,transparent 0,transparent 50%),repeating-linear-gradient(-45deg,rgba(201,169,110,0.04) 0,rgba(201,169,110,0.04) 1px,transparent 0,transparent 50%)`, backgroundSize: "14px 14px" }} />
+                            <div style={{ position: "relative", width: 36, height: 36, borderRadius: "50%", background: s.gold, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                              <span style={{ fontFamily: s.serif, fontStyle: "italic", fontSize: 18, fontWeight: 700, color: "#111" }}>F</span>
+                            </div>
+                            <div style={{ position: "relative", fontFamily: s.serif, fontStyle: "italic", fontSize: 12, color: s.gold, textAlign: "center", lineHeight: 1.3 }}>Not sure which floor?</div>
                           </div>
-                          <span style={{ fontFamily: s.sans, fontSize: 12, color: s.dim, lineHeight: 1.5 }}>Not sure which to pick? Tell me about the room and I&apos;ll choose for you.</span>
+                          {/* Right — message */}
+                          <div style={{ flex: 1, padding: "16px 16px 14px" }}>
+                            <div style={{ fontFamily: s.serif, fontSize: 16, fontWeight: 600, color: s.text, marginBottom: 6 }}>Let me pick for you.</div>
+                            <div style={{ fontFamily: s.sans, fontSize: 11.5, color: "rgba(242,237,224,0.55)", lineHeight: 1.65, fontWeight: 300 }}>
+                              Tell me about the room — how it's used, who's in it, what matters to you. I'll recommend exactly the right floor.
+                            </div>
+                          </div>
                         </div>
 
-                        {!interceptOpen && !interceptResponse && (
-                          <button onClick={() => setInterceptOpen(true)} style={{ background: s.gold, border: "none", borderRadius: "4px", padding: "10px 16px", color: "#111", fontFamily: s.sans, fontSize: "13px", fontWeight: 600, cursor: "pointer", width: "100%" }}>
-                            Ask Flo →
-                          </button>
-                        )}
-
-                        {interceptOpen && !interceptResponse && (
-                          <div>
-                            <textarea
-                              value={interceptInput}
-                              onChange={e => setInterceptInput(e.target.value)}
-                              placeholder="e.g. It's a kitchen, we have a dog, want something warm and easy to clean..."
-                              rows={3}
-                              disabled={interceptLoading}
-                              style={{ width: "100%", background: "rgba(242,237,224,0.05)", border: `1px solid ${s.border}`, borderRadius: "4px", padding: "10px 12px", color: s.text, fontFamily: s.sans, fontSize: 12, resize: "none", outline: "none", marginBottom: 8, boxSizing: "border-box" }}
-                              onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey && !interceptLoading) { e.preventDefault(); handleFloAsk(); } }}
-                            />
-                            <button onClick={handleFloAsk} disabled={!interceptInput.trim() || interceptLoading} style={{ background: s.gold, border: "none", borderRadius: "4px", padding: "10px 16px", color: "#111", fontFamily: s.sans, fontSize: 13, fontWeight: 600, cursor: interceptLoading ? "default" : "pointer", opacity: !interceptInput.trim() || interceptLoading ? 0.5 : 1, width: "100%" }}>
-                              {interceptLoading ? "Asking Flo…" : "Send →"}
+                        {/* Input area */}
+                        <div style={{ background: "#111110", padding: "14px 16px", borderTop: `1px solid rgba(201,169,110,0.1)` }}>
+                          {!interceptOpen && !interceptResponse && (
+                            <button onClick={() => setInterceptOpen(true)} style={{ background: s.gold, border: "none", borderRadius: "4px", padding: "12px 16px", color: "#111", fontFamily: s.sans, fontSize: "13px", fontWeight: 600, cursor: "pointer", width: "100%", letterSpacing: "0.05em" }}>
+                              Tell Flo about your room →
                             </button>
-                            {interceptLoading && <div style={{ height: 3, background: s.gold, borderRadius: 2, marginTop: 8, animation: "calcPulse 1.2s ease-in-out infinite" }} />}
-                          </div>
-                        )}
+                          )}
 
-                        {interceptResponse && (
-                          <div>
-                            <div style={{ fontFamily: s.sans, fontSize: 13, color: s.text, lineHeight: 1.6, marginBottom: 14, padding: "10px 14px", background: "rgba(242,237,224,0.04)", borderRadius: 4, border: `1px solid ${s.border}` }}>
-                              {interceptResponse.text}
-                            </div>
-                            <div style={{ display: "flex", gap: 10 }}>
-                              {interceptResponse.flooring && (
-                                <button onClick={() => {
-                                  setSelectedFlooring(interceptResponse.flooring);
-                                  setFlooringGrade("");
-                                  setShowFloIntercept(false);
-                                  setInterceptResponse(null);
-                                  setInterceptOpen(false);
-                                }} style={{ flex: 2, padding: "12px", background: s.gold, color: "#111", border: "none", borderRadius: "4px", fontSize: "13px", fontWeight: 600, fontFamily: s.sans, cursor: "pointer" }}>
-                                  Use {interceptResponse.flooring} →
-                                </button>
-                              )}
-                              <button onClick={() => { setShowFloIntercept(false); setInterceptResponse(null); setInterceptOpen(false); }} style={{ flex: 1, padding: "12px", background: "transparent", color: s.dim, border: `1px solid ${s.border}`, borderRadius: "4px", fontSize: "13px", fontFamily: s.sans, cursor: "pointer" }}>
-                                See all options
+                          {interceptOpen && !interceptResponse && (
+                            <div>
+                              <textarea
+                                value={interceptInput}
+                                onChange={e => setInterceptInput(e.target.value)}
+                                placeholder="e.g. It's a busy kitchen, we have a dog, want something warm and very easy to clean..."
+                                rows={3}
+                                disabled={interceptLoading}
+                                style={{ width: "100%", background: "rgba(242,237,224,0.05)", border: `1px solid rgba(201,169,110,0.2)`, borderRadius: "4px", padding: "10px 12px", color: s.text, fontFamily: s.sans, fontSize: 12.5, resize: "none", outline: "none", marginBottom: 8, boxSizing: "border-box", lineHeight: 1.5 }}
+                                onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey && !interceptLoading) { e.preventDefault(); handleFloAsk(); } }}
+                              />
+                              <button onClick={handleFloAsk} disabled={!interceptInput.trim() || interceptLoading} style={{ background: s.gold, border: "none", borderRadius: "4px", padding: "11px 16px", color: "#111", fontFamily: s.sans, fontSize: 13, fontWeight: 600, cursor: interceptLoading ? "default" : "pointer", opacity: !interceptInput.trim() || interceptLoading ? 0.5 : 1, width: "100%" }}>
+                                {interceptLoading ? "Flo is thinking…" : "Send to Flo →"}
                               </button>
+                              {interceptLoading && <div style={{ height: 2, background: s.gold, borderRadius: 1, marginTop: 10, animation: "calcPulse 1.2s ease-in-out infinite" }} />}
                             </div>
-                          </div>
-                        )}
+                          )}
+
+                          {interceptResponse && (
+                            <div>
+                              <div style={{ fontFamily: s.sans, fontSize: 13, color: s.text, lineHeight: 1.7, marginBottom: 14, padding: "12px 14px", background: "rgba(201,169,110,0.05)", borderRadius: 4, border: `1px solid rgba(201,169,110,0.15)` }}>
+                                {interceptResponse.text}
+                              </div>
+                              <div style={{ display: "flex", gap: 8 }}>
+                                {interceptResponse.flooring && (
+                                  <button onClick={() => {
+                                    setSelectedFlooring(interceptResponse.flooring);
+                                    setFlooringGrade("");
+                                    setShowFloIntercept(false);
+                                    setInterceptResponse(null);
+                                    setInterceptOpen(false);
+                                  }} style={{ flex: 2, padding: "12px", background: s.gold, color: "#111", border: "none", borderRadius: "4px", fontSize: "13px", fontWeight: 600, fontFamily: s.sans, cursor: "pointer" }}>
+                                    Use {interceptResponse.flooring} →
+                                  </button>
+                                )}
+                                <button onClick={() => { setShowFloIntercept(false); setInterceptResponse(null); setInterceptOpen(false); }} style={{ flex: 1, padding: "12px", background: "transparent", color: s.dim, border: `1px solid ${s.border}`, borderRadius: "4px", fontSize: "13px", fontFamily: s.sans, cursor: "pointer" }}>
+                                  Browse all
+                                </button>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     )}
 
@@ -1552,19 +1772,25 @@ export default function StrataPage() {
                                     ))}
                                   </div>
 
-                                  <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Edge finishing</div>
-                                  <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                                    {[
-                                      { id: "None" },
-                                      { id: "Whipping",  desc: "Edges stitched for a clean, durable finish" },
-                                      { id: "Binding",   desc: "Fabric tape bound around edge — more decorative than whipping" },
-                                    ].map(({ id, desc }) => (
-                                      <button key={id} onClick={() => setRoomConfig(room, "edgeFinish", id)} style={{ background: config.edgeFinish === id ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${config.edgeFinish === id ? s.gold : s.border}`, borderRadius: "3px", padding: "10px 14px", cursor: "pointer", textAlign: "left", transition: "all 0.2s" }}>
-                                        <div style={{ fontFamily: s.sans, fontSize: "12px", fontWeight: 600, color: config.edgeFinish === id ? s.gold : s.text }}>{id}</div>
-                                        {desc && <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, fontWeight: 300, marginTop: "2px" }}>{desc}</div>}
-                                      </button>
-                                    ))}
-                                  </div>
+                                  {/* Whipping and binding — stairs only */}
+                                  {room === "Stairs" && (
+                                    <>
+                                      <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Edge finishing</div>
+                                      <GoldNote>Whipping and binding finish the cut edges of stair carpet for a clean, professional look and prevent fraying over time.</GoldNote>
+                                      <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+                                        {[
+                                          { id: "None", desc: "Standard finished edges — suitable for most stair carpets." },
+                                          { id: "Whipping", desc: "Edges stitched with thread for a clean, durable, tailored finish." },
+                                          { id: "Binding", desc: "Fabric tape bound around edges — more decorative than whipping." },
+                                        ].map(({ id, desc }) => (
+                                          <button key={id} onClick={() => setRoomConfig(room, "edgeFinish", id)} style={{ background: config.edgeFinish === id ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${config.edgeFinish === id ? s.gold : s.border}`, borderRadius: "3px", padding: "10px 14px", cursor: "pointer", textAlign: "left", transition: "all 0.2s" }}>
+                                            <div style={{ fontFamily: s.sans, fontSize: "12px", fontWeight: 600, color: config.edgeFinish === id ? s.gold : s.text }}>{id}</div>
+                                            <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, fontWeight: 300, marginTop: "2px" }}>{desc}</div>
+                                          </button>
+                                        ))}
+                                      </div>
+                                    </>
+                                  )}
                                 </>
                               )}
 
@@ -1730,8 +1956,8 @@ export default function StrataPage() {
         )}
       </section>
 
-      {/* LIVE ESTIMATE BAR */}
-      {!submitted && selectedRooms.length > 0 && (
+      {/* LIVE ESTIMATE BAR — only after dimensions entered */}
+      {!submitted && allMeasurementsValid && totalGrossM2 > 0 && liveEstimate.low > 0 && (
         <>
           {/* Tap-away overlay */}
           {estimateExpanded && (
@@ -1770,10 +1996,44 @@ export default function StrataPage() {
         </>
       )}
 
+      {/* PHONE INTERCEPT MODAL */}
+      {showPhoneModal && (
+        <>
+          <div onClick={() => setShowPhoneModal(false)} style={{ position: "fixed", inset: 0, background: "rgba(17,17,16,0.82)", zIndex: 200, backdropFilter: "blur(6px)" }} />
+          <div style={{ position: "fixed", top: "50%", left: "50%", transform: "translate(-50%,-50%)", zIndex: 201, width: "min(92vw, 420px)", background: "#111110", border: `1px solid rgba(201,169,110,0.35)`, borderRadius: "8px", overflow: "hidden" }}>
+            <div style={{ background: "rgba(201,169,110,0.07)", padding: "28px 28px 24px", borderBottom: `1px solid rgba(201,169,110,0.15)` }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 14 }}>
+                <div style={{ width: 40, height: 40, borderRadius: "50%", background: s.gold, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <span style={{ fontFamily: s.serif, fontStyle: "italic", fontSize: 20, fontWeight: 700, color: "#111" }}>F</span>
+                </div>
+                <div>
+                  <div style={{ fontFamily: s.serif, fontSize: 18, fontWeight: 600, color: s.text }}>Before you call…</div>
+                  <div style={{ fontFamily: s.sans, fontSize: 11, color: "rgba(242,237,224,0.45)", marginTop: 2 }}>Flo can usually answer faster than a phone queue</div>
+                </div>
+              </div>
+              <p style={{ fontFamily: s.sans, fontSize: 13, color: "rgba(242,237,224,0.65)", lineHeight: 1.7, margin: 0 }}>
+                Flo is Strata's flooring expert — she's available right now and can give you pricing guidance, material advice, or help you book your free survey in under 2 minutes. No hold music.
+              </p>
+            </div>
+            <div style={{ padding: "20px 28px", display: "flex", flexDirection: "column", gap: 10 }}>
+              <button onClick={() => { setShowPhoneModal(false); document.getElementById("flo-section")?.scrollIntoView({ behavior: "smooth" }); }} style={{ width: "100%", background: s.gold, color: "#111", border: "none", borderRadius: "4px", padding: "15px", fontSize: 13, fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", cursor: "pointer", fontFamily: s.sans }}>
+                Chat with Flo now →
+              </button>
+              <a href="tel:01234567890" onClick={() => setShowPhoneModal(false)} style={{ display: "block", width: "100%", background: "transparent", color: "rgba(242,237,224,0.45)", border: `1px solid rgba(242,237,224,0.15)`, borderRadius: "4px", padding: "13px", fontSize: 13, letterSpacing: "0.06em", textTransform: "uppercase", cursor: "pointer", fontFamily: s.sans, textAlign: "center", textDecoration: "none", boxSizing: "border-box" }}>
+                Call anyway — 01234 567890
+              </a>
+            </div>
+          </div>
+        </>
+      )}
+
       {/* FOOTER */}
       <footer style={{ padding: "40px 20px", borderTop: `1px solid ${s.border}` }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px", marginBottom: "28px" }}>
-          <div style={{ fontFamily: s.serif, fontSize: "20px", fontWeight: 700, letterSpacing: "0.1em" }}>STRATA</div>
+          <div>
+            <div style={{ fontFamily: s.serif, fontSize: "20px", fontWeight: 700, letterSpacing: "0.1em" }}>STRATA</div>
+            <div style={{ fontFamily: "var(--font-outfit,'Outfit',system-ui,sans-serif)", fontSize: "8px", fontWeight: 300, letterSpacing: "0.2em", color: "rgba(242,237,224,0.25)", textTransform: "uppercase", marginTop: "1px" }}>Superior Flooring</div>
+          </div>
           <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.2)" }}>© 2026 Strata · Essex & London · All rights reserved.</div>
         </div>
         <div style={{ borderTop: `1px solid ${s.border}`, paddingTop: "20px", display: "flex", flexWrap: "wrap", gap: "16px" }}>
