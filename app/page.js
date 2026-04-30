@@ -1,13 +1,15 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import FloSection from "./components/FloSection";
 
 // ── Gallery — close-up photorealistic texture shots ───────────────
 const galleryImages = [
-  { url: "https://images.unsplash.com/photo-1581539250439-c96689b516dd?w=1600&q=95&fit=crop&crop=center", label: "Warm Oak LVT", sub: "Waterproof · Durable · Underfloor heating compatible" },
-  { url: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=95&fit=crop&crop=center", label: "Cream Saxony Carpet", sub: "Deeply soft · Bedroom perfection · Warm underfoot" },
-  { url: "https://images.unsplash.com/photo-1562113530-57ba467cea38?w=1600&q=95&fit=crop&crop=center", label: "Charcoal Herringbone", sub: "Bold geometric pattern · Statement flooring" },
+  { url: "/images/hero1.jpg", label: "Warm Oak LVT", sub: "Waterproof · Durable · Underfloor heating compatible" },
+  { url: "/images/hero2.jpg", label: "Cream Saxony Carpet", sub: "Deeply soft · Bedroom perfection · Warm underfoot" },
+  { url: "/images/hero3.jpg", label: "Charcoal Herringbone", sub: "Bold geometric pattern · Statement flooring" },
+  { url: "/images/hero4.jpg", label: "Premium Flooring", sub: "Expertly fitted · Beautifully finished" },
 ];
 
 // ── Flooring types ───────────────────────────────────────────────
@@ -1019,7 +1021,6 @@ export default function StrataPage() {
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400;1,600;1,700&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        .gi { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity 1.4s ease; }
         .mq-track { display: flex; gap: 48px; animation: mq 28s linear infinite; white-space: nowrap; will-change: transform; }
         @keyframes mq { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
         .row-card { background: #1a1a18; border: 1px solid #2a2a28; border-radius: 4px; padding: 14px 16px; margin-bottom: 6px; }
@@ -1071,7 +1072,9 @@ export default function StrataPage() {
       {/* HERO */}
       <section style={{ minHeight: "100vh", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0 }}>
-          {galleryImages.map((img, i) => <img key={i} src={img.url} alt={img.label} className="gi" style={{ opacity: i === activeGallery ? 1 : 0 }}/>)}
+          {galleryImages.map((img, i) => (
+            <Image key={i} src={img.url} alt={img.label} fill sizes="100vw" style={{ objectFit: "cover", opacity: i === activeGallery ? 1 : 0, transition: "opacity 1.4s ease" }} />
+          ))}
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg, rgba(17,17,16,0.1) 0%, rgba(17,17,16,0.7) 45%, rgba(17,17,16,1) 88%)" }}/>
         </div>
         <div style={{ position: "relative", zIndex: 2, minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: "0 20px 80px" }}>
@@ -1164,7 +1167,7 @@ export default function StrataPage() {
       </section>
 
       {/* MATERIALS */}
-      <section style={{ padding: "0 20px 48px" }}>
+      <section style={{ padding: "0 20px 48px", backgroundImage: "url('/images/carpet-samples.jpg')", backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }}>
         <Tag>Our materials</Tag>
         <div style={{ fontFamily: s.serif, fontSize: "26px", fontWeight: 700, color: s.text, lineHeight: 1.1, marginBottom: "6px" }}>
           Carpet. LVT. Laminate.<br /><span style={{ color: s.gold, fontStyle: "italic" }}>Every grade.</span>
@@ -1176,9 +1179,9 @@ export default function StrataPage() {
           <div style={{ fontFamily: s.sans, fontSize: "10px", letterSpacing: "0.18em", color: s.gold, textTransform: "uppercase", marginBottom: "10px" }}>Carpet</div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px" }}>
             {[
-              { tier: "Budget", img: "https://images.unsplash.com/photo-1589834390005-5d4d9a9571e2?w=400&q=85&fit=crop&crop=center", desc: "Polypropylene twist. Hard-wearing and practical." },
-              { tier: "Mid", img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=85&fit=crop&crop=center", desc: "Nylon blend. The sweet spot of comfort and durability." },
-              { tier: "Premium", img: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&q=85&fit=crop&crop=top", desc: "Wool-blend saxony. Deep, soft, and completely luxurious." },
+              { tier: "Budget", img: "/images/carpet-texture.jpg", desc: "Polypropylene twist. Hard-wearing and practical." },
+              { tier: "Mid", img: "/images/carpet-texture.jpg", desc: "Nylon blend. The sweet spot of comfort and durability." },
+              { tier: "Premium", img: "/images/carpet-texture.jpg", desc: "Wool-blend saxony. Deep, soft, and completely luxurious." },
             ].map(({ tier, img, desc }) => (
               <div key={tier} style={{ position: "relative", borderRadius: "3px", overflow: "hidden", cursor: "default" }} className="mat-card-tier">
                 <img src={img} alt={`${tier} carpet`} style={{ width: "100%", height: "120px", objectFit: "cover", display: "block", transition: "transform 0.5s" }} />
