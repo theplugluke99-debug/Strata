@@ -1182,77 +1182,29 @@ export default function StrataPage() {
         </div>
       </section>
 
-      {/* MATERIALS */}
+      {/* POPULAR */}
       <section style={{ padding: "0 20px 48px" }}>
-        <Tag>Our materials</Tag>
+        <Tag>What&apos;s popular right now</Tag>
         <div style={{ fontFamily: s.serif, fontSize: "26px", fontWeight: 700, color: s.text, lineHeight: 1.1, marginBottom: "6px" }}>
-          Carpet. LVT. Laminate.<br /><span style={{ color: s.gold, fontStyle: "italic" }}>Every grade.</span>
+          The floors people <span style={{ color: s.gold, fontStyle: "italic" }}>actually</span> want
         </div>
         <Divider />
-
-        {/* CARPET */}
-        <div style={{ marginBottom: "28px" }}>
-          <div style={{ fontFamily: s.sans, fontSize: "10px", letterSpacing: "0.18em", color: s.gold, textTransform: "uppercase", marginBottom: "10px" }}>Carpet</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px" }}>
-            {[
-              { tier: "Budget", img: "https://images.unsplash.com/photo-1589834390005-5d4d9a9571e2?w=400&q=85&fit=crop&crop=center", desc: "Polypropylene twist. Hard-wearing and practical." },
-              { tier: "Mid", img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=85&fit=crop&crop=center", desc: "Nylon blend. The sweet spot of comfort and durability." },
-              { tier: "Premium", img: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&q=85&fit=crop&crop=top", desc: "Wool-blend saxony. Deep, soft, and completely luxurious." },
-            ].map(({ tier, img, desc }) => (
-              <div key={tier} style={{ position: "relative", borderRadius: "3px", overflow: "hidden", cursor: "default" }} className="mat-card-tier">
-                <img src={img} alt={`${tier} carpet`} style={{ width: "100%", height: "120px", objectFit: "cover", display: "block", transition: "transform 0.5s" }} />
-                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(17,17,16,0.96) 0%, rgba(17,17,16,0.3) 60%, transparent 100%)" }} />
-                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "8px 10px" }}>
-                  <div style={{ fontFamily: s.sans, fontSize: "8px", letterSpacing: "0.14em", color: s.gold, textTransform: "uppercase", marginBottom: "2px" }}>{tier}</div>
-                  <div style={{ fontFamily: s.sans, fontSize: "9px", color: "rgba(242,237,224,0.55)", lineHeight: 1.4, fontWeight: 300 }}>{desc}</div>
-                </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "20px" }}>
+          {[
+            { name: "Carpet",    tag: "Most popular",      img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=85&fit=crop" },
+            { name: "LVT & SPC", tag: "Best for wet rooms", img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&q=85&fit=crop" },
+            { name: "Laminate",  tag: "Great value",        img: "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&q=85&fit=crop" },
+          ].map(({ name, tag, img }) => (
+            <div key={name} style={{ position: "relative", borderRadius: "3px", overflow: "hidden", height: "140px" }} className="mat-card">
+              <img src={img} alt={name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 0.5s" }} />
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(17,17,16,0.96) 0%, rgba(17,17,16,0.3) 60%, transparent 100%)" }} />
+              <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "12px 14px" }}>
+                <div style={{ fontFamily: s.serif, fontSize: "18px", fontWeight: 700, color: s.text, lineHeight: 1, marginBottom: "4px" }}>{name}</div>
+                <div style={{ fontFamily: s.sans, fontSize: "9px", letterSpacing: "0.14em", color: s.gold, textTransform: "uppercase" }}>{tag}</div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
-
-        {/* LVT */}
-        <div style={{ marginBottom: "28px" }}>
-          <div style={{ fontFamily: s.sans, fontSize: "10px", letterSpacing: "0.18em", color: s.gold, textTransform: "uppercase", marginBottom: "10px" }}>LVT — Luxury Vinyl Tile</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px" }}>
-            {[
-              { tier: "Budget", img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&q=85&fit=crop&crop=center", desc: "Glue-down LVT. Slim, flat, and fully waterproof." },
-              { tier: "Mid", img: "https://images.unsplash.com/photo-1581539250439-c96689b516dd?w=400&q=85&fit=crop&crop=center", desc: "Click SPC with built-in underlay. Easy to replace individual planks." },
-              { tier: "Premium", img: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=400&q=85&fit=crop&crop=center", desc: "Karndean or Amtico equivalent. Thick wear layer, extended warranty." },
-            ].map(({ tier, img, desc }) => (
-              <div key={tier} style={{ position: "relative", borderRadius: "3px", overflow: "hidden" }} className="mat-card-tier">
-                <img src={img} alt={`${tier} LVT`} style={{ width: "100%", height: "120px", objectFit: "cover", display: "block", transition: "transform 0.5s" }} />
-                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(17,17,16,0.96) 0%, rgba(17,17,16,0.3) 60%, transparent 100%)" }} />
-                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "8px 10px" }}>
-                  <div style={{ fontFamily: s.sans, fontSize: "8px", letterSpacing: "0.14em", color: s.gold, textTransform: "uppercase", marginBottom: "2px" }}>{tier}</div>
-                  <div style={{ fontFamily: s.sans, fontSize: "9px", color: "rgba(242,237,224,0.55)", lineHeight: 1.4, fontWeight: 300 }}>{desc}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* LAMINATE */}
-        <div style={{ marginBottom: "24px" }}>
-          <div style={{ fontFamily: s.sans, fontSize: "10px", letterSpacing: "0.18em", color: s.gold, textTransform: "uppercase", marginBottom: "10px" }}>Laminate</div>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px" }}>
-            {[
-              { tier: "Budget", img: "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&q=85&fit=crop&crop=center", desc: "8mm standard. Gets the job done with clean lines." },
-              { tier: "Mid", img: "https://images.unsplash.com/photo-1567361808960-571157eded78?w=400&q=85&fit=crop&crop=center", desc: "10–12mm with acoustic underlay. Quieter and more solid underfoot." },
-              { tier: "Premium", img: "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?w=400&q=85&fit=crop&crop=center", desc: "12mm+ premium. The closest thing to real wood without the price tag." },
-            ].map(({ tier, img, desc }) => (
-              <div key={tier} style={{ position: "relative", borderRadius: "3px", overflow: "hidden" }} className="mat-card-tier">
-                <img src={img} alt={`${tier} laminate`} style={{ width: "100%", height: "120px", objectFit: "cover", display: "block", transition: "transform 0.5s" }} />
-                <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(17,17,16,0.96) 0%, rgba(17,17,16,0.3) 60%, transparent 100%)" }} />
-                <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "8px 10px" }}>
-                  <div style={{ fontFamily: s.sans, fontSize: "8px", letterSpacing: "0.14em", color: s.gold, textTransform: "uppercase", marginBottom: "2px" }}>{tier}</div>
-                  <div style={{ fontFamily: s.sans, fontSize: "9px", color: "rgba(242,237,224,0.55)", lineHeight: 1.4, fontWeight: 300 }}>{desc}</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
         <a href="/" onClick={e => { e.preventDefault(); scrollToQuote(); }} style={{ display: "block", textAlign: "center", background: s.gold, color: "#111", padding: "16px", fontSize: "13px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", borderRadius: "3px" }}>Get my free quote →</a>
       </section>
 
