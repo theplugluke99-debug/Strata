@@ -6,10 +6,10 @@ import FloSection from "./components/FloSection";
 
 // ── Gallery — close-up photorealistic texture shots ───────────────
 const galleryImages = [
-  { url: "/hero1.jpg", label: "Warm Oak LVT", sub: "Waterproof · Durable · Underfloor heating compatible" },
-  { url: "/hero2.jpg", label: "Cream Saxony Carpet", sub: "Deeply soft · Bedroom perfection · Warm underfoot" },
-  { url: "/hero3.JPG", label: "Charcoal Herringbone", sub: "Bold geometric pattern · Statement flooring" },
-  { url: "/hero4.jpg", label: "Premium Flooring", sub: "Expertly fitted · Beautifully finished" },
+  { url: "/hero4.jpg",  pos: "center center", label: "Premium Flooring",      sub: "Expertly fitted · Beautifully finished" },
+  { url: "/hero2.jpg",  pos: "center center", label: "Cream Saxony Carpet",   sub: "Deeply soft · Bedroom perfection · Warm underfoot" },
+  { url: "/hero1.jpg",  pos: "center 25%",    label: "Warm Oak LVT",          sub: "Waterproof · Durable · Underfloor heating compatible" },
+  { url: "/hero3.JPG",  pos: "center center", label: "Charcoal Herringbone",  sub: "Bold geometric pattern · Statement flooring" },
 ];
 
 // ── Flooring types ───────────────────────────────────────────────
@@ -1073,7 +1073,7 @@ export default function StrataPage() {
       <section style={{ minHeight: "100vh", position: "relative", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0 }}>
           {galleryImages.map((img, i) => (
-            <Image key={i} src={img.url} alt={img.label} fill sizes="100vw" style={{ objectFit: "cover", opacity: i === activeGallery ? 1 : 0, transition: "opacity 1.4s ease" }} />
+            <Image key={i} src={img.url} alt={img.label} fill sizes="100vw" quality={100} priority={i === 0} style={{ objectFit: "cover", objectPosition: img.pos, opacity: i === activeGallery ? 1 : 0, transition: "opacity 1.4s ease" }} />
           ))}
           <div style={{ position: "absolute", inset: 0, background: "linear-gradient(160deg, rgba(17,17,16,0.1) 0%, rgba(17,17,16,0.7) 45%, rgba(17,17,16,1) 88%)" }}/>
         </div>
