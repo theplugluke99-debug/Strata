@@ -1191,9 +1191,9 @@ export default function StrataPage() {
         <Divider />
         <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "20px", maxWidth: "420px" }}>
           {[
-            { name: "Carpet",    tag: "Most popular",   img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=85&fit=crop" },
-            { name: "LVT & SPC", tag: "Most versatile", img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&q=85&fit=crop" },
-            { name: "Laminate",  tag: "Great value",    img: "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&q=85&fit=crop" },
+            { name: "Carpet",    tag: "Most popular",   img: "/images/carpet-berber.jpg" },
+            { name: "LVT & SPC", tag: "Most versatile", img: "/images/lvt-herringbone-oak.jpg" },
+            { name: "Laminate",  tag: "Great value",    img: "/images/laminate-greige-oak.jpg" },
           ].map(({ name, tag, img }) => (
             <div key={name} style={{ position: "relative", borderRadius: "3px", overflow: "hidden", height: "120px" }} className="mat-card">
               <img src={img} alt={name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 0.5s" }} />
