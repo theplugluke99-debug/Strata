@@ -1042,10 +1042,12 @@ export default function StrataPage() {
         .row-card { background: #1a1a18; border: 1px solid #2a2a28; border-radius: 4px; padding: 14px 16px; margin-bottom: 6px; }
         .floor-card { border: 1px solid #2a2a28; border-radius: 4px; overflow: hidden; display: flex; cursor: pointer; transition: border-color 0.2s; margin-bottom: 6px; }
         .floor-card:hover { border-color: #c9a96e; }
-        .mat-card { border-radius: 6px; overflow: hidden; position: relative; height: 110px; cursor: pointer; }
+        .mat-card { border-radius: 6px; overflow: hidden; position: relative; height: 140px; cursor: pointer; }
         .mat-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s; display: block; }
         .mat-card:hover img { transform: scale(1.05); }
         .mat-card-tier:hover img { transform: scale(1.06); }
+        .popular-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 20px; }
+        @media (min-width: 640px) { .popular-grid { grid-template-columns: 1fr 1fr 1fr; } .mat-card { height: 200px; } }
         .lbl { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(17,17,16,0.95) 0%, transparent 100%); padding: 10px 12px; }
         .stat-box { background: #1a1a18; border: 1px solid #2a2a28; padding: 18px 14px; transition: border-color 0.3s; }
         .stat-box:hover { border-color: rgba(201,169,110,0.25); }
@@ -1189,13 +1191,13 @@ export default function StrataPage() {
           The floors people <span style={{ color: s.gold, fontStyle: "italic" }}>actually</span> want
         </div>
         <Divider />
-        <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "20px", maxWidth: "420px" }}>
+        <div className="popular-grid">
           {[
             { name: "Carpet",    tag: "Most popular",   img: "/carpet-berber.png" },
             { name: "LVT & SPC", tag: "Most versatile", img: "/lvt-herringbone-oak.png" },
             { name: "Laminate",  tag: "Great value",    img: "/laminate-greige-oak.png" },
           ].map(({ name, tag, img }) => (
-            <div key={name} style={{ position: "relative", borderRadius: "3px", overflow: "hidden", height: "120px" }} className="mat-card">
+            <div key={name} className="mat-card">
               <img src={img} alt={name} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", transition: "transform 0.5s" }} />
               <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(17,17,16,0.96) 0%, rgba(17,17,16,0.3) 60%, transparent 100%)" }} />
               <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "12px 14px" }}>
