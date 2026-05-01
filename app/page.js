@@ -4,12 +4,18 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import FloSection from "./components/FloSection";
 
-// ── Gallery — close-up photorealistic texture shots ───────────────
-const galleryImages = [
-  { url: "/hero4.jpg",  pos: "center center", label: "Premium Flooring",      sub: "Expertly fitted · Beautifully finished" },
-  { url: "/hero2.jpg",  pos: "center center", label: "Cream Saxony Carpet",   sub: "Deeply soft · Bedroom perfection · Warm underfoot" },
-  { url: "/hero1.jpg",  pos: "center 25%",    label: "Warm Oak LVT",          sub: "Waterproof · Durable · Underfloor heating compatible" },
-  { url: "/hero3.JPG",  pos: "center center", label: "Charcoal Herringbone",  sub: "Bold geometric pattern · Statement flooring" },
+// ── Hero gallery — responsive image sets ─────────────────────────
+const mobileImages = [
+  { url: "/mobile-1.png", pos: "center center", label: "Stair Runner",              sub: "Precision fitted · Every step covered" },
+  { url: "/mobile-2.png", pos: "center center", label: "Herringbone LVT Kitchen",   sub: "Waterproof · Durable · Underfloor heating compatible" },
+  { url: "/mobile-3.png", pos: "center center", label: "Carpet Living Room",        sub: "Warm underfoot · Timeless style" },
+  { url: "/mobile-4.png", pos: "center center", label: "Bedroom Carpet",            sub: "Deeply soft · Bedroom perfection · Warm underfoot" },
+];
+const desktopImages = [
+  { url: "/desktop-1.png", pos: "center center", label: "Herringbone Open Plan",    sub: "Bold geometric pattern · Statement flooring" },
+  { url: "/desktop-2.png", pos: "center center", label: "Wide Plank LVT",           sub: "Waterproof · Durable · Underfloor heating compatible" },
+  { url: "/desktop-3.png", pos: "center center", label: "Cream Carpet Bedroom",     sub: "Deeply soft · Bedroom perfection · Warm underfoot" },
+  { url: "/desktop-4.jpg", pos: "center center", label: "Your New Floor Starts Here", sub: "Free survey · Samples brought to you · No obligation" },
 ];
 
 // ── Flooring types ───────────────────────────────────────────────
@@ -831,6 +837,7 @@ function Typewriter({ text, delay = 400 }) {
 // ════════════════════════════════════════════════════════════════
 export default function StrataPage() {
   const [activeGallery,    setActiveGallery]    = useState(0);
+  const [isMobile,         setIsMobile]         = useState(null);
   const [scrollY,          setScrollY]          = useState(0);
   const [step,             setStep]             = useState(0);
   const [measureSubStep,   setMeasureSubStep]   = useState("educate");
@@ -941,9 +948,18 @@ export default function StrataPage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
   useEffect(() => {
-    const t = setInterval(() => setActiveGallery(p => (p + 1) % galleryImages.length), 4500);
-    return () => clearInterval(t);
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
   }, []);
+  useEffect(() => {
+    setActiveGallery(0);
+    const t = setInterval(() => setActiveGallery(p => (p + 1) % 4), 4500);
+    return () => clearInterval(t);
+  }, [isMobile]);
+  const galleryImages = isMobile === false ? desktopImages : mobileImages;
+
   const toggleRoom    = (r)  => setSelectedRooms(p => p.includes(r)  ? p.filter(x => x !== r)  : [...p, r]);
   const toggleExtra   = (id) => setSelectedExtras(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
   const setDim        = (room, data) => setDimensions(p => ({ ...p, [room]: data }));
