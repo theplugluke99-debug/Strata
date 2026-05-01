@@ -6,10 +6,10 @@ import FloSection from "./components/FloSection";
 
 // ── Gallery — close-up photorealistic texture shots ───────────────
 const galleryImages = [
-  { url: "/images/hero1.jpg", label: "Warm Oak LVT", sub: "Waterproof · Durable · Underfloor heating compatible" },
-  { url: "/images/hero2.jpg", label: "Cream Saxony Carpet", sub: "Deeply soft · Bedroom perfection · Warm underfoot" },
-  { url: "/images/hero3.jpg", label: "Charcoal Herringbone", sub: "Bold geometric pattern · Statement flooring" },
-  { url: "/images/hero4.jpg", label: "Premium Flooring", sub: "Expertly fitted · Beautifully finished" },
+  { url: "/hero1.jpg", label: "Warm Oak LVT", sub: "Waterproof · Durable · Underfloor heating compatible" },
+  { url: "/hero2.jpg", label: "Cream Saxony Carpet", sub: "Deeply soft · Bedroom perfection · Warm underfoot" },
+  { url: "/hero3.JPG", label: "Charcoal Herringbone", sub: "Bold geometric pattern · Statement flooring" },
+  { url: "/hero4.jpg", label: "Premium Flooring", sub: "Expertly fitted · Beautifully finished" },
 ];
 
 // ── Flooring types ───────────────────────────────────────────────
@@ -1167,7 +1167,7 @@ export default function StrataPage() {
       </section>
 
       {/* MATERIALS */}
-      <section style={{ padding: "0 20px 48px", backgroundImage: "url('/images/carpet-samples.jpg')", backgroundSize: "cover", backgroundPosition: "center", backgroundRepeat: "no-repeat" }}>
+      <section style={{ padding: "0 20px 48px" }}>
         <Tag>Our materials</Tag>
         <div style={{ fontFamily: s.serif, fontSize: "26px", fontWeight: 700, color: s.text, lineHeight: 1.1, marginBottom: "6px" }}>
           Carpet. LVT. Laminate.<br /><span style={{ color: s.gold, fontStyle: "italic" }}>Every grade.</span>
@@ -1179,9 +1179,9 @@ export default function StrataPage() {
           <div style={{ fontFamily: s.sans, fontSize: "10px", letterSpacing: "0.18em", color: s.gold, textTransform: "uppercase", marginBottom: "10px" }}>Carpet</div>
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px" }}>
             {[
-              { tier: "Budget", img: "/images/carpet-texture.jpg", desc: "Polypropylene twist. Hard-wearing and practical." },
-              { tier: "Mid", img: "/images/carpet-texture.jpg", desc: "Nylon blend. The sweet spot of comfort and durability." },
-              { tier: "Premium", img: "/images/carpet-texture.jpg", desc: "Wool-blend saxony. Deep, soft, and completely luxurious." },
+              { tier: "Budget", img: "https://images.unsplash.com/photo-1589834390005-5d4d9a9571e2?w=400&q=85&fit=crop&crop=center", desc: "Polypropylene twist. Hard-wearing and practical." },
+              { tier: "Mid", img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=85&fit=crop&crop=center", desc: "Nylon blend. The sweet spot of comfort and durability." },
+              { tier: "Premium", img: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=400&q=85&fit=crop&crop=top", desc: "Wool-blend saxony. Deep, soft, and completely luxurious." },
             ].map(({ tier, img, desc }) => (
               <div key={tier} style={{ position: "relative", borderRadius: "3px", overflow: "hidden", cursor: "default" }} className="mat-card-tier">
                 <img src={img} alt={`${tier} carpet`} style={{ width: "100%", height: "120px", objectFit: "cover", display: "block", transition: "transform 0.5s" }} />
