@@ -1031,6 +1031,14 @@ export default function StrataPage() {
   const scrollToQuote = () => {
     document.getElementById("quote")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
+  const handleAskExpert = () => {
+    if (isMobile) {
+      window.location.href = "/flo";
+    } else {
+      window.dispatchEvent(new CustomEvent("open-flo"));
+      document.getElementById("flo-section")?.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
     <div style={{ background: s.bg, color: s.text, minHeight: "100vh", overflowX: "hidden", fontFamily: s.sans }}>
@@ -1058,14 +1066,13 @@ export default function StrataPage() {
         .nav-link { color: rgba(242,237,224,0.45); text-decoration: none; font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; transition: color 0.2s; }
         .nav-link:hover { color: #f2ede0; }
         .nav-links { display: none !important; }
-        .nav-cta-mobile { display: block; }
         .flo-estimate-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 48px; background: rgba(17,17,16,0.98); border-top: 1px solid rgba(201,169,110,0.3); padding: 0 20px; z-index: 40; display: flex; justify-content: space-between; align-items: center; cursor: pointer; box-sizing: border-box; }
-        .nav-phone-mobile { display: flex; align-items: center; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes calcPulse { 0%,100%{opacity:0.35} 50%{opacity:0.85} }
         @keyframes slideUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
         @keyframes progressIn { from { transform:scaleX(0); } to { transform:scaleX(1); } }
-        @media (min-width: 480px) { .nav-links { display: flex !important; gap: 24px; align-items: center; } .nav-cta-mobile { display: none; } .nav-phone-mobile { display: none !important; } }
+        @keyframes waveform { 0%, 100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); } }
+        @media (min-width: 480px) { .nav-links { display: flex !important; gap: 24px; align-items: center; } }
         @media (min-width: 640px) { .hero-h1 { font-size: 52px !important; } }
       `}</style>
 
@@ -1078,12 +1085,10 @@ export default function StrataPage() {
         <div className="nav-links">
           <a href="#how" className="nav-link">How it works</a>
           <a href="#about" className="nav-link">About</a>
-          <a href="tel:01234567890" onClick={handlePhoneClick} className="nav-link" style={{ fontSize: "12px", letterSpacing: "0.05em", color: s.gold }}>01234 567890</a>
-          <a href="/" onClick={e => { e.preventDefault(); scrollToQuote(); }} style={{ background: s.gold, color: "#111", padding: "9px 20px", fontSize: "11px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", borderRadius: "2px" }}>Free quote</a>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-          <a href="tel:01234567890" onClick={handlePhoneClick} className="nav-phone-mobile" style={{ color: s.gold, textDecoration: "none", fontSize: "17px", lineHeight: 1 }}>📞</a>
-          <a href="/" onClick={e => { e.preventDefault(); scrollToQuote(); }} className="nav-cta-mobile" style={{ background: s.gold, color: "#111", padding: "8px 14px", fontSize: "10px", fontWeight: 600, letterSpacing: "0.08em", textTransform: "uppercase", textDecoration: "none", borderRadius: "2px" }}>Free quote</a>
+        <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+          <button onClick={handleAskExpert} style={{ background: "#1a1a18", border: `1px solid ${s.gold}`, color: s.gold, padding: "9px 18px", fontSize: "11px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", borderRadius: "2px", cursor: "pointer", fontFamily: s.sans, whiteSpace: "nowrap" }}>Ask our expert</button>
+          <a href="/" onClick={e => { e.preventDefault(); scrollToQuote(); }} style={{ background: s.gold, color: "#111", padding: "9px 18px", fontSize: "11px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", borderRadius: "2px", whiteSpace: "nowrap" }}>Free Quote</a>
         </div>
       </nav>
 
@@ -1118,6 +1123,9 @@ export default function StrataPage() {
           </div>
         </div>
       </section>
+
+      {/* FLO */}
+      <div id="flo-section"><FloSection /></div>
 
       {/* MARQUEE */}
       <div style={{ overflow: "hidden", borderTop: `1px solid ${s.border}`, borderBottom: `1px solid ${s.border}`, padding: "14px 0", background: "rgba(201,169,110,0.04)" }}>
@@ -1209,9 +1217,6 @@ export default function StrataPage() {
         </div>
         <a href="/" onClick={e => { e.preventDefault(); scrollToQuote(); }} style={{ display: "block", textAlign: "center", background: s.gold, color: "#111", padding: "16px", fontSize: "13px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", borderRadius: "3px" }}>Get my free quote →</a>
       </section>
-
-      {/* FLO */}
-      <div id="flo-section"><FloSection /></div>
 
       {/* ABOUT */}
       <section id="about" style={{ padding: "48px 20px", borderTop: `1px solid ${s.border}` }}>
@@ -2010,8 +2015,8 @@ export default function StrataPage() {
           <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.2)" }}>© 2026 Strata · Essex & London · All rights reserved.</div>
         </div>
         <div style={{ borderTop: `1px solid ${s.border}`, paddingTop: "20px", display: "flex", flexWrap: "wrap", gap: "16px" }}>
-          <a href="/fitter/apply" style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.2)", textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "rgba(242,237,224,0.4)"} onMouseLeave={e => e.target.style.color = "rgba(242,237,224,0.2)"}>Are you a fitter? Apply to join Strata</a>
-          <a href="/surveyor/apply" style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.2)", textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "rgba(242,237,224,0.4)"} onMouseLeave={e => e.target.style.color = "rgba(242,237,224,0.2)"}>Interested in surveying? Apply here</a>
+          <a href="/fitter/apply" style={{ fontFamily: s.sans, fontSize: "10px", color: "rgba(242,237,224,0.2)", textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "rgba(242,237,224,0.4)"} onMouseLeave={e => e.target.style.color = "rgba(242,237,224,0.2)"}>Are you a fitter? Join Strata →</a>
+          <a href="/surveyor/apply" style={{ fontFamily: s.sans, fontSize: "10px", color: "rgba(242,237,224,0.2)", textDecoration: "none", transition: "color 0.2s" }} onMouseEnter={e => e.target.style.color = "rgba(242,237,224,0.4)"} onMouseLeave={e => e.target.style.color = "rgba(242,237,224,0.2)"}>Interested in surveying? Apply here →</a>
         </div>
       </footer>
     </div>
