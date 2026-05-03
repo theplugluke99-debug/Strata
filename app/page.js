@@ -1072,7 +1072,15 @@ export default function StrataPage() {
         @keyframes slideUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
         @keyframes progressIn { from { transform:scaleX(0); } to { transform:scaleX(1); } }
         @keyframes waveform { 0%, 100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); } }
-        @media (min-width: 480px) { .nav-links { display: flex !important; gap: 24px; align-items: center; } }
+        .nav-expert-short { display: inline; }
+        .nav-expert-long  { display: none; }
+        .nav-quote-btn    { display: none !important; }
+        @media (min-width: 480px) {
+          .nav-links        { display: flex !important; gap: 24px; align-items: center; }
+          .nav-expert-short { display: none; }
+          .nav-expert-long  { display: inline; }
+          .nav-quote-btn    { display: inline-block !important; }
+        }
         @media (min-width: 640px) { .hero-h1 { font-size: 52px !important; } }
       `}</style>
 
@@ -1087,8 +1095,11 @@ export default function StrataPage() {
           <a href="#about" className="nav-link">About</a>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <button onClick={handleAskExpert} style={{ background: "#1a1a18", border: `1px solid ${s.gold}`, color: s.gold, padding: "9px 18px", fontSize: "11px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", borderRadius: "2px", cursor: "pointer", fontFamily: s.sans, whiteSpace: "nowrap" }}>Ask our expert</button>
-          <a href="/" onClick={e => { e.preventDefault(); scrollToQuote(); }} style={{ background: s.gold, color: "#111", padding: "9px 18px", fontSize: "11px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", borderRadius: "2px", whiteSpace: "nowrap" }}>Free Quote</a>
+          <button onClick={handleAskExpert} style={{ background: "#1a1a18", border: `1px solid ${s.gold}`, color: s.gold, padding: "9px 14px", fontSize: "11px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", borderRadius: "2px", cursor: "pointer", fontFamily: s.sans, whiteSpace: "nowrap" }}>
+            <span className="nav-expert-short">Ask Flo →</span>
+            <span className="nav-expert-long">Ask our expert</span>
+          </button>
+          <a href="/" onClick={e => { e.preventDefault(); scrollToQuote(); }} className="nav-quote-btn" style={{ background: s.gold, color: "#111", padding: "9px 18px", fontSize: "11px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none", borderRadius: "2px", whiteSpace: "nowrap" }}>Free Quote</a>
         </div>
       </nav>
 

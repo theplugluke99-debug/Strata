@@ -88,8 +88,9 @@ export default function FloPage() {
   const [muted, setMuted]     = useState(true);
   const [showChips, setShowChips] = useState(true);
 
-  const messagesRef = useRef(null);
-  const inputRef    = useRef(null);
+  const messagesRef  = useRef(null);
+  const inputRef     = useRef(null);
+  const currentAudio = useRef(null);
 
   useEffect(() => {
     if (messagesRef.current) {
@@ -98,16 +99,29 @@ export default function FloPage() {
   }, [messages]);
 
   const speak = useCallback(
-    (text) => {
-      if (muted || !window.speechSynthesis) return;
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 0.9;
-      utterance.pitch = 1.1;
-      utterance.voice =
-        speechSynthesis.getVoices().find((v) => v.lang === "en-GB" && v.name.includes("Female")) ||
-        speechSynthesis.getVoices().find((v) => v.lang.startsWith("en"));
-      speechSynthesis.speak(utterance);
+    async (text) => {
+      if (muted) return;
+      // Stop any current playback
+      if (currentAudio.current) {
+        currentAudio.current.pause();
+        currentAudio.current = null;
+      }
+      try {
+        const res = await fetch("/api/flo/speak", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text }),
+        });
+        if (!res.ok) throw new Error("TTS failed");
+        const blob = await res.blob();
+        const url  = URL.createObjectURL(blob);
+        const audio = new Audio(url);
+        currentAudio.current = audio;
+        audio.onended = () => URL.revokeObjectURL(url);
+        audio.play();
+      } catch {
+        // silent fail — user can tap the speaker icon again
+      }
     },
     [muted]
   );
