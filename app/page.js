@@ -1193,7 +1193,7 @@ export default function StrataPage() {
         <Divider />
         <div className="popular-grid">
           {[
-            { name: "Carpet",    tag: "Most popular",   img: "/carpet-berber.png" },
+            { name: "Carpet",    tag: "Most popular",   img: "/carpet.png" },
             { name: "LVT & SPC", tag: "Most versatile", img: "/lvt-herringbone-oak.png" },
             { name: "Laminate",  tag: "Great value",    img: "/laminate-greige-oak.png" },
           ].map(({ name, tag, img }) => (
