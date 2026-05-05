@@ -106,9 +106,16 @@ const EXTRAS_COSTS = {
 };
 
 // ── Wastage ──────────────────────────────────────────────────────
+// Rates are slightly generous — better to over-order than under-order
 const WASTAGE = {
-  "Carpet": 0.10, "LVT": 0.10, "Laminate": 0.10,
-  "Herringbone": 0.15, "Vinyl": 0.10, "Not sure yet": 0.10,
+  "Carpet":       0.12,  // 12% — straight lay no pattern
+  "Herringbone":  0.18,  // 18% — pattern cutting waste is significant
+  "LVT":          0.12,  // 12% — click system standard
+  "LVT Glue Down":0.08,  // 8%  — glue down, more precise cutting
+  "Laminate":     0.12,  // 12% — industry standard
+  "Vinyl":        0.15,  // 15% — roll goods, cutting waste around obstacles
+  "Carpet Tiles": 0.07,  // 7%  — modular, very little waste
+  "Not sure yet": 0.12,  // default
 };
 
 // ── Live Estimate Pricing ────────────────────────────────────────
@@ -722,77 +729,88 @@ function PhoneMeasureDemo() {
 function MeasureEducationScreen({ onContinue, propertyType }) {
   const isCommercial = propertyType === "Commercial";
 
-  const tips = isCommercial ? [
-    {
-      icon: "📐",
-      title: "Measure the full usable floor area — not just the desk space",
-      body: "In offices and commercial spaces it is tempting to measure only the area in active use. Measure the entire floor from wall to wall including under desks, behind reception counters, and into alcoves. Your fitter needs the total floor area to order the right quantity of material.",
-    },
-    {
-      icon: "🚪",
-      title: "Account for doorways, thresholds and fire doors",
-      body: "Commercial spaces often have multiple doorways, double doors, and fire door thresholds. Measure each opening width — these determine the door bar specification and affect how the flooring is cut and finished at each entrance. Note whether any thresholds have a height difference between rooms.",
-    },
-    {
-      icon: "🏗️",
-      title: "Raised access floors and subfloor considerations",
-      body: "Many commercial offices have raised access flooring with cable management underneath. Note whether your subfloor is raised access, screed, or concrete. This affects which flooring products can be used and what preparation is needed before installation.",
-    },
-    {
-      icon: "📦",
-      title: "Fixed furniture, built-in units and island counters",
-      body: "Note any fixed items that cannot be moved — built-in reception desks, fixed shelving, kitchen islands in café or restaurant spaces. These create cut-outs in the flooring. Measure around them carefully and note their position. Our surveyor will confirm these measurements on site.",
-    },
-    {
-      icon: "🪜",
-      title: "Corridors and irregular shapes — measure in sections",
-      body: "Long corridors, L-shaped spaces, and open plan offices with structural columns are best measured in rectangular sections. Break the space into simple rectangles, measure each one separately, and add them together. Do not try to measure an L-shape as one measurement.",
-    },
-    {
-      icon: "⚠️",
-      title: "Wet areas, kitchens and bathrooms need separate notes",
-      body: "If your commercial space includes a kitchen, bathroom, WC or any wet area these must be flagged separately. Wet areas require specific waterproof flooring products and different subfloor preparation. Note these rooms separately with their measurements and we will specify the correct product for each area.",
-    },
-  ] : [
+  const residentialTips = [
     {
       icon: "📏",
       title: "Skirting board to skirting board — not wall to wall",
-      body: "Place your start point at the base of one skirting board and measure across to the base of the opposite one. This is the exact footprint your flooring needs to cover — measuring wall to wall gives you the wrong number.",
+      body: "Place your start point at the base of one skirting board and measure to the base of the opposite one. This is the exact footprint your flooring needs to cover. Measuring wall to wall gives you the wrong number because it includes the skirting board thickness.",
+    },
+    {
+      icon: "🛋️",
+      title: "Measure under all furniture — not just visible floor",
+      body: "Your flooring goes under beds, wardrobes, sofas, dressing tables and all freestanding furniture. Always measure the full room from wall to wall. The only exception is fixed built-in furniture that cannot be moved — measure up to those items but not underneath them.",
     },
     {
       icon: "🚪",
-      title: "Door bars — always include the threshold",
-      body: "Measure to the door bar or threshold — whichever represents the widest or longest point of the room. The door bar sits at the entrance and your flooring runs right up to it. If you measure short of it, your quote will be short too. When in doubt, measure a little long.",
+      title: "Measure to the door bar — and note any height differences between rooms",
+      body: "Measure to the door bar or threshold at each doorway. Also note whether there is a height difference between rooms — carpet meeting a hard floor, or two hard floors of different thicknesses. This determines which type of door bar is needed. Z bars, T bars and reducers are all different products and the wrong one will not fit.",
     },
     {
       icon: "🪟",
-      title: "Bay windows — the main room, then the drop-back",
-      body: "Don't try to measure the bay in one go. First measure your main room rectangle as normal. Then measure the bay separately: its width (how wide the opening is) × its drop-back (how far it projects into the room). We add these together as two rectangles.",
+      title: "Bay windows — measure the main room then the bay separately",
+      body: "Do not try to measure a bay window room in one go. First measure the main rectangular room as normal. Then measure the bay separately — its width across the opening and how far it projects into the room. We add these together as two rectangles. Never measure diagonally across a bay.",
     },
     {
       icon: "📦",
-      title: "Alcoves — width × depth",
-      body: "An alcove is a recess set back into the wall — most commonly found either side of a chimney breast in living rooms and bedrooms. Measure the width of the opening and the depth of how far it goes back. These are their own rectangle and get added to your main room total.",
+      title: "Alcoves — width of the opening × depth into the wall",
+      body: "An alcove is a recess built into a wall — most commonly found either side of a chimney breast. Measure the width of the opening and how deep it goes back into the wall. These are their own rectangle and get added to your main room total.",
     },
     {
       icon: "🪜",
-      title: "Stairs — count the treads",
-      body: "Don't measure the length of your staircase. Instead, count each individual step from the very bottom to the very top — these are called treads. Include any half-landing treads. We calculate the material needed from your tread count.",
+      title: "Stairs need four measurements — not just a tread count",
+      body: "For an accurate stair estimate we need: the number of treads, the tread depth (front to back of each step), the riser height (from one step surface to the next), and the stair width (wall to wall or between spindles). You also need to note any landings and their dimensions. If in doubt our surveyor will confirm everything on site — stairs are the one area where an in-person check makes the biggest difference to accuracy.",
     },
   ];
+
+  const commercialTips = [
+    {
+      icon: "📐",
+      title: "Measure the full floor area — including under desks and counters",
+      body: "Measure the entire floor from wall to wall including under desks, behind reception counters and under shelving. Your fitter needs the total floor area to order the right quantity. The only areas to subtract are permanent fixed structures that cannot be moved.",
+    },
+    {
+      icon: "🏗️",
+      title: "Note structural columns — their footprint is subtracted from your total",
+      body: "Floor to ceiling columns within a room have a footprint that does not get floored. Measure each column's width and depth and note how many there are. We subtract the total column footprint from your floor area automatically.",
+    },
+    {
+      icon: "🚪",
+      title: "Commercial doorways — note width and any height differences between areas",
+      body: "Commercial spaces often have multiple doorways, double doors and fire door thresholds. The door bar specification depends on the threshold width and any height difference between the two floor surfaces. Note each doorway width and whether the floors either side are at the same level.",
+    },
+    {
+      icon: "📋",
+      title: "L-shapes and irregular spaces — measure in rectangular sections",
+      body: "Long corridors, L-shaped open plan offices and spaces with structural protrusions are best measured in rectangular sections. Break the space into simple rectangles, measure each one separately and add them together. Do not try to measure an L-shape or U-shape as one measurement.",
+    },
+    {
+      icon: "💧",
+      title: "Wet areas must be noted separately — they need different products",
+      body: "Commercial kitchens, bathrooms, WC areas and any wet zone need fully waterproof flooring with appropriate slip resistance ratings. These areas cannot use the same product as dry areas. Note them separately with their measurements so we can specify the correct product for each zone.",
+    },
+    {
+      icon: "🏢",
+      title: "Raised access flooring and subfloor type affects product selection",
+      body: "Many commercial offices have raised access flooring with cable management underneath. Note whether your subfloor is raised access panels, concrete screed or timber. This affects which adhesives and products can be used and what preparation is needed before installation.",
+    },
+  ];
+
+  const tips = isCommercial ? commercialTips : residentialTips;
 
   return (
     <div>
       {/* Phone demo / commercial note */}
       {isCommercial ? (
-        <div style={{ fontFamily: s.sans, fontSize: "13px", color: s.dim, lineHeight: 1.7, marginBottom: "16px", padding: "16px", background: "rgba(201,169,110,0.06)", border: "1px solid rgba(201,169,110,0.2)", borderRadius: "4px" }}>
-          <div style={{ color: s.gold, fontSize: "10px", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>Commercial spaces</div>
-          For larger or complex commercial spaces a tape measure or laser measure gives more accurate results than a phone app. If you have existing floor plans or building drawings these are even better — you can upload them or note the dimensions directly from the plans.
+        <div style={{ background: "rgba(201,169,110,0.06)", border: "1px solid rgba(201,169,110,0.2)", borderRadius: "4px", padding: "18px 20px", marginBottom: "16px" }}>
+          <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "10px" }}>For commercial spaces</div>
+          <div style={{ fontFamily: s.sans, fontSize: "13px", color: s.dim, lineHeight: 1.7, fontWeight: 300 }}>
+            A laser distance measure gives the most accurate results in large commercial spaces — more reliable than a phone app over distances above 5 metres. If you have existing floor plans or architectural drawings use those measurements directly. For complex or multi-room commercial fits we strongly recommend booking a free survey visit first.
+          </div>
         </div>
       ) : (
         <div style={{ background: "rgba(201,169,110,0.06)", border: "1px solid rgba(201,169,110,0.18)", borderRadius: "4px", padding: "20px 18px", marginBottom: "16px" }}>
           <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600, marginBottom: "14px", textAlign: "center" }}>
-            Use your phone's Measure app
+            Use your phone&apos;s Measure app
           </div>
           <PhoneMeasureDemo />
           <div style={{ display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap" }}>
@@ -819,41 +837,89 @@ function MeasureEducationScreen({ onContinue, propertyType }) {
 
       <GoldNote>
         {isCommercial
-          ? "Rough figures are completely fine for now. Our surveyor will visit and take precise measurements before any order is placed — commercial installations are always confirmed on site before we proceed."
+          ? "These figures give us a reliable starting point for your estimate. All commercial installations are confirmed on site by our surveyor before any order is placed or work begins."
           : "Rough figures are completely fine. Our surveyor confirms exact measurements in person before any price is finalised — no obligation at any stage."}
       </GoldNote>
-      <GoldBtn onClick={onContinue}>I'm ready to measure →</GoldBtn>
+      <GoldBtn onClick={onContinue}>I&apos;m ready to measure →</GoldBtn>
     </div>
   );
 }
 
 // ── Room Calculator ──────────────────────────────────────────────
 function getRoomGrossM2(room, data, flooringType) {
-  const wastage = WASTAGE[flooringType] || 0.10;
-  if (room === "Stairs") return parseInt(data?.treads || 0) * 0.25 * (1 + wastage);
-  const main = parseFloat(data?.l || 0) * parseFloat(data?.w || 0);
-  const bay  = data?.hasBay ? parseFloat(data?.bayL || 0) * parseFloat(data?.bayD || 0) : 0;
-  const alc  = data?.hasAlc ? parseFloat(data?.alcW || 0) * parseFloat(data?.alcD || 0) : 0;
-  return (main + bay + alc) * (1 + wastage);
+  const wastage = WASTAGE[flooringType] || 0.12;
+
+  if (room === "Stairs") {
+    const treads      = parseInt(data?.treads || 0);
+    const treadDepth  = parseFloat(data?.treadDepth  || 220) / 1000;
+    const riserHeight = parseFloat(data?.riserHeight || 190) / 1000;
+    const treadWidth  = parseFloat(data?.treadWidth  || 860) / 1000;
+    const landingM2   = data?.hasLanding
+      ? parseFloat(data?.landingL || 0) * parseFloat(data?.landingW || 0)
+      : 0;
+    const capExtra = data?.fitType === "Cap and band" ? 0.08 : 0;
+    const netM2 = (treads * treadDepth * treadWidth) + (treads * riserHeight * treadWidth) + landingM2;
+    return netM2 * (1 + wastage + capExtra);
+  }
+
+  if (room === "Landing") {
+    const main   = parseFloat(data?.l || 0) * parseFloat(data?.w || 0);
+    const cutout = data?.hasStairwell
+      ? parseFloat(data?.stairwellL || 0) * parseFloat(data?.stairwellW || 0)
+      : 0;
+    return Math.max(0, main - cutout) * (1 + wastage);
+  }
+
+  const main       = parseFloat(data?.l || 0) * parseFloat(data?.w || 0);
+  const bay        = data?.hasBay       ? parseFloat(data?.bayL   || 0) * parseFloat(data?.bayD   || 0) : 0;
+  const alc        = data?.hasAlc       ? parseFloat(data?.alcW   || 0) * parseFloat(data?.alcD   || 0) : 0;
+  const extra1     = data?.hasExtra1    ? parseFloat(data?.extra1L || 0) * parseFloat(data?.extra1W || 0) : 0;
+  const extra2     = data?.hasExtra2    ? parseFloat(data?.extra2L || 0) * parseFloat(data?.extra2W || 0) : 0;
+  const extra3     = data?.hasExtra3    ? parseFloat(data?.extra3L || 0) * parseFloat(data?.extra3W || 0) : 0;
+  const columns    = data?.hasColumns   ? parseInt(data?.numColumns || 0) * parseFloat(data?.colW || 0) * parseFloat(data?.colD || 0) : 0;
+  const fixedUnits = data?.hasFixedUnits ? parseFloat(data?.unitW || 0) * parseFloat(data?.unitD || 0) : 0;
+
+  const net = Math.max(0, main + bay + alc + extra1 + extra2 + extra3 - columns - fixedUnits);
+  return net * (1 + wastage);
 }
 
-function RoomCalculator({ room, data, onChange, flooringType }) {
-  const isStairs   = room === "Stairs";
-  const wastageRate = WASTAGE[flooringType] || 0.10;
-  const wastageLabel = flooringType === "Herringbone" ? "15% wastage" : "10% wastage";
-  const mainM2  = parseFloat(data?.l || 0) * parseFloat(data?.w || 0);
-  const bayM2   = data?.hasBay ? parseFloat(data?.bayL || 0) * parseFloat(data?.bayD || 0) : 0;
-  const alcM2   = data?.hasAlc ? parseFloat(data?.alcW || 0) * parseFloat(data?.alcD || 0) : 0;
-  const stairM2 = isStairs ? parseInt(data?.treads || 0) * 0.25 : 0;
-  const netM2   = isStairs ? stairM2 : (mainM2 + bayM2 + alcM2);
-  const grossM2 = netM2 * (1 + wastageRate);
+function RoomCalculator({ room, data, onChange, flooringType, propertyType }) {
+  const isCommercial = propertyType === "Commercial";
+  const isStairs     = room === "Stairs";
+  const isLanding    = room === "Landing";
+  const wastageRate  = WASTAGE[flooringType] || 0.12;
+  const wastageLabel = flooringType === "Herringbone" ? "18% wastage"
+    : flooringType === "Vinyl" ? "15% wastage"
+    : `${Math.round(wastageRate * 100)}% wastage`;
+  const grossM2 = getRoomGrossM2(room, data, flooringType);
   const set = (key, val) => onChange({ ...data, [key]: val });
 
-  const inp = { background: "transparent", border: "none", borderBottom: "1px solid rgba(242,237,224,0.2)", color: s.text, fontFamily: s.serif, fontSize: "22px", padding: "6px 0", width: "100%", outline: "none" };
-  const ml  = (txt) => <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "6px" }}>{txt}</div>;
+  const inp = {
+    background: "transparent", border: "none",
+    borderBottom: "1px solid rgba(242,237,224,0.2)",
+    color: s.text, fontFamily: s.serif, fontSize: "22px",
+    padding: "6px 0", width: "100%", outline: "none",
+  };
+  const smallInp = { ...inp, fontSize: "18px" };
+  const ml = (txt) => (
+    <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "6px" }}>{txt}</div>
+  );
+
+  const showJoinWarning = !isCommercial && parseFloat(data?.w || 0) > 5.0 &&
+    (flooringType === "Carpet" || flooringType === "Vinyl");
+  const joinWarningText = flooringType === "Carpet"
+    ? "This room is wider than 5 metres. Depending on the roll width selected this may require a heat seam join. Your fitter will position any seam in the least visible location — typically under furniture or in a low traffic area. Roll width availability will be confirmed at survey."
+    : "This room is wider than 5 metres. Sheet vinyl comes in 2m, 3m, 4m and 5m widths. A room this wide will likely require heat welded joints — a specialist process that creates a watertight invisible seam. We will confirm roll width options at survey.";
+
+  const showCommercialJoinWarning = isCommercial && parseFloat(data?.w || 0) > 5.0 &&
+    (flooringType === "Carpet" || flooringType === "Vinyl");
+  const commercialJoinText = flooringType === "Carpet"
+    ? "This space exceeds 5 metres width. Broadloom carpet comes in 4m and 5m widths — a heat seam join will likely be required. For large commercial spaces carpet tiles eliminate this issue entirely and allow individual tile replacement if damaged."
+    : "This space exceeds 5 metres width. Sheet vinyl will require heat welded joints — a specialist process creating a watertight seam. This is standard practice in commercial installations and when done correctly the joint is virtually invisible.";
 
   return (
     <div style={{ background: s.card, border: `1px solid ${s.border}`, borderRadius: "4px", marginBottom: "10px", overflow: "hidden" }}>
+      {/* Header */}
       <div style={{ padding: "12px 16px 0", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ fontSize: "10px", color: s.gold, letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: s.sans }}>{room}</div>
         {grossM2 > 0 && (
@@ -863,63 +929,304 @@ function RoomCalculator({ room, data, onChange, flooringType }) {
           </div>
         )}
       </div>
+
       <div style={{ padding: "12px 16px 16px" }}>
-        {isStairs ? (
+
+        {/* ── STAIRS ── */}
+        {isStairs && (
           <div>
-            <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, marginBottom: "12px", lineHeight: 1.6 }}>Count each individual step (tread) from bottom to top. Include half-landings.</div>
-            {ml("Number of treads")}
-            <input style={{ ...inp, fontSize: "28px" }} type="number" placeholder="0" min="0" value={data?.treads || ""} onChange={e => set("treads", e.target.value)}/>
+            <GoldNote>Stairs are the hardest area to measure accurately by phone. These figures give us a reliable estimate — our surveyor will confirm exact measurements on site.</GoldNote>
+
+            {ml("Number of treads (count each individual step)")}
+            <input style={{ ...inp, fontSize: "28px" }} type="number" placeholder="0" min="0" value={data?.treads || ""} onChange={e => set("treads", e.target.value)} />
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginTop: "16px" }}>
+              <div>
+                {ml("Tread depth (mm)")}
+                <input style={smallInp} type="number" placeholder="220" value={data?.treadDepth || ""} onChange={e => set("treadDepth", e.target.value)} />
+                <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.2)", fontFamily: s.sans, marginTop: "4px" }}>Front to back of each step</div>
+              </div>
+              <div>
+                {ml("Riser height (mm)")}
+                <input style={smallInp} type="number" placeholder="190" value={data?.riserHeight || ""} onChange={e => set("riserHeight", e.target.value)} />
+                <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.2)", fontFamily: s.sans, marginTop: "4px" }}>Step surface to next step</div>
+              </div>
+            </div>
+
+            <div style={{ marginTop: "12px" }}>
+              {ml("Stair width (mm)")}
+              <input style={smallInp} type="number" placeholder="860" value={data?.treadWidth || ""} onChange={e => set("treadWidth", e.target.value)} />
+              <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.2)", fontFamily: s.sans, marginTop: "4px" }}>Wall to wall or between spindles</div>
+            </div>
+
+            <div style={{ marginTop: "16px" }}>
+              {ml("Fit type")}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "8px" }}>
+                {["Waterfall", "Cap and band"].map(type => (
+                  <button key={type} onClick={() => set("fitType", type)} style={{ background: data?.fitType === type ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.fitType === type ? s.gold : s.border}`, borderRadius: "3px", padding: "10px 12px", cursor: "pointer", textAlign: "left", transition: "all 0.2s" }}>
+                    <div style={{ fontFamily: s.sans, fontSize: "12px", fontWeight: 600, color: data?.fitType === type ? s.gold : s.text }}>{type}</div>
+                    <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim, fontWeight: 300, marginTop: "2px" }}>
+                      {type === "Waterfall" ? "Over the nose — uses less carpet" : "Wrapped around each tread — more tailored, uses slightly more"}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ marginTop: "16px" }}>
+              {ml("Landing")}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "10px" }}>
+                {["No landing", "Quarter landing", "Half landing", "Full landing"].map(type => (
+                  <button key={type} onClick={() => set("landingType", type)} style={{ background: data?.landingType === type ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.landingType === type ? s.gold : s.border}`, borderRadius: "3px", padding: "8px 10px", cursor: "pointer", transition: "all 0.2s" }}>
+                    <div style={{ fontFamily: s.sans, fontSize: "11px", color: data?.landingType === type ? s.gold : s.dim }}>{type}</div>
+                  </button>
+                ))}
+              </div>
+              {data?.landingType && data?.landingType !== "No landing" && (
+                <div style={{ paddingLeft: "12px", borderLeft: "1px solid rgba(201,169,110,0.2)" }}>
+                  <GoldNote>Measure the landing from wall to wall. Include the area over the top step nose — measure to the edge of the tread nosing, not to the wall behind it.</GoldNote>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                    <div>{ml("Landing length (m)")}<input style={smallInp} type="number" placeholder="0.0" step="0.1" value={data?.landingL || ""} onChange={e => { set("landingL", e.target.value); set("hasLanding", true); }} /></div>
+                    <div>{ml("Landing width (m)")}<input style={smallInp} type="number" placeholder="0.0" step="0.1" value={data?.landingW || ""} onChange={e => { set("landingW", e.target.value); set("hasLanding", true); }} /></div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {data?.treads > 0 && data?.treadDepth && data?.riserHeight && data?.treadWidth && (
+              <div style={{ background: "rgba(201,169,110,0.07)", borderRadius: "3px", padding: "10px 14px", marginTop: "12px" }}>
+                <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.gold, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "6px" }}>Breakdown</div>
+                <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim }}>
+                  Treads: {(parseInt(data.treads) * parseFloat(data.treadDepth) / 1000 * parseFloat(data.treadWidth) / 1000).toFixed(2)} m²
+                </div>
+                <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim }}>
+                  Risers: {(parseInt(data.treads) * parseFloat(data.riserHeight) / 1000 * parseFloat(data.treadWidth) / 1000).toFixed(2)} m²
+                </div>
+                {data?.hasLanding && data?.landingL && data?.landingW && (
+                  <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim }}>
+                    Landing: {(parseFloat(data.landingL) * parseFloat(data.landingW)).toFixed(2)} m²
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-        ) : (
+        )}
+
+        {/* ── LANDING (separate room) ── */}
+        {isLanding && !isStairs && (
+          <div>
+            <GoldNote>Measure the landing from wall to wall. The measurement should extend over the nose of the top step — measure to the edge of the tread nosing, not back to the wall. For quarter and half landings measure each rectangular section separately.</GoldNote>
+            {ml("Main room")}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "12px" }}>
+              <div>{ml("Length (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.l || ""} onChange={e => set("l", e.target.value)} /></div>
+              <div>{ml("Width (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.w || ""} onChange={e => set("w", e.target.value)} /></div>
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: data?.hasStairwell ? "10px" : "0" }}>
+              <div onClick={() => set("hasStairwell", !data?.hasStairwell)} style={{ background: data?.hasStairwell ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.hasStairwell ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasStairwell ? s.gold : "rgba(242,237,224,0.3)", fontFamily: s.sans, fontSize: "11px", padding: "7px 12px", cursor: "pointer", flex: 1, transition: "all 0.2s" }}>
+                {data?.hasStairwell ? "✓ " : "+ "}Stairwell opening (open landings)
+              </div>
+            </div>
+            {data?.hasStairwell && (
+              <div style={{ paddingLeft: "12px", borderLeft: "1px solid rgba(201,169,110,0.2)", marginBottom: "10px" }}>
+                <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, marginBottom: "8px" }}>The open section over the stairwell — this area has no floor and is subtracted from your total.</div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                  <div>{ml("Opening length (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.stairwellL || ""} onChange={e => set("stairwellL", e.target.value)} /></div>
+                  <div>{ml("Opening width (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.stairwellW || ""} onChange={e => set("stairwellW", e.target.value)} /></div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── RESIDENTIAL STANDARD ROOMS ── */}
+        {!isStairs && !isLanding && !isCommercial && (
           <>
+            <GoldNote>Measure the full room from wall to wall — including under beds, wardrobes, sofas and dressing tables. Flooring goes under all freestanding furniture. Only subtract fixed built-in furniture that cannot be moved.</GoldNote>
             {ml("Main room")}
             <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "4px" }}>
-              <div>{ml("Length (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.l || ""} onChange={e => set("l", e.target.value)}/></div>
-              <div>{ml("Width (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.w || ""} onChange={e => set("w", e.target.value)}/></div>
+              <div>{ml("Length (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.l || ""} onChange={e => set("l", e.target.value)} /></div>
+              <div>{ml("Width (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.w || ""} onChange={e => set("w", e.target.value)} /></div>
             </div>
-            {mainM2 > 0 && <div style={{ fontSize: "10px", color: "rgba(242,237,224,0.2)", fontFamily: s.sans, marginBottom: "12px" }}>{parseFloat(data.l).toFixed(1)} × {parseFloat(data.w).toFixed(1)} = {mainM2.toFixed(2)} m²</div>}
+            {parseFloat(data?.l || 0) > 0 && parseFloat(data?.w || 0) > 0 && (
+              <div style={{ fontSize: "10px", color: "rgba(242,237,224,0.2)", fontFamily: s.sans, marginBottom: "12px" }}>
+                {parseFloat(data.l).toFixed(1)} × {parseFloat(data.w).toFixed(1)} = {(parseFloat(data.l) * parseFloat(data.w)).toFixed(2)} m²
+              </div>
+            )}
+            {showJoinWarning && <GoldNote>{joinWarningText}</GoldNote>}
 
-            {/* Bay window toggle */}
+            {/* Bay window */}
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: data?.hasBay ? "10px" : "6px" }}>
               <div onClick={() => set("hasBay", !data?.hasBay)} style={{ background: data?.hasBay ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.hasBay ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasBay ? s.gold : "rgba(242,237,224,0.3)", fontFamily: s.sans, fontSize: "11px", padding: "7px 12px", cursor: "pointer", flex: 1, transition: "all 0.2s" }}>
                 {data?.hasBay ? "✓ " : "+ "}Bay window
               </div>
-              <InfoTooltip title="What's a bay window?">
-                A bay window projects outward from the main wall of a room, creating a recess or bump-out. They're common in Victorian and Edwardian homes. Measure the main room first, then measure the bay separately — its width × how far it extends into the room.
+              <InfoTooltip title="What is a bay window?">
+                A bay window projects outward from the main wall creating a recess. Measure the main room first then measure the bay separately — its width × how far it projects into the room. Add them as two rectangles.
               </InfoTooltip>
             </div>
             {data?.hasBay && (
               <div style={{ paddingLeft: "12px", borderLeft: "1px solid rgba(201,169,110,0.2)", marginBottom: "10px" }}>
-                <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, marginBottom: "8px", lineHeight: 1.5 }}>Bay width × how far it drops back into the room. Do not measure diagonally.</div>
+                <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, marginBottom: "8px" }}>Bay width × how far it projects into the room. Do not measure diagonally.</div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-                  <div>{ml("Bay width (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.bayL || ""} onChange={e => set("bayL", e.target.value)}/></div>
-                  <div>{ml("Drop-back (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.bayD || ""} onChange={e => set("bayD", e.target.value)}/></div>
+                  <div>{ml("Bay width (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.bayL || ""} onChange={e => set("bayL", e.target.value)} /></div>
+                  <div>{ml("Projection (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.bayD || ""} onChange={e => set("bayD", e.target.value)} /></div>
                 </div>
-                {bayM2 > 0 && <div style={{ fontSize: "10px", color: "rgba(242,237,224,0.2)", fontFamily: s.sans, marginTop: "6px" }}>Bay: {bayM2.toFixed(2)} m²</div>}
               </div>
             )}
 
-            {/* Alcove toggle */}
+            {/* Alcove */}
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: data?.hasAlc ? "10px" : "0" }}>
               <div onClick={() => set("hasAlc", !data?.hasAlc)} style={{ background: data?.hasAlc ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.hasAlc ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasAlc ? s.gold : "rgba(242,237,224,0.3)", fontFamily: s.sans, fontSize: "11px", padding: "7px 12px", cursor: "pointer", flex: 1, transition: "all 0.2s" }}>
                 {data?.hasAlc ? "✓ " : "+ "}Alcove
               </div>
-              <InfoTooltip title="What's an alcove?">
-                An alcove is a recess built into a wall — most commonly found either side of a chimney breast in living rooms and bedrooms. They look like a smaller rectangular space set back from the main room. Measure the width of the opening and how deep it goes back into the wall.
+              <InfoTooltip title="What is an alcove?">
+                A recess built into a wall — most commonly either side of a chimney breast. Measure the width of the opening and how deep it goes back into the wall.
               </InfoTooltip>
             </div>
             {data?.hasAlc && (
               <div style={{ paddingLeft: "12px", borderLeft: "1px solid rgba(201,169,110,0.2)" }}>
-                <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, marginBottom: "8px", lineHeight: 1.5 }}>The width of the alcove opening × how deep it goes back into the wall.</div>
+                <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, marginBottom: "8px" }}>Width of the alcove opening × how deep it goes into the wall.</div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
-                  <div>{ml("Alcove width (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.alcW || ""} onChange={e => set("alcW", e.target.value)}/></div>
-                  <div>{ml("Alcove depth (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.alcD || ""} onChange={e => set("alcD", e.target.value)}/></div>
+                  <div>{ml("Alcove width (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.alcW || ""} onChange={e => set("alcW", e.target.value)} /></div>
+                  <div>{ml("Alcove depth (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.alcD || ""} onChange={e => set("alcD", e.target.value)} /></div>
                 </div>
-                {alcM2 > 0 && <div style={{ fontSize: "10px", color: "rgba(242,237,224,0.2)", fontFamily: s.sans, marginTop: "6px" }}>Alcove: {alcM2.toFixed(2)} m²</div>}
               </div>
             )}
           </>
         )}
+
+        {/* ── COMMERCIAL STANDARD ROOMS ── */}
+        {!isStairs && isCommercial && (
+          <>
+            <GoldNote>Rough figures are fine at this stage. Our surveyor will visit and confirm all measurements before any order is placed.</GoldNote>
+            {ml("Main area")}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px", marginBottom: "4px" }}>
+              <div>{ml("Length (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.l || ""} onChange={e => set("l", e.target.value)} /></div>
+              <div>{ml("Width (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.w || ""} onChange={e => set("w", e.target.value)} /></div>
+            </div>
+            {parseFloat(data?.l || 0) > 0 && parseFloat(data?.w || 0) > 0 && (
+              <div style={{ fontSize: "10px", color: "rgba(242,237,224,0.2)", fontFamily: s.sans, marginBottom: "12px" }}>
+                {parseFloat(data.l).toFixed(1)} × {parseFloat(data.w).toFixed(1)} = {(parseFloat(data.l) * parseFloat(data.w)).toFixed(2)} m²
+              </div>
+            )}
+            {showCommercialJoinWarning && <GoldNote>{commercialJoinText}</GoldNote>}
+
+            {/* Additional sections (L-shapes, corridors) */}
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: data?.hasExtra1 ? "10px" : "6px" }}>
+              <div onClick={() => set("hasExtra1", !data?.hasExtra1)} style={{ background: data?.hasExtra1 ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.hasExtra1 ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasExtra1 ? s.gold : "rgba(242,237,224,0.3)", fontFamily: s.sans, fontSize: "11px", padding: "7px 12px", cursor: "pointer", flex: 1, transition: "all 0.2s" }}>
+                {data?.hasExtra1 ? "✓ " : "+ "}Add another section (L-shapes, corridors)
+              </div>
+            </div>
+            {data?.hasExtra1 && (
+              <div style={{ paddingLeft: "12px", borderLeft: "1px solid rgba(201,169,110,0.2)", marginBottom: "10px" }}>
+                <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, marginBottom: "8px" }}>For L-shaped spaces measure each rectangular section separately and add them together.</div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "8px" }}>
+                  <div>{ml("Section 2 length (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.extra1L || ""} onChange={e => set("extra1L", e.target.value)} /></div>
+                  <div>{ml("Section 2 width (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.extra1W || ""} onChange={e => set("extra1W", e.target.value)} /></div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: data?.hasExtra2 ? "10px" : "0" }}>
+                  <div onClick={() => set("hasExtra2", !data?.hasExtra2)} style={{ background: data?.hasExtra2 ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.hasExtra2 ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasExtra2 ? s.gold : "rgba(242,237,224,0.3)", fontFamily: s.sans, fontSize: "11px", padding: "7px 12px", cursor: "pointer", flex: 1, transition: "all 0.2s" }}>
+                    {data?.hasExtra2 ? "✓ " : "+ "}Add section 3
+                  </div>
+                </div>
+                {data?.hasExtra2 && (
+                  <div style={{ paddingLeft: "12px", borderLeft: "1px solid rgba(201,169,110,0.2)", marginBottom: "10px" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", marginBottom: "8px" }}>
+                      <div>{ml("Section 3 length (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.extra2L || ""} onChange={e => set("extra2L", e.target.value)} /></div>
+                      <div>{ml("Section 3 width (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.extra2W || ""} onChange={e => set("extra2W", e.target.value)} /></div>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <div onClick={() => set("hasExtra3", !data?.hasExtra3)} style={{ background: data?.hasExtra3 ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.hasExtra3 ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasExtra3 ? s.gold : "rgba(242,237,224,0.3)", fontFamily: s.sans, fontSize: "11px", padding: "7px 12px", cursor: "pointer", flex: 1, transition: "all 0.2s" }}>
+                        {data?.hasExtra3 ? "✓ " : "+ "}Add section 4
+                      </div>
+                    </div>
+                    {data?.hasExtra3 && (
+                      <div style={{ paddingLeft: "12px", borderLeft: "1px solid rgba(201,169,110,0.2)", marginTop: "10px" }}>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                          <div>{ml("Section 4 length (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.extra3L || ""} onChange={e => set("extra3L", e.target.value)} /></div>
+                          <div>{ml("Section 4 width (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.extra3W || ""} onChange={e => set("extra3W", e.target.value)} /></div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Structural columns */}
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: data?.hasColumns ? "10px" : "6px", marginTop: "6px" }}>
+              <div onClick={() => set("hasColumns", !data?.hasColumns)} style={{ background: data?.hasColumns ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.hasColumns ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasColumns ? s.gold : "rgba(242,237,224,0.3)", fontFamily: s.sans, fontSize: "11px", padding: "7px 12px", cursor: "pointer", flex: 1, transition: "all 0.2s" }}>
+                {data?.hasColumns ? "✓ " : "+ "}Structural columns
+              </div>
+              <InfoTooltip title="Structural columns">
+                Floor to ceiling columns within the room. Flooring fits around them and their footprint is subtracted from your total floor area.
+              </InfoTooltip>
+            </div>
+            {data?.hasColumns && (
+              <div style={{ paddingLeft: "12px", borderLeft: "1px solid rgba(201,169,110,0.2)", marginBottom: "10px" }}>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "10px" }}>
+                  <div>{ml("Number of columns")}<input style={smallInp} type="number" placeholder="0" min="0" value={data?.numColumns || ""} onChange={e => set("numColumns", e.target.value)} /></div>
+                  <div>{ml("Column width (m)")}<input style={smallInp} type="number" placeholder="0.0" step="0.05" value={data?.colW || ""} onChange={e => set("colW", e.target.value)} /></div>
+                  <div>{ml("Column depth (m)")}<input style={smallInp} type="number" placeholder="0.0" step="0.05" value={data?.colD || ""} onChange={e => set("colD", e.target.value)} /></div>
+                </div>
+                {data?.numColumns && data?.colW && data?.colD && (
+                  <div style={{ fontSize: "10px", color: "rgba(242,237,224,0.2)", fontFamily: s.sans, marginTop: "6px" }}>
+                    Subtracting: {(parseInt(data.numColumns) * parseFloat(data.colW) * parseFloat(data.colD)).toFixed(2)} m²
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Fixed counters / built-in units */}
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: data?.hasFixedUnits ? "10px" : "6px" }}>
+              <div onClick={() => set("hasFixedUnits", !data?.hasFixedUnits)} style={{ background: data?.hasFixedUnits ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.hasFixedUnits ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasFixedUnits ? s.gold : "rgba(242,237,224,0.3)", fontFamily: s.sans, fontSize: "11px", padding: "7px 12px", cursor: "pointer", flex: 1, transition: "all 0.2s" }}>
+                {data?.hasFixedUnits ? "✓ " : "+ "}Fixed counters or built-in units
+              </div>
+              <InfoTooltip title="Fixed counters and built-in units">
+                Permanently fixed items that cannot be moved before fitting — reception desks, fixed shelving, bar counters, kitchen islands. Measure their footprint (width × depth from wall). Their area is subtracted from your total.
+              </InfoTooltip>
+            </div>
+            {data?.hasFixedUnits && (
+              <div style={{ paddingLeft: "12px", borderLeft: "1px solid rgba(201,169,110,0.2)", marginBottom: "10px" }}>
+                <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, marginBottom: "8px" }}>Total footprint of all fixed units combined.</div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                  <div>{ml("Total width (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.unitW || ""} onChange={e => set("unitW", e.target.value)} /></div>
+                  <div>{ml("Total depth (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.unitD || ""} onChange={e => set("unitD", e.target.value)} /></div>
+                </div>
+              </div>
+            )}
+
+            {/* Raised access floor */}
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: data?.hasRaisedAccess ? "4px" : "6px" }}>
+              <div onClick={() => set("hasRaisedAccess", !data?.hasRaisedAccess)} style={{ background: data?.hasRaisedAccess ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.hasRaisedAccess ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasRaisedAccess ? s.gold : "rgba(242,237,224,0.3)", fontFamily: s.sans, fontSize: "11px", padding: "7px 12px", cursor: "pointer", flex: 1, transition: "all 0.2s" }}>
+                {data?.hasRaisedAccess ? "✓ " : "+ "}Raised access flooring
+              </div>
+            </div>
+            {data?.hasRaisedAccess && (
+              <GoldNote>Raised access flooring affects which products can be used and how they are fixed. Some adhesive products cannot be applied to raised access panels. We will specify the correct product at survey.</GoldNote>
+            )}
+
+            {/* Wet zone */}
+            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: data?.hasWetZone ? "4px" : "6px" }}>
+              <div onClick={() => set("hasWetZone", !data?.hasWetZone)} style={{ background: data?.hasWetZone ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.hasWetZone ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasWetZone ? s.gold : "rgba(242,237,224,0.3)", fontFamily: s.sans, fontSize: "11px", padding: "7px 12px", cursor: "pointer", flex: 1, transition: "all 0.2s" }}>
+                {data?.hasWetZone ? "✓ " : "+ "}This area includes a wet zone
+              </div>
+            </div>
+            {data?.hasWetZone && (
+              <GoldNote>Wet areas require fully waterproof flooring with appropriate slip ratings. Commercial kitchens need R11 anti-slip rated flooring as a minimum. We will specify the correct product for this zone at survey.</GoldNote>
+            )}
+
+            {room === "Restaurant / Café" && (
+              <GoldNote>Restaurant and kitchen areas have specific requirements. Kitchen zones need R11 anti-slip rated safety flooring as a minimum. Front of house can use standard commercial flooring. Flag kitchen and front of house areas separately if they need different products.</GoldNote>
+            )}
+            {room === "Warehouse" && (
+              <GoldNote>Warehouse floors often need specialist resin, epoxy or heavy duty safety vinyl. Note any areas with forklift traffic, chemical exposure or heavy racking — these require specific product specifications and may need additional subfloor preparation.</GoldNote>
+            )}
+            {room === "Gym / Studio" && (
+              <GoldNote>Gym and studio floors need specific products — rubber flooring, sports vinyl or specialist acoustic underlay. Note the activity type (weights, cardio, dance, yoga) as this determines the product specification.</GoldNote>
+            )}
+          </>
+        )}
+
       </div>
     </div>
   );
@@ -1618,7 +1925,7 @@ export default function StrataPage() {
                 <BackBtn onClick={() => setMeasureSubStep("educate")}/>
                 <Sub>Enter your measurements room by room.</Sub>
                 {expandedRooms.map(room => (
-                  <RoomCalculator key={room} room={room} data={dimensions[room] || {}} onChange={data => setDim(room, data)} flooringType={selectedFlooring}/>
+                  <RoomCalculator key={room} room={room} data={dimensions[room] || {}} onChange={data => setDim(room, data)} flooringType={selectedFlooring} propertyType={propertyType} />
                 ))}
                 {totalGrossM2 > 0 && (
                   <div style={{ background: "rgba(201,169,110,0.07)", border: "1px solid rgba(201,169,110,0.2)", borderRadius: "3px", padding: "14px 16px", marginTop: "8px", marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
