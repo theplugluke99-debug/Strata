@@ -719,8 +719,41 @@ function PhoneMeasureDemo() {
 }
 
 // ── Measure Education ────────────────────────────────────────────
-function MeasureEducationScreen({ onContinue }) {
-  const tips = [
+function MeasureEducationScreen({ onContinue, propertyType }) {
+  const isCommercial = propertyType === "Commercial";
+
+  const tips = isCommercial ? [
+    {
+      icon: "📐",
+      title: "Measure the full usable floor area — not just the desk space",
+      body: "In offices and commercial spaces it is tempting to measure only the area in active use. Measure the entire floor from wall to wall including under desks, behind reception counters, and into alcoves. Your fitter needs the total floor area to order the right quantity of material.",
+    },
+    {
+      icon: "🚪",
+      title: "Account for doorways, thresholds and fire doors",
+      body: "Commercial spaces often have multiple doorways, double doors, and fire door thresholds. Measure each opening width — these determine the door bar specification and affect how the flooring is cut and finished at each entrance. Note whether any thresholds have a height difference between rooms.",
+    },
+    {
+      icon: "🏗️",
+      title: "Raised access floors and subfloor considerations",
+      body: "Many commercial offices have raised access flooring with cable management underneath. Note whether your subfloor is raised access, screed, or concrete. This affects which flooring products can be used and what preparation is needed before installation.",
+    },
+    {
+      icon: "📦",
+      title: "Fixed furniture, built-in units and island counters",
+      body: "Note any fixed items that cannot be moved — built-in reception desks, fixed shelving, kitchen islands in café or restaurant spaces. These create cut-outs in the flooring. Measure around them carefully and note their position. Our surveyor will confirm these measurements on site.",
+    },
+    {
+      icon: "🪜",
+      title: "Corridors and irregular shapes — measure in sections",
+      body: "Long corridors, L-shaped spaces, and open plan offices with structural columns are best measured in rectangular sections. Break the space into simple rectangles, measure each one separately, and add them together. Do not try to measure an L-shape as one measurement.",
+    },
+    {
+      icon: "⚠️",
+      title: "Wet areas, kitchens and bathrooms need separate notes",
+      body: "If your commercial space includes a kitchen, bathroom, WC or any wet area these must be flagged separately. Wet areas require specific waterproof flooring products and different subfloor preparation. Note these rooms separately with their measurements and we will specify the correct product for each area.",
+    },
+  ] : [
     {
       icon: "📏",
       title: "Skirting board to skirting board — not wall to wall",
@@ -750,22 +783,29 @@ function MeasureEducationScreen({ onContinue }) {
 
   return (
     <div>
-      {/* Phone demo */}
-      <div style={{ background: "rgba(201,169,110,0.06)", border: "1px solid rgba(201,169,110,0.18)", borderRadius: "4px", padding: "20px 18px", marginBottom: "16px" }}>
-        <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600, marginBottom: "14px", textAlign: "center" }}>
-          Use your phone's Measure app
+      {/* Phone demo / commercial note */}
+      {isCommercial ? (
+        <div style={{ fontFamily: s.sans, fontSize: "13px", color: s.dim, lineHeight: 1.7, marginBottom: "16px", padding: "16px", background: "rgba(201,169,110,0.06)", border: "1px solid rgba(201,169,110,0.2)", borderRadius: "4px" }}>
+          <div style={{ color: s.gold, fontSize: "10px", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>Commercial spaces</div>
+          For larger or complex commercial spaces a tape measure or laser measure gives more accurate results than a phone app. If you have existing floor plans or building drawings these are even better — you can upload them or note the dimensions directly from the plans.
         </div>
-        <PhoneMeasureDemo />
-        <div style={{ display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap" }}>
-          {["iPhone — Measure app (built-in)", "Android — Measure app (built-in)"].map(l => (
-            <div key={l} style={{ fontFamily: s.sans, fontSize: "10px", color: "rgba(201,169,110,0.7)", border: "1px solid rgba(201,169,110,0.2)", borderRadius: "2px", padding: "4px 10px" }}>{l}</div>
-          ))}
+      ) : (
+        <div style={{ background: "rgba(201,169,110,0.06)", border: "1px solid rgba(201,169,110,0.18)", borderRadius: "4px", padding: "20px 18px", marginBottom: "16px" }}>
+          <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", fontWeight: 600, marginBottom: "14px", textAlign: "center" }}>
+            Use your phone's Measure app
+          </div>
+          <PhoneMeasureDemo />
+          <div style={{ display: "flex", gap: "8px", justifyContent: "center", flexWrap: "wrap" }}>
+            {["iPhone — Measure app (built-in)", "Android — Measure app (built-in)"].map(l => (
+              <div key={l} style={{ fontFamily: s.sans, fontSize: "10px", color: "rgba(201,169,110,0.7)", border: "1px solid rgba(201,169,110,0.2)", borderRadius: "2px", padding: "4px 10px" }}>{l}</div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Tips */}
       <div style={{ fontFamily: s.sans, fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "10px" }}>
-        How to measure each area
+        {isCommercial ? "How to measure commercial spaces" : "How to measure each area"}
       </div>
       {tips.map((tip, i) => (
         <div key={i} style={{ background: s.card, border: `1px solid ${s.border}`, borderRadius: "3px", padding: "14px 16px", marginBottom: "6px", display: "flex", gap: "12px", alignItems: "flex-start" }}>
@@ -777,7 +817,11 @@ function MeasureEducationScreen({ onContinue }) {
         </div>
       ))}
 
-      <GoldNote>Rough figures are completely fine. Our surveyor confirms exact measurements in person before any price is finalised — no obligation at any stage.</GoldNote>
+      <GoldNote>
+        {isCommercial
+          ? "Rough figures are completely fine for now. Our surveyor will visit and take precise measurements before any order is placed — commercial installations are always confirmed on site before we proceed."
+          : "Rough figures are completely fine. Our surveyor confirms exact measurements in person before any price is finalised — no obligation at any stage."}
+      </GoldNote>
       <GoldBtn onClick={onContinue}>I'm ready to measure →</GoldBtn>
     </div>
   );
@@ -1564,7 +1608,7 @@ export default function StrataPage() {
             {step === 1 && measureSubStep === "educate" && (
               <>
                 <BackBtn onClick={() => setStep(0)}/>
-                <MeasureEducationScreen onContinue={() => setMeasureSubStep("measure")}/>
+                <MeasureEducationScreen onContinue={() => setMeasureSubStep("measure")} propertyType={propertyType} />
               </>
             )}
 
