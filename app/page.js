@@ -166,15 +166,186 @@ const calculateLiveEstimate = ({ m2, selectedFlooring, flooringGrade, selectedEx
   return { low: Math.max(totalLow, 250), high: Math.max(totalHigh, 250), breakdown, m2 };
 };
 
-// ── Room icons ──────────────────────────────────────────────────
-const ROOM_ICONS = {
-  "Living Room": "🛋", "Bedroom": "🛏", "Hallway": "🚪", "Stairs": "🪜",
-  "Dining Room": "🍽", "Landing": "↕", "Playroom": "🎨", "Home Office": "💻",
-  "Kitchen": "🍳", "Bathroom": "🛁", "En-suite": "🚿", "Conservatory": "☀",
-  "Garage": "🚗", "Office Space": "🏢", "Reception": "🖥", "Meeting Room": "📋",
-  "Corridor / Hallway": "🚶", "Retail Floor": "🛒", "Warehouse": "📦",
-  "Showroom": "✨", "Gym / Studio": "💪", "Restaurant / Café": "☕",
-  "Hotel Room": "🛌", "Bathroom / WC": "🚻", "Staff Room": "🧑‍🤝‍🧑",
+// ── Room SVG icons ───────────────────────────────────────────────
+const _HallwaySVG = (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="3" y="1" width="10" height="14" rx="1"/>
+    <circle cx="11" cy="8" r="0.8" fill="currentColor"/>
+    <path d="M3 5h10M3 11h10"/>
+  </svg>
+);
+const _BathroomSVG = (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 8h10v4a2 2 0 01-2 2H5a2 2 0 01-2-2V8z"/>
+    <path d="M3 8V4a1 1 0 012 0v1"/>
+    <path d="M1 8h14"/>
+  </svg>
+);
+const ROOM_SVG_ICONS = {
+  "Living Room": (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 10V7a1 1 0 011-1h10a1 1 0 011 1v3"/>
+      <path d="M1 10h14v2H1z"/>
+      <path d="M4 10V8M12 10V8"/>
+    </svg>
+  ),
+  "Bedroom": (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="6" width="14" height="8" rx="1"/>
+      <path d="M1 10h14"/>
+      <path d="M5 6V4a2 2 0 014 0v2"/>
+      <path d="M3 14v1M13 14v1"/>
+    </svg>
+  ),
+  "Hallway": _HallwaySVG,
+  "Kitchen": (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="3" width="14" height="10" rx="1"/>
+      <circle cx="5" cy="7" r="1.5"/>
+      <circle cx="11" cy="7" r="1.5"/>
+      <path d="M1 11h14"/>
+    </svg>
+  ),
+  "Bathroom": _BathroomSVG,
+  "Stairs": (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 14h3v-3h3V8h3V5h3"/>
+      <path d="M2 14V5h3"/>
+    </svg>
+  ),
+  "Dining Room": (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 2v12"/>
+      <ellipse cx="8" cy="8" rx="6" ry="2"/>
+      <path d="M3 6v4M13 6v4"/>
+    </svg>
+  ),
+  "Landing": (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 12h12"/>
+      <path d="M2 12V6l4-4h8v10"/>
+      <path d="M6 12V8h4v4"/>
+    </svg>
+  ),
+  "Home Office": (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="3" width="12" height="8" rx="1"/>
+      <path d="M5 14h6M8 11v3"/>
+      <path d="M5 7h6M5 9h4"/>
+    </svg>
+  ),
+  "Playroom": (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="5" cy="11" r="2"/>
+      <circle cx="11" cy="11" r="2"/>
+      <path d="M7 11h2"/>
+      <path d="M8 3v4M5 5l3-2 3 2"/>
+    </svg>
+  ),
+  "En-suite": (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 9h8v3a2 2 0 01-2 2H6a2 2 0 01-2-2V9z"/>
+      <path d="M4 9V6a1 1 0 011-1h1"/>
+      <path d="M2 9h12"/>
+      <circle cx="11" cy="4" r="1.5"/>
+    </svg>
+  ),
+  "Conservatory": (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 2L2 7v7h12V7L8 2z"/>
+      <path d="M2 7h12"/>
+      <path d="M8 2v5"/>
+      <path d="M5 7v7M11 7v7"/>
+    </svg>
+  ),
+  "Garage": (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="4" width="12" height="10" rx="1"/>
+      <path d="M2 8h12"/>
+      <path d="M2 11h12"/>
+      <path d="M6 4V2h4v2"/>
+    </svg>
+  ),
+  "Office Space": (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="2" width="14" height="12" rx="1"/>
+      <path d="M1 6h14"/>
+      <path d="M5 6v8M10 6v8"/>
+    </svg>
+  ),
+  "Reception": (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 13h14"/>
+      <path d="M3 13V8h10v5"/>
+      <path d="M6 8V6a2 2 0 014 0v2"/>
+      <circle cx="8" cy="4" r="1.5"/>
+    </svg>
+  ),
+  "Meeting Room": (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <ellipse cx="8" cy="8" rx="6" ry="3"/>
+      <circle cx="4" cy="5" r="1"/>
+      <circle cx="8" cy="4" r="1"/>
+      <circle cx="12" cy="5" r="1"/>
+      <path d="M4 6v4M8 5v6M12 6v4"/>
+    </svg>
+  ),
+  "Corridor / Hallway": _HallwaySVG,
+  "Retail Floor": (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M2 6h12l-1 7H3L2 6z"/>
+      <path d="M1 4h14"/>
+      <path d="M6 4L5 1M10 4l1-3"/>
+      <path d="M6 10v2M10 10v2"/>
+    </svg>
+  ),
+  "Warehouse": (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M1 14V6l7-4 7 4v8H1z"/>
+      <path d="M1 6h14"/>
+      <path d="M6 14v-5h4v5"/>
+    </svg>
+  ),
+  "Showroom": (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="3" width="14" height="10" rx="1"/>
+      <path d="M1 8h14"/>
+      <path d="M5 3v5M11 3v5"/>
+      <circle cx="8" cy="11" r="1"/>
+    </svg>
+  ),
+  "Gym / Studio": (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="3" cy="8" r="1.5"/>
+      <circle cx="13" cy="8" r="1.5"/>
+      <path d="M4.5 8h7"/>
+      <rect x="6" y="6" width="4" height="4" rx="0.5"/>
+    </svg>
+  ),
+  "Restaurant / Café": (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M6 2v4a2 2 0 01-2 2v6"/>
+      <path d="M10 2v12"/>
+      <path d="M8 2v3a2 2 0 004 0V2"/>
+    </svg>
+  ),
+  "Hotel Room": (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="1" y="6" width="14" height="8" rx="1"/>
+      <path d="M1 10h14"/>
+      <path d="M4 6V4a2 2 0 014 0v2"/>
+      <path d="M3 14v1M13 14v1"/>
+    </svg>
+  ),
+  "Bathroom / WC": _BathroomSVG,
+  "Staff Room": (
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="5" cy="4" r="1.5"/>
+      <circle cx="11" cy="4" r="1.5"/>
+      <path d="M2 14v-3a3 3 0 016 0v3"/>
+      <path d="M8 14v-3a3 3 0 016 0v3"/>
+    </svg>
+  ),
 };
 
 // ── Rooms ────────────────────────────────────────────────────────
@@ -273,7 +444,7 @@ const ProgressBar = ({ current, total }) => (
     ))}
   </div>
 );
-const Chip = ({ label, selected, onClick }) => {
+const Chip = ({ label, selected, onClick, icon }) => {
   const [pressed, setPressed] = useState(false);
   return (
     <button
@@ -282,20 +453,28 @@ const Chip = ({ label, selected, onClick }) => {
         background: selected ? s.gold : "transparent",
         border: `1px solid ${selected ? s.gold : s.border}`,
         color: selected ? "#111" : s.dim,
-        padding: "11px 12px",
+        padding: "10px 12px",
         borderRadius: "3px", fontSize: "13px", fontFamily: s.sans,
         cursor: "pointer", textAlign: "left",
         fontWeight: selected ? "600" : "400",
-        transition: "all 0.18s",
+        transition: "all 0.2s",
+        display: "flex", alignItems: "center", gap: "8px",
         transform: pressed ? "scale(0.95)" : "scale(1)",
       }}
-    >{label}</button>
+    >
+      {icon && (
+        <span style={{ color: selected ? "#111" : s.gold, display: "flex", alignItems: "center", flexShrink: 0 }}>
+          {icon}
+        </span>
+      )}
+      {label}
+    </button>
   );
 };
 
 const RoomChip = ({ label, selected, onClick }) => {
   const [pressed, setPressed] = useState(false);
-  const icon = ROOM_ICONS[label];
+  const icon = ROOM_SVG_ICONS[label];
   return (
     <button
       onClick={() => { setPressed(true); setTimeout(() => { setPressed(false); onClick(); }, 120); }}
@@ -307,12 +486,16 @@ const RoomChip = ({ label, selected, onClick }) => {
         borderRadius: "3px", fontSize: "12px", fontFamily: s.sans,
         cursor: "pointer", textAlign: "left",
         fontWeight: selected ? "600" : "400",
-        transition: "all 0.18s",
+        transition: "all 0.2s",
         transform: pressed ? "scale(0.95)" : "scale(1)",
         display: "flex", alignItems: "center", gap: "7px",
       }}
     >
-      {icon && <span style={{ fontSize: "14px", lineHeight: 1 }}>{icon}</span>}
+      {icon && (
+        <span style={{ color: selected ? "#111" : s.gold, display: "flex", alignItems: "center", flexShrink: 0 }}>
+          {icon}
+        </span>
+      )}
       {label}
     </button>
   );
@@ -1327,18 +1510,21 @@ export default function StrataPage() {
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "20px" }}>
                   {[
                     { type: "Residential", icon: (
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9.5z"/><path d="M9 21V12h6v9"/>
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M3 9.5L10 3l7 6.5V17a1 1 0 01-1 1H4a1 1 0 01-1-1V9.5z"/>
+                        <path d="M7 18V12h6v6"/>
                       </svg>
                     )},
                     { type: "Commercial", icon: (
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                        <rect x="2" y="3" width="20" height="18" rx="1"/><path d="M8 21V7M16 21V7M2 11h20M2 15h20"/>
+                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <rect x="2" y="3" width="16" height="15" rx="1"/>
+                        <path d="M6 7h2M6 10h2M6 13h2M12 7h2M12 10h2M12 13h2"/>
+                        <path d="M8 18v-4h4v4"/>
                       </svg>
                     )},
                   ].map(({ type, icon }) => (
-                    <button key={type} onClick={() => { setPropertyType(type); setSelectedRooms([]); }} style={{ background: propertyType === type ? s.gold : "transparent", border: `1px solid ${propertyType === type ? s.gold : s.border}`, color: propertyType === type ? "#111" : s.dim, padding: "18px 12px", borderRadius: "3px", fontSize: "14px", fontFamily: s.serif, fontWeight: 700, cursor: "pointer", transition: "all 0.2s", letterSpacing: "0.04em", display: "flex", flexDirection: "column", alignItems: "center", gap: "8px" }}>
-                      <span style={{ opacity: propertyType === type ? 1 : 0.45 }}>{icon}</span>
+                    <button key={type} onClick={() => { setPropertyType(type); setSelectedRooms([]); }} style={{ background: propertyType === type ? s.gold : "transparent", border: `1px solid ${propertyType === type ? s.gold : s.border}`, color: propertyType === type ? "#111" : s.dim, padding: "16px 14px", borderRadius: "3px", fontSize: "14px", fontFamily: s.serif, fontWeight: 700, cursor: "pointer", transition: "all 0.2s", letterSpacing: "0.04em", display: "flex", flexDirection: "row", alignItems: "center", gap: "10px" }}>
+                      <span style={{ color: propertyType === type ? "#111" : s.gold, display: "flex", alignItems: "center", flexShrink: 0 }}>{icon}</span>
                       {type}
                     </button>
                   ))}
