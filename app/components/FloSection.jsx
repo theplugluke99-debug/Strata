@@ -86,10 +86,12 @@ export default function FloSection() {
   const [loading, setLoading]         = useState(false);
   const [showChips, setShowChips]     = useState(true);
   const [isMobileView, setIsMobileView] = useState(false);
+  const [isListening, setIsListening] = useState(false);
 
   const messagesRef    = useRef(null);
   const inputRef       = useRef(null);
   const initializedRef = useRef(false);
+  const recognitionRef = useRef(null);
 
   useEffect(() => {
     const check = () => setIsMobileView(window.innerWidth < 480);
@@ -174,6 +176,30 @@ export default function FloSection() {
     },
     [input, loading, messages]
   );
+
+  const startListening = () => {
+    if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) return;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = "en-GB";
+    recognition.onstart = () => setIsListening(true);
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setInput(transcript);
+      setIsListening(false);
+    };
+    recognition.onerror = () => setIsListening(false);
+    recognition.onend = () => setIsListening(false);
+    recognitionRef.current = recognition;
+    recognition.start();
+  };
+
+  const stopListening = () => {
+    recognitionRef.current?.stop();
+    setIsListening(false);
+  };
 
   const handleKey = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -360,8 +386,19 @@ export default function FloSection() {
                   disabled={loading}
                   placeholder="Ask Flo anything…"
                   className="flo-input-bare"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="sentences"
+                  spellCheck={false}
                   style={{ opacity: loading ? 0.55 : 1 }}
                 />
+                <button
+                  className={`flo-mic-btn${isListening ? " listening" : ""}`}
+                  onClick={isListening ? stopListening : startListening}
+                  title={isListening ? "Stop listening" : "Speak to Flo"}
+                >
+                  🎤
+                </button>
                 <button
                   onClick={() => sendMessage()}
                   disabled={!input.trim() || loading}
@@ -386,15 +423,17 @@ function FloStyles() {
       @keyframes waveform { 0%, 100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); } }
       @keyframes flo-dot { 0%,60%,100%{opacity:0.2} 30%{opacity:1} }
       @keyframes flo-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+      @keyframes flo-mic-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(201,169,110,0.5)} 50%{box-shadow:0 0 0 6px rgba(201,169,110,0)} }
 
       .flo-chip-suggest {
         background: transparent;
         border: 1px solid rgba(201,169,110,0.18);
-        border-radius: 14px; padding: 4px 10px;
+        border-radius: 14px; padding: 6px 12px;
         color: rgba(242,237,224,0.48);
         font-family: var(--font-outfit,'Outfit',system-ui,sans-serif);
-        font-size: 11px; cursor: pointer;
+        font-size: 12px; cursor: pointer;
         transition: border-color 0.15s, color 0.15s;
+        min-height: 36px;
       }
       .flo-chip-suggest:hover:not(:disabled) { border-color: #c9a96e; color: #f2ede0; }
       .flo-chip-suggest:disabled { opacity: 0.4; cursor: default; }
@@ -406,19 +445,31 @@ function FloStyles() {
         border-radius: 6px; padding: 9px 13px;
         color: #f2ede0;
         font-family: var(--font-outfit,'Outfit',system-ui,sans-serif);
-        font-size: 13px; outline: none;
+        font-size: 16px; outline: none;
         transition: border-color 0.15s;
       }
       .flo-input-bare:focus { border-color: rgba(201,169,110,0.5); }
       .flo-input-bare::placeholder { color: rgba(242,237,224,0.28); }
 
       .flo-send-btn {
-        width: 36px; height: 36px;
+        width: 44px; height: 44px;
         border: none; border-radius: 6px;
         cursor: pointer; display: flex; align-items: center; justify-content: center;
         flex-shrink: 0; transition: background 0.15s;
       }
       .flo-send-btn:disabled { cursor: default; }
+
+      .flo-mic-btn {
+        width: 36px; height: 36px; border-radius: 50%;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; border: 1px solid #c9a96e;
+        background: transparent; font-size: 15px; flex-shrink: 0;
+        transition: background 0.15s;
+      }
+      .flo-mic-btn.listening {
+        background: #c9a96e;
+        animation: flo-mic-pulse 1s ease-in-out infinite;
+      }
     `}</style>
   );
 }

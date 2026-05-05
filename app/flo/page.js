@@ -83,14 +83,14 @@ export default function FloPage() {
   const [messages, setMessages] = useState([
     { role: "assistant", content: INITIAL_MESSAGE },
   ]);
-  const [input, setInput]     = useState("");
-  const [loading, setLoading] = useState(false);
-  const [muted, setMuted]     = useState(true);
+  const [input, setInput]         = useState("");
+  const [loading, setLoading]     = useState(false);
   const [showChips, setShowChips] = useState(true);
+  const [isListening, setIsListening] = useState(false);
 
-  const messagesRef  = useRef(null);
-  const inputRef     = useRef(null);
-  const currentAudio = useRef(null);
+  const messagesRef    = useRef(null);
+  const inputRef       = useRef(null);
+  const recognitionRef = useRef(null);
 
   useEffect(() => {
     if (messagesRef.current) {
@@ -98,33 +98,29 @@ export default function FloPage() {
     }
   }, [messages]);
 
-  const speak = useCallback(
-    async (text) => {
-      if (muted) return;
-      // Stop any current playback
-      if (currentAudio.current) {
-        currentAudio.current.pause();
-        currentAudio.current = null;
-      }
-      try {
-        const res = await fetch("/api/flo/speak", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text }),
-        });
-        if (!res.ok) throw new Error("TTS failed");
-        const blob = await res.blob();
-        const url  = URL.createObjectURL(blob);
-        const audio = new Audio(url);
-        currentAudio.current = audio;
-        audio.onended = () => URL.revokeObjectURL(url);
-        audio.play();
-      } catch {
-        // silent fail — user can tap the speaker icon again
-      }
-    },
-    [muted]
-  );
+  const startListening = () => {
+    if (!("webkitSpeechRecognition" in window) && !("SpeechRecognition" in window)) return;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = "en-GB";
+    recognition.onstart = () => setIsListening(true);
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setInput(transcript);
+      setIsListening(false);
+    };
+    recognition.onerror = () => setIsListening(false);
+    recognition.onend = () => setIsListening(false);
+    recognitionRef.current = recognition;
+    recognition.start();
+  };
+
+  const stopListening = () => {
+    recognitionRef.current?.stop();
+    setIsListening(false);
+  };
 
   const sendMessage = useCallback(
     async (textOverride) => {
@@ -155,7 +151,6 @@ export default function FloPage() {
           copy[copy.length - 1] = { role: "assistant", content: reply };
           return copy;
         });
-        speak(reply);
       } catch {
         setMessages((prev) => {
           const copy = [...prev];
@@ -166,7 +161,7 @@ export default function FloPage() {
         setLoading(false);
       }
     },
-    [input, loading, messages, speak]
+    [input, loading, messages]
   );
 
   const handleKey = (e) => {
@@ -186,6 +181,7 @@ export default function FloPage() {
         color: TEXT,
         overflow: "hidden",
         fontFamily: SANS,
+        position: "relative",
       }}
     >
       <style>{`
@@ -193,16 +189,37 @@ export default function FloPage() {
         @keyframes waveform { 0%, 100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); } }
         @keyframes flo-dot { 0%,60%,100%{opacity:0.2} 30%{opacity:1} }
         @keyframes flo-pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.05)} }
+        @keyframes flo-mic-pulse { 0%,100%{box-shadow:0 0 0 0 rgba(201,169,110,0.5)} 50%{box-shadow:0 0 0 7px rgba(201,169,110,0)} }
         * { box-sizing: border-box; }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(201,169,110,0.2); border-radius: 2px; }
         .flo-page-input:focus { border-color: rgba(201,169,110,0.5) !important; outline: none; }
         .flo-page-input::placeholder { color: rgba(242,237,224,0.28); }
-        .flo-page-chip { background: transparent; border: 1px solid rgba(201,169,110,0.28); border-radius: 16px; padding: 6px 12px; color: rgba(242,237,224,0.65); font-size: 11px; cursor: pointer; font-family: ${SANS}; transition: border-color 0.15s, color 0.15s; }
+        .flo-page-chip {
+          background: transparent;
+          border: 1px solid rgba(201,169,110,0.28);
+          border-radius: 20px;
+          padding: 10px 16px;
+          color: rgba(242,237,224,0.65);
+          font-size: 13px;
+          cursor: pointer;
+          font-family: ${SANS};
+          transition: border-color 0.15s, color 0.15s;
+          min-height: 44px;
+        }
         .flo-page-chip:hover { border-color: ${GOLD}; color: ${TEXT}; }
-        .flo-speak-btn { position: absolute; top: 6px; right: 6px; background: none; border: none; cursor: pointer; font-size: 12px; opacity: 0.4; padding: 2px; line-height: 1; transition: opacity 0.15s; }
-        .flo-speak-btn:hover { opacity: 0.8; }
+        .flo-mic-btn {
+          width: 44px; height: 44px; border-radius: 50%;
+          display: flex; align-items: center; justify-content: center;
+          cursor: pointer; border: 1px solid ${GOLD};
+          background: transparent; font-size: 18px; flex-shrink: 0;
+          transition: background 0.15s;
+        }
+        .flo-mic-btn.listening {
+          background: ${GOLD};
+          animation: flo-mic-pulse 1s ease-in-out infinite;
+        }
       `}</style>
 
       {/* TOP BAR */}
@@ -211,7 +228,7 @@ export default function FloPage() {
           display: "flex",
           justifyContent: "space-between",
           alignItems: "center",
-          padding: "16px 20px",
+          padding: "14px 20px",
           borderBottom: `1px solid ${BORDER}`,
           background: BG,
           flexShrink: 0,
@@ -225,77 +242,70 @@ export default function FloPage() {
             Superior Flooring
           </div>
         </a>
-        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <button
-            onClick={() => setMuted((m) => !m)}
-            title={muted ? "Enable voice" : "Mute voice"}
-            style={{
-              background: "none", border: "none", cursor: "pointer",
-              color: muted ? "rgba(242,237,224,0.25)" : GOLD,
-              fontSize: "18px", lineHeight: 1, padding: "4px",
-            }}
-          >
-            {muted ? "🔇" : "🔊"}
-          </button>
-          <a
-            href="/"
-            style={{
-              display: "flex", alignItems: "center", justifyContent: "center",
-              width: "32px", height: "32px",
-              background: "rgba(242,237,224,0.05)",
-              border: `1px solid ${BORDER}`,
-              borderRadius: "50%",
-              color: "rgba(242,237,224,0.5)",
-              textDecoration: "none",
-              fontSize: "18px",
-              lineHeight: 1,
-            }}
-          >
-            ×
-          </a>
-        </div>
+        <a
+          href="/"
+          style={{
+            display: "flex", alignItems: "center", justifyContent: "center",
+            width: "44px", height: "44px",
+            background: "rgba(242,237,224,0.05)",
+            border: `1px solid ${BORDER}`,
+            borderRadius: "50%",
+            color: "rgba(242,237,224,0.5)",
+            textDecoration: "none",
+            fontSize: "20px",
+            lineHeight: 1,
+          }}
+        >
+          ×
+        </a>
       </div>
 
-      {/* FLO IDENTITY */}
+      {/* FLO IDENTITY — compact row */}
       <div
         style={{
-          padding: "20px 20px 16px",
+          padding: "10px 20px",
           display: "flex",
-          flexDirection: "column",
+          flexDirection: "row",
           alignItems: "center",
-          gap: "6px",
+          gap: "12px",
           borderBottom: `1px solid ${BORDER}`,
           flexShrink: 0,
         }}
       >
         <div
           style={{
-            width: 48, height: 48, borderRadius: "50%", background: GOLD,
+            width: 40, height: 40, borderRadius: "50%", background: GOLD,
             display: "flex", alignItems: "center", justifyContent: "center",
-            boxShadow: "0 0 20px rgba(201,169,110,0.3)",
+            boxShadow: "0 0 16px rgba(201,169,110,0.3)",
             animation: "flo-pulse 2s ease-in-out infinite",
+            flexShrink: 0,
           }}
         >
-          <span style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: 22, fontWeight: 700, color: "#111" }}>F</span>
+          <span style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: 18, fontWeight: 700, color: "#111" }}>F</span>
         </div>
-        <div style={{ fontFamily: SERIF, fontSize: "28px", fontWeight: 600, color: GOLD, lineHeight: 1.1, marginTop: 2 }}>Flo</div>
-        <div style={{ fontSize: "11px", color: TEXT_MUTED, letterSpacing: "0.06em" }}>Flooring Expert</div>
-        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-          <div style={{ width: 7, height: 7, borderRadius: "50%", background: GREEN }} />
-          <span style={{ fontSize: "10px", color: GOLD, letterSpacing: "0.04em" }}>Online now</span>
+        <div>
+          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+            <span style={{ fontFamily: SERIF, fontSize: "22px", fontWeight: 600, color: GOLD, lineHeight: 1 }}>Flo</span>
+            <span style={{ fontSize: "11px", color: TEXT_MUTED }}>· Flooring Expert</span>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "5px", marginTop: "2px" }}>
+            <div style={{ width: 6, height: 6, borderRadius: "50%", background: GREEN }} />
+            <span style={{ fontSize: "10px", color: GOLD }}>Online now</span>
+          </div>
         </div>
-        <div style={{ marginTop: 4 }}>
+        <div style={{ marginLeft: "auto" }}>
           <Waveform active={loading} />
         </div>
       </div>
 
-      {/* MESSAGES */}
+      {/* MESSAGES — flex-grow fills space, paddingBottom clears fixed input bar */}
       <div
         ref={messagesRef}
         style={{
           flex: 1,
           overflowY: "auto",
           padding: "16px",
+          paddingBottom: "84px",
           display: "flex",
           flexDirection: "column",
           gap: "10px",
@@ -316,7 +326,6 @@ export default function FloPage() {
             )}
             <div
               style={{
-                position: "relative",
                 maxWidth: "85%",
                 background: msg.role === "user" ? "rgba(201,169,110,0.15)" : SURFACE,
                 border: `1px solid ${msg.role === "user" ? "rgba(201,169,110,0.3)" : BORDER}`,
@@ -333,14 +342,7 @@ export default function FloPage() {
               {msg.role === "assistant" && msg.content === "" ? (
                 <TypingDots />
               ) : (
-                <>
-                  {msg.content}
-                  {msg.role === "assistant" && msg.content && (
-                    <button className="flo-speak-btn" onClick={() => speak(msg.content)} title="Read aloud">
-                      🔊
-                    </button>
-                  )}
-                </>
+                msg.content
               )}
             </div>
           </div>
@@ -357,13 +359,16 @@ export default function FloPage() {
         )}
       </div>
 
-      {/* INPUT BAR */}
+      {/* INPUT BAR — fixed at bottom, never hidden by keyboard */}
       <div
         style={{
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
           padding: "12px 16px",
-          borderTop: `1px solid ${GOLD}`,
+          borderTop: `1px solid ${BORDER}`,
           background: BG,
-          flexShrink: 0,
         }}
       >
         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
@@ -375,6 +380,10 @@ export default function FloPage() {
             disabled={loading}
             placeholder="Ask Flo anything…"
             className="flo-page-input"
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="sentences"
+            spellCheck={false}
             style={{
               flex: 1,
               background: "rgba(242,237,224,0.05)",
@@ -382,16 +391,23 @@ export default function FloPage() {
               borderRadius: "6px",
               padding: "10px 13px",
               color: TEXT,
-              fontSize: "13px",
+              fontSize: "16px",
               fontFamily: SANS,
               opacity: loading ? 0.55 : 1,
             }}
           />
           <button
+            className={`flo-mic-btn${isListening ? " listening" : ""}`}
+            onClick={isListening ? stopListening : startListening}
+            title={isListening ? "Stop listening" : "Speak to Flo"}
+          >
+            🎤
+          </button>
+          <button
             onClick={() => sendMessage()}
             disabled={!input.trim() || loading}
             style={{
-              width: 38, height: 38,
+              width: 44, height: 44,
               background: !input.trim() || loading ? "rgba(201,169,110,0.18)" : GOLD,
               border: "none", borderRadius: "6px",
               cursor: !input.trim() || loading ? "default" : "pointer",
