@@ -1883,14 +1883,6 @@ export default function StrataPage() {
                 {propertyType && (
                   <>
                     <div style={{ fontSize: "10px", color: s.gold, letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "10px" }}>Which {propertyType === "Commercial" ? "spaces" : "rooms"} need new flooring?</div>
-                    {propertyType === "Commercial" && (
-                      <div style={{ background: "rgba(201,169,110,0.06)", border: `1px solid rgba(201,169,110,0.2)`, borderRadius: "4px", padding: "12px 16px", marginBottom: "14px" }}>
-                        <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.gold, letterSpacing: "0.12em", textTransform: "uppercase", marginBottom: "6px" }}>Commercial measuring tip</div>
-                        <div style={{ fontFamily: s.sans, fontSize: "12px", color: "rgba(242,237,224,0.55)", lineHeight: 1.65, fontWeight: 300 }}>
-                          For large spaces, measure the longest length and widest width of each area. Include columns, reception desks, and fixed furniture in your footprint — we always account for cut-outs at survey. Rough figures are fine.
-                        </div>
-                      </div>
-                    )}
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "16px" }}>
                       {roomsToUse.map(r => <RoomChip key={r} label={r} selected={selectedRooms.includes(r)} onClick={() => toggleRoom(r)}/>)}
                     </div>
