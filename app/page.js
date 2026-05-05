@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import ReactDOM from "react-dom";
 import Image from "next/image";
 import FloSection from "./components/FloSection";
 
@@ -517,17 +518,86 @@ const GoldNote = ({ children }) => (
 // ── Info Tooltip (alcove / bay window explainer) ─────────────────
 function InfoTooltip({ title, children }) {
   const [open, setOpen] = useState(false);
+  const btnRef = useRef(null);
+  const [coords, setCoords] = useState({ top: 0, left: 0 });
+
+  const toggle = () => {
+    if (!open && btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect();
+      const tooltipW = 270;
+      const scrollY = window.scrollY || document.documentElement.scrollTop;
+
+      let left = rect.left;
+      if (left + tooltipW > window.innerWidth - 12) {
+        left = window.innerWidth - tooltipW - 12;
+      }
+      if (left < 8) left = 8;
+
+      setCoords({ top: rect.bottom + scrollY + 6, left });
+    }
+    setOpen(o => !o);
+  };
+
   return (
-    <span style={{ position: "relative", display: "inline-block" }}>
-      <button onClick={() => setOpen(o => !o)} style={{ background: "rgba(201,169,110,0.15)", border: "1px solid rgba(201,169,110,0.3)", borderRadius: "50%", width: "16px", height: "16px", color: s.gold, fontSize: "9px", fontWeight: 700, cursor: "pointer", fontFamily: s.sans, lineHeight: 1, padding: 0, verticalAlign: "middle", marginLeft: "6px" }}>?</button>
-      {open && (
-        <div style={{ position: "absolute", left: "0", top: "22px", zIndex: 10, background: "#1e1e1c", border: `1px solid ${s.border}`, borderRadius: "4px", padding: "12px 14px", width: "240px", boxShadow: "0 8px 24px rgba(0,0,0,0.4)" }}>
-          <div style={{ fontFamily: s.serif, fontSize: "14px", fontWeight: 700, color: s.text, marginBottom: "6px" }}>{title}</div>
-          <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, lineHeight: 1.65, fontWeight: 300 }}>{children}</div>
-          <button onClick={() => setOpen(false)} style={{ marginTop: "8px", background: "none", border: "none", color: "rgba(242,237,224,0.3)", fontSize: "10px", cursor: "pointer", fontFamily: s.sans }}>Close</button>
-        </div>
+    <>
+      <button
+        ref={btnRef}
+        onClick={toggle}
+        style={{
+          background: "rgba(201,169,110,0.15)",
+          border: "1px solid rgba(201,169,110,0.3)",
+          borderRadius: "50%",
+          width: "20px",
+          height: "20px",
+          minWidth: "20px",
+          color: s.gold,
+          fontSize: "11px",
+          fontWeight: 700,
+          cursor: "pointer",
+          fontFamily: s.sans,
+          lineHeight: "20px",
+          padding: 0,
+          display: "inline-flex",
+          alignItems: "center",
+          justifyContent: "center",
+          verticalAlign: "middle",
+          marginLeft: "6px",
+          flexShrink: 0,
+        }}
+      >?</button>
+
+      {open && typeof document !== "undefined" && ReactDOM.createPortal(
+        <>
+          <div
+            onClick={() => setOpen(false)}
+            style={{ position: "fixed", inset: 0, zIndex: 9998, background: "rgba(0,0,0,0.01)" }}
+          />
+          <div
+            style={{
+              position: "absolute",
+              top: coords.top,
+              left: coords.left,
+              zIndex: 9999,
+              background: "#1e1e1c",
+              border: `1px solid ${s.border}`,
+              borderRadius: "6px",
+              padding: "16px 18px",
+              width: "270px",
+              boxShadow: "0 12px 40px rgba(0,0,0,0.7)",
+              pointerEvents: "auto",
+            }}
+          >
+            <div style={{ fontFamily: s.serif, fontSize: "16px", fontWeight: 700, color: s.text, marginBottom: "8px" }}>{title}</div>
+            <div style={{ fontFamily: s.sans, fontSize: "12px", color: s.dim, lineHeight: 1.7, fontWeight: 300 }}>{children}</div>
+            <button
+              onClick={() => setOpen(false)}
+              style={{ marginTop: "12px", background: "none", border: "none", color: "rgba(242,237,224,0.3)", fontSize: "11px", cursor: "pointer", fontFamily: s.sans, padding: 0, display: "block" }}
+            >Close ×</button>
+          </div>
+        </>,
+        document.body
       )}
-    </span>
+    </>
   );
 }
 
