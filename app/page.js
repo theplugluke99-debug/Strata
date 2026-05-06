@@ -1322,113 +1322,242 @@ function RoomCalculator({ room, data, onChange, flooringType, propertyType }) {
   );
 }
 
-// ── Isometric Room Builder ───────────────────────────────────────
-const RESIDENTIAL_ISO = {
-  "Living Room":  { gx:0, gy:0, w:3, d:2 },
-  "Dining Room":  { gx:3, gy:0, w:2, d:1 },
-  "Kitchen":      { gx:3, gy:1, w:2, d:1 },
-  "Hallway":      { gx:5, gy:0, w:1, d:2 },
-  "Bedroom":      { gx:0, gy:2, w:2, d:2 },
-  "Bathroom":     { gx:2, gy:2, w:1, d:1 },
-  "En-suite":     { gx:2, gy:3, w:1, d:1 },
-  "Landing":      { gx:3, gy:2, w:2, d:1 },
-  "Stairs":       { gx:5, gy:2, w:1, d:1 },
-  "Home Office":  { gx:3, gy:3, w:1, d:1 },
-  "Playroom":     { gx:4, gy:3, w:1, d:1 },
-  "Conservatory": { gx:5, gy:3, w:1, d:1 },
-  "Garage":       { gx:0, gy:4, w:3, d:1 },
+// ── Mini quote visualisers ───────────────────────────────────────
+const VISUALISER_RESIDENTIAL_ROOMS = [
+  { name: "Living Room", points: "40,56 108,46 138,100 70,110" },
+  { name: "Kitchen",     points: "98,28 166,18 176,36 108,46" },
+  { name: "Hallway",     points: "108,46 142,41 172,95 138,100" },
+  { name: "Bedroom",     points: "142,41 210,31 240,85 172,95" },
+  { name: "Bathroom",    points: "166,18 200,13 210,31 176,36" },
+];
+const RESIDENTIAL_OUTER_SHELL = "98,28 200,13 240,85 70,110 40,56 108,46";
+const RESIDENTIAL_DEPTH_OFFSET = 10;
+const VISUALISER_COMMERCIAL_ROOMS = [
+  { name: "Reception",             points: "52,36 108,58 58,84 4,60" },
+  { name: "Office Space",           points: "108,58 214,102 128,146 58,84" },
+  { name: "Meeting Room",           points: "148,28 220,58 174,82 108,58" },
+  { name: "Corridor / Hallway",     points: "58,84 128,146 94,164 26,100" },
+  { name: "Bathroom / WC",          points: "174,82 220,58 238,88 214,102" },
+];
+const VISUALISER_ROOM_ALIASES = {
+  "Bedroom 1": "Bedroom",
+  "Bedroom 2": "Bedroom",
+  "Bedroom 3": "Bedroom",
+  "Bedroom 4": "Bedroom",
+  "Bedroom 5": "Bedroom",
+  "Bedroom 6": "Bedroom",
+  "Bedroom 7": "Bedroom",
+  "Bedroom 8": "Bedroom",
+  "Dining Room": "Living Room",
+  "Landing": "Hallway",
+  "Stairs": "Hallway",
+  "En-suite": "Bathroom",
+  "Conservatory": "Living Room",
+  "Garage": "Kitchen",
+  "Retail Floor": "Office Space",
+  "Showroom": "Office Space",
+  "Gym / Studio": "Office Space",
+  "Warehouse": "Office Space",
+  "Restaurant / Café": "Office Space",
+  "Hotel Room": "Meeting Room",
+  "Staff Room": "Bathroom / WC",
 };
-const COMMERCIAL_ISO = {
-  "Office Space":        { gx:0, gy:0, w:3, d:2 },
-  "Reception":           { gx:3, gy:0, w:2, d:1 },
-  "Meeting Room":        { gx:3, gy:1, w:2, d:1 },
-  "Corridor / Hallway":  { gx:5, gy:0, w:1, d:2 },
-  "Retail Floor":        { gx:0, gy:2, w:2, d:2 },
-  "Showroom":            { gx:2, gy:2, w:2, d:1 },
-  "Gym / Studio":        { gx:2, gy:3, w:2, d:1 },
-  "Warehouse":           { gx:4, gy:2, w:2, d:2 },
-  "Restaurant / Café":   { gx:0, gy:4, w:2, d:1 },
-  "Hotel Room":          { gx:2, gy:4, w:2, d:1 },
-  "Bathroom / WC":       { gx:4, gy:4, w:1, d:1 },
-  "Staff Room":          { gx:5, gy:4, w:1, d:1 },
-};
-const FLOORING_ISO_COLORS = {
-  "Carpet":       "#c8a870", "Herringbone": "#d4a040",
-  "LVT":          "#6a9db5", "Laminate":    "#b08858",
-  "Vinyl":        "#7a9e82", "Carpet Tiles":"#c09878",
-  "Not sure yet": "#c9a96e",
+const FLOORING_TEXTURE_IDS = {
+  "Carpet": "texture-carpet",
+  "LVT": "texture-lvt",
+  "SPC": "texture-lvt",
+  "Laminate": "texture-laminate",
+  "Herringbone": "texture-herringbone",
+  "Vinyl": "texture-vinyl",
+  "Carpet Tiles": "texture-carpet-tiles",
+  "Commercial carpet tiles": "texture-carpet-tiles",
+  "Commercial Carpet Tiles": "texture-carpet-tiles",
+  "Safety Vinyl": "texture-safety-vinyl",
+  "Safety vinyl": "texture-safety-vinyl",
+  "Rubber": "texture-rubber",
 };
 
-function IsometricRoomBuilder({ selectedRooms, onToggleRoom, propertyType, roomConfigs, selectedFlooring }) {
-  const TW = 50, TH = 25, OX = 130, OY = 10;
-  const iso = (gx, gy) => ({ sx: (gx - gy) * TW / 2 + OX, sy: (gx + gy) * TH / 2 + OY });
-  const pts = (gx, gy, w, d) => {
-    const a = iso(gx, gy), b = iso(gx + w, gy), c = iso(gx + w, gy + d), dl = iso(gx, gy + d);
-    return `${a.sx},${a.sy} ${b.sx},${b.sy} ${c.sx},${c.sy} ${dl.sx},${dl.sy}`;
-  };
-  const layout = propertyType === "Commercial" ? COMMERCIAL_ISO : RESIDENTIAL_ISO;
-  const getColor = (room) => FLOORING_ISO_COLORS[roomConfigs?.[room]?.flooring || selectedFlooring] || "#c9a96e";
-  const getPattern = (room) => {
-    const fl = roomConfigs?.[room]?.flooring || selectedFlooring;
-    if (!fl) return null;
-    if (fl === "Carpet" || fl === "Carpet Tiles") return "iso-carpet";
-    if (fl === "Herringbone") return "iso-herring";
-    return "iso-plank";
-  };
-  if (!propertyType) return null;
+const baseRoomName = (room) => room?.replace(/\s+\d+$/, "") || "";
+const visualiserRoomKey = (room) => VISUALISER_ROOM_ALIASES[room] || VISUALISER_ROOM_ALIASES[baseRoomName(room)] || baseRoomName(room);
+const roomIsSelected = (room, selectedRooms) => selectedRooms.some(selected => visualiserRoomKey(selected) === room);
+const getRoomFlooring = (room, selectedRooms, roomConfigs, selectedFlooring) => {
+  const configuredRoom = selectedRooms.find(selected => visualiserRoomKey(selected) === room && roomConfigs?.[selected]?.flooring);
+  return roomConfigs?.[configuredRoom]?.flooring || selectedFlooring || "";
+};
+const textureForFlooring = (flooring) => FLOORING_TEXTURE_IDS[flooring] || "";
+
+function FlooringTexturePatterns() {
   return (
-    <div style={{ marginBottom: "14px" }}>
-      <svg width="300" height="155" viewBox="0 0 300 155" style={{ width: "100%", height: "auto", display: "block" }}>
-        <defs>
-          <pattern id="iso-carpet" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
-            <line x1="0" y1="0" x2="8" y2="8" stroke="rgba(255,255,255,0.13)" strokeWidth="0.7"/>
-            <line x1="0" y1="8" x2="8" y2="0" stroke="rgba(255,255,255,0.13)" strokeWidth="0.7"/>
-          </pattern>
-          <pattern id="iso-plank" x="0" y="0" width="14" height="6" patternUnits="userSpaceOnUse">
-            <rect width="14" height="6" fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="0.5"/>
-            <line x1="7" y1="0" x2="7" y2="6" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5"/>
-          </pattern>
-          <pattern id="iso-herring" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
-            <path d="M0,4 L4,0 L8,4 M0,8 L4,4 L8,8" fill="none" stroke="rgba(255,255,255,0.16)" strokeWidth="0.6"/>
-          </pattern>
-        </defs>
-        {Object.entries(layout).map(([room, { gx, gy, w, d }]) => {
-          const selected = selectedRooms.includes(room);
-          const poly = pts(gx, gy, w, d);
-          const ctr = iso(gx + w / 2, gy + d / 2);
-          const area = w * d;
-          const pat = selected ? getPattern(room) : null;
+    <defs>
+      <pattern id="texture-carpet" x="0" y="0" width="9" height="6" patternUnits="userSpaceOnUse">
+        <path d="M0 4 Q2 1.5 4 4 T8 4" fill="none" stroke="rgba(242,237,224,0.32)" strokeWidth="0.7"/>
+      </pattern>
+      <pattern id="texture-lvt" x="0" y="0" width="14" height="7" patternUnits="userSpaceOnUse">
+        <path d="M0 2.5h14M0 6.5h14" stroke="rgba(242,237,224,0.28)" strokeWidth="0.6"/>
+      </pattern>
+      <pattern id="texture-laminate" x="0" y="0" width="22" height="8" patternUnits="userSpaceOnUse">
+        <path d="M0 4h22M11 0v8" stroke="rgba(242,237,224,0.26)" strokeWidth="0.65"/>
+      </pattern>
+      <pattern id="texture-herringbone" x="0" y="0" width="12" height="8" patternUnits="userSpaceOnUse">
+        <path d="M0 4 6 0 12 4M0 8 6 4 12 8" fill="none" stroke="rgba(242,237,224,0.3)" strokeWidth="0.65"/>
+      </pattern>
+      <pattern id="texture-vinyl" x="0" y="0" width="16" height="12" patternUnits="userSpaceOnUse">
+        <path d="M0 0h16v12H0zM8 0v12M0 6h16" fill="none" stroke="rgba(242,237,224,0.2)" strokeWidth="0.55"/>
+      </pattern>
+      <pattern id="texture-carpet-tiles" x="0" y="0" width="12" height="12" patternUnits="userSpaceOnUse">
+        <path d="M0 0h12v12H0zM6 0v12M0 6h12" fill="none" stroke="rgba(242,237,224,0.3)" strokeWidth="0.65"/>
+      </pattern>
+      <pattern id="texture-safety-vinyl" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
+        <circle cx="2" cy="2" r="0.7" fill="rgba(242,237,224,0.28)"/>
+        <circle cx="6" cy="6" r="0.7" fill="rgba(242,237,224,0.22)"/>
+      </pattern>
+      <pattern id="texture-rubber" x="0" y="0" width="10" height="10" patternUnits="userSpaceOnUse">
+        <circle cx="2" cy="3" r="0.65" fill="rgba(242,237,224,0.24)"/>
+        <circle cx="7" cy="2" r="0.5" fill="rgba(242,237,224,0.2)"/>
+        <circle cx="6" cy="8" r="0.7" fill="rgba(242,237,224,0.18)"/>
+      </pattern>
+    </defs>
+  );
+}
+
+function MiniVisualiserShell({ rooms, selectedRooms, roomConfigs, selectedFlooring }) {
+  return (
+    <div className="quote-mini-visualiser" style={{ background: "#111110", border: "1px solid rgba(201,169,110,0.22)", borderRadius: "4px", padding: "10px 10px 8px", marginBottom: "8px" }}>
+      <svg width="244" height="170" viewBox="0 0 244 170" style={{ width: "100%", height: "auto", maxHeight: "150px", display: "block" }} aria-hidden="true">
+        <FlooringTexturePatterns />
+        {rooms.map(({ name, points }) => {
+          const selected = roomIsSelected(name, selectedRooms);
+          const flooring = getRoomFlooring(name, selectedRooms, roomConfigs, selectedFlooring);
+          const texture = selected && flooring ? textureForFlooring(flooring) : "";
           return (
-            <g key={room} onClick={() => onToggleRoom?.(room)} style={{ cursor: onToggleRoom ? "pointer" : "default" }}>
-              <polygon points={poly} fill={selected ? getColor(room) : "#1c1c1a"} stroke={selected ? "#e8c47e" : "#2a2a28"} strokeWidth={selected ? 1.2 : 0.7} style={{ transition: "fill 0.3s cubic-bezier(0.34,1.56,0.64,1), stroke 0.2s" }}/>
-              {pat && <polygon points={poly} fill={`url(#${pat})`} opacity="0.65" style={{ pointerEvents: "none" }}/>}
-              {area >= 1 && (
-                <text x={ctr.sx} y={ctr.sy} textAnchor="middle" dominantBaseline="middle" fill={selected ? "rgba(17,17,16,0.85)" : "rgba(242,237,224,0.18)"} fontSize={area >= 4 ? 7 : area >= 2 ? 6 : 5.5} fontFamily="system-ui,sans-serif" fontWeight={selected ? "700" : "400"} style={{ pointerEvents: "none", userSelect: "none" }}>
-                  {room.replace(" / ", "/").length > 13 ? room.replace(" / ", "/").slice(0, 11) + "…" : room.replace(" / ", "/")}
-                </text>
+            <g key={name}>
+              <polygon
+                points={points}
+                fill={selected ? "rgba(201,169,110,0.15)" : "transparent"}
+                stroke={selected ? "#e5c47d" : "#c9a96e"}
+                strokeWidth={selected ? "1.7" : "1.15"}
+                strokeLinejoin="round"
+                vectorEffect="non-scaling-stroke"
+              />
+              {texture && (
+                <polygon points={points} fill={`url(#${texture})`} opacity="0.75" style={{ pointerEvents: "none" }} />
               )}
             </g>
           );
         })}
       </svg>
-      {onToggleRoom && (
-        <div style={{ fontFamily: s.sans, fontSize: "10px", color: "rgba(242,237,224,0.2)", textAlign: "center", letterSpacing: "0.06em", marginTop: "2px" }}>
-          Tap rooms to select · chip list below
-        </div>
-      )}
     </div>
   );
 }
 
-// ── Flo Voice ────────────────────────────────────────────────────
-function FloVoice({ message, visible }) {
-  if (!visible || !message) return null;
+function ResidentialMiniVisualiser({ selectedRooms, roomConfigs, selectedFlooring, showTextures = true }) {
+  const wallStroke = "#c9a96e";
+  const brightStroke = "#e5c47d";
+  const depth = RESIDENTIAL_DEPTH_OFFSET;
+  const depthWall = (points) => points.map(([x, y]) => `${x},${y}`).join(" ");
+  const outerDepthFront = depthWall([[40,56], [70,110], [240,85], [240,85 + depth], [70,110 + depth], [40,56 + depth]]);
+  const outerDepthRight = depthWall([[200,13], [240,85], [240,85 + depth], [200,13 + depth]]);
+  const drawWall = (key, x1, y1, x2, y2, width = 2) => (
+    <line key={key} x1={x1} y1={y1} x2={x2} y2={y2} stroke={wallStroke} strokeWidth={width} strokeLinecap="square" vectorEffect="non-scaling-stroke" />
+  );
+  const roomState = (name) => {
+    const selected = roomIsSelected(name, selectedRooms);
+    const flooring = getRoomFlooring(name, selectedRooms, roomConfigs, selectedFlooring);
+    return { selected, flooring, texture: selected && showTextures && flooring ? textureForFlooring(flooring) : "" };
+  };
+
   return (
-    <div style={{ display: "flex", alignItems: "flex-start", gap: "10px", padding: "11px 14px", background: "rgba(201,169,110,0.07)", border: "1px solid rgba(201,169,110,0.18)", borderRadius: "5px", marginBottom: "14px", animation: "floVoiceFade 6s ease-in-out forwards" }}>
-      <div style={{ width: 26, height: 26, borderRadius: "50%", background: s.gold, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: "1px" }}>
-        <span style={{ fontFamily: s.serif, fontStyle: "italic", fontSize: 12, fontWeight: 700, color: "#111" }}>F</span>
+    <div className="quote-mini-visualiser quote-mini-visualiser-residential" style={{ background: "#111110", border: "1px solid rgba(201,169,110,0.22)", borderRadius: "4px", padding: "10px 10px 8px", marginBottom: "8px" }}>
+      <svg width="244" height="170" viewBox="0 0 244 170" style={{ width: "100%", height: "auto", maxHeight: "180px", display: "block" }} aria-hidden="true">
+        <FlooringTexturePatterns />
+        <defs>
+          <filter id="residential-selected-glow" x="-30%" y="-30%" width="160%" height="160%">
+            <feGaussianBlur stdDeviation="3.6" />
+          </filter>
+        </defs>
+
+        <polygon points={outerDepthFront} fill="rgba(201,169,110,0.035)" stroke="rgba(201,169,110,0.16)" strokeWidth="1" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+        <polygon points={outerDepthRight} fill="rgba(201,169,110,0.055)" stroke="rgba(201,169,110,0.18)" strokeWidth="1" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+
+        {VISUALISER_RESIDENTIAL_ROOMS.map(({ name, points }) => {
+          const { selected } = roomState(name);
+          return selected ? (
+            <polygon key={`${name}-glow`} points={points} fill="rgba(201,169,110,0.18)" opacity="0.55" filter="url(#residential-selected-glow)" />
+          ) : null;
+        })}
+
+        {VISUALISER_RESIDENTIAL_ROOMS.map(({ name, points }) => {
+          const { selected, texture } = roomState(name);
+          return (
+            <g key={name}>
+              <polygon
+                points={points}
+                fill={selected ? "rgba(201,169,110,0.12)" : "rgba(17,17,16,0.72)"}
+                stroke={selected ? brightStroke : "rgba(201,169,110,0.58)"}
+                strokeWidth={selected ? "1.2" : "0.75"}
+                strokeLinejoin="round"
+                vectorEffect="non-scaling-stroke"
+              />
+              {texture && <polygon points={points} fill={`url(#${texture})`} opacity="0.62" style={{ pointerEvents: "none" }} />}
+            </g>
+          );
+        })}
+
+        <polygon points={RESIDENTIAL_OUTER_SHELL} fill="none" stroke={wallStroke} strokeWidth="2.4" strokeLinejoin="round" vectorEffect="non-scaling-stroke" />
+
+        {[
+          drawWall("living-hall-a", 108,46, 118,64),
+          drawWall("living-hall-b", 128,82, 138,100),
+          drawWall("hall-bedroom-a", 142,41, 151,58),
+          drawWall("hall-bedroom-b", 163,76, 172,95),
+          drawWall("kitchen-hall-a", 108,46, 132,42.5),
+          drawWall("kitchen-hall-b", 151,39.5, 176,36),
+          drawWall("kitchen-bath-a", 166,18, 170,25),
+          drawWall("kitchen-bath-b", 173,31, 176,36),
+          drawWall("bath-bedroom-a", 176,36, 188,34),
+          drawWall("bath-bedroom-b", 198,33, 210,31),
+        ]}
+
+        <path d="M119 66 q7 5 9 14" fill="none" stroke="rgba(201,169,110,0.5)" strokeWidth="0.8" vectorEffect="non-scaling-stroke" />
+        <path d="M153 60 q8 3 10 14" fill="none" stroke="rgba(201,169,110,0.45)" strokeWidth="0.8" vectorEffect="non-scaling-stroke" />
+        <path d="M133 43 q8 6 16 4" fill="none" stroke="rgba(201,169,110,0.42)" strokeWidth="0.75" vectorEffect="non-scaling-stroke" />
+        <path d="M188 34 q6 4 10 -1" fill="none" stroke="rgba(201,169,110,0.42)" strokeWidth="0.75" vectorEffect="non-scaling-stroke" />
+
+        <path d="M70 110v10M240 85v10M40 56v10M200 13v10" stroke="rgba(201,169,110,0.16)" strokeWidth="1" vectorEffect="non-scaling-stroke" />
+      </svg>
+    </div>
+  );
+}
+
+function CommercialMiniVisualiser(props) {
+  return <MiniVisualiserShell rooms={VISUALISER_COMMERCIAL_ROOMS} {...props} />;
+}
+
+function VisualiserRoomLabelRow({ selectedRooms, roomConfigs, selectedFlooring }) {
+  if (!selectedRooms.length) return null;
+  return (
+    <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "10px" }}>
+      {selectedRooms.map(room => {
+        const flooring = roomConfigs?.[room]?.flooring || selectedFlooring;
+        return (
+          <div key={room} style={{ border: "1px solid rgba(201,169,110,0.22)", borderRadius: "3px", padding: "5px 7px", minWidth: 0, background: "rgba(17,17,16,0.85)" }}>
+            <div style={{ fontFamily: s.sans, fontSize: "9px", color: "#f2ede0", lineHeight: 1.2, whiteSpace: "nowrap" }}>{room}</div>
+            {flooring && <div style={{ fontFamily: s.sans, fontSize: "8px", color: "#c9a96e", lineHeight: 1.35, marginTop: "2px", whiteSpace: "nowrap" }}>{flooring}</div>}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function FloNudge({ message }) {
+  if (!message) return null;
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "14px" }}>
+      <div style={{ width: 22, height: 22, borderRadius: "50%", background: s.gold, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+        <span style={{ fontFamily: s.serif, fontStyle: "italic", fontSize: 11, fontWeight: 700, color: "#111110" }}>F</span>
       </div>
-      <div style={{ fontFamily: s.serif, fontSize: "14px", fontStyle: "italic", color: s.text, lineHeight: 1.55, paddingTop: "2px" }}>{message}</div>
+      <div style={{ fontFamily: s.serif, fontSize: "13px", fontStyle: "italic", color: s.gold, lineHeight: 1.45 }}>{message}</div>
     </div>
   );
 }
@@ -1782,6 +1911,19 @@ export default function StrataPage() {
     step === 3 ? "This takes 30 seconds and helps us bring exactly what's needed on the day. No surprises." :
     step === 4 ? "Two more quick questions and you're done." :
     step === 5 ? "Last step. Your personalised estimate is ready and waiting." : null;
+  const latestRoomWithFlooring = [...expandedRooms].reverse().find(r => roomConfigs[r]?.flooring);
+  const latestConfiguredFlooring = latestRoomWithFlooring ? roomConfigs[latestRoomWithFlooring]?.flooring : selectedFlooring;
+  const visualiserFloMessage = floVoiceVisible && floVoiceMessage ? floVoiceMessage :
+    step === 1 && measureSubStep === "educate" ? "First we get the shape right, then the floor choice starts to make sense." :
+    step === 1 && measureSubStep === "measure" ? "Those selected rooms are locked in. Rough measurements are fine for now." :
+    step === 2 && step2Sub === "path" ? "Choose one route and I'll keep the room plan updated as you go." :
+    step === 2 && step2Sub === "room-config" && latestRoomWithFlooring ? `${latestRoomWithFlooring} is set to ${latestConfiguredFlooring}. The plan is starting to come alive.` :
+    step === 2 && latestConfiguredFlooring ? `${latestConfiguredFlooring} noted. We'll show it room by room as you configure the quote.` :
+    step === 3 ? "Now we check what is underneath, because prep is what keeps a floor behaving properly." :
+    step === 4 ? "Budget and timing help us bring the right samples and fit the job around you." :
+    step === 5 ? "Last details now. Your estimate is ready on the other side." :
+    selectedRooms.length ? `${selectedRooms[selectedRooms.length - 1]} added. I'll keep the miniature updated from here.` : "";
+  const residentialVisualiserShowTextures = step > 2 || (step === 2 && step2Sub === "room-config");
 
   const stepTitles = [
     "Your project",
@@ -1874,6 +2016,7 @@ export default function StrataPage() {
         @keyframes floVoiceFade { 0%{opacity:0;transform:translateY(6px)} 15%{opacity:1;transform:translateY(0)} 80%{opacity:1} 100%{opacity:0;transform:translateY(-4px)} }
         @keyframes progressIn { from { transform:scaleX(0); } to { transform:scaleX(1); } }
         @keyframes waveform { 0%, 100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); } }
+        .quote-mini-visualiser svg { max-height: 180px; }
         .nav-expert-short { display: inline; }
         .nav-expert-long  { display: none; }
         .nav-quote-btn    { display: none !important; }
@@ -1884,6 +2027,7 @@ export default function StrataPage() {
           .nav-quote-btn    { display: inline-block !important; }
         }
         @media (min-width: 640px) { .hero-h1 { font-size: 52px !important; } }
+        @media (max-width: 430px) { .quote-mini-visualiser { padding: 8px !important; } .quote-mini-visualiser svg { max-height: 180px !important; } }
       `}</style>
 
       {/* NAV */}
@@ -2117,14 +2261,17 @@ export default function StrataPage() {
           <>
             <div style={{ fontFamily: s.serif, fontSize: "28px", fontWeight: 700, color: s.text, lineHeight: 1.05, marginBottom: "8px" }}>{stepTitles[step]}</div>
             <Divider />
-            <IsometricRoomBuilder
-              selectedRooms={selectedRooms}
-              onToggleRoom={step === 0 ? toggleRoom : undefined}
-              propertyType={propertyType}
-              roomConfigs={roomConfigs}
-              selectedFlooring={selectedFlooring}
-            />
-            <FloVoice message={floVoiceMessage} visible={floVoiceVisible} />
+            {step > 0 && selectedRooms.length > 0 && (
+              <>
+                {propertyType === "Commercial" ? (
+                  <CommercialMiniVisualiser selectedRooms={expandedRooms} roomConfigs={roomConfigs} selectedFlooring={selectedFlooring} />
+                ) : (
+                  <ResidentialMiniVisualiser selectedRooms={expandedRooms} roomConfigs={roomConfigs} selectedFlooring={selectedFlooring} showTextures={residentialVisualiserShowTextures} />
+                )}
+                <VisualiserRoomLabelRow selectedRooms={expandedRooms} roomConfigs={roomConfigs} selectedFlooring={selectedFlooring} />
+                <FloNudge message={visualiserFloMessage} />
+              </>
+            )}
             {currentEncouragement && (
               <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.35)", lineHeight: 1.6, marginBottom: "16px", fontStyle: "italic" }}>{currentEncouragement}</div>
             )}
