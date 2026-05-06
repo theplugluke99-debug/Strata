@@ -224,55 +224,65 @@ const CarpetCutLoopSVG = () => (
 const VinylWoodCard = () => (
   <svg width="80" height="60" viewBox="0 0 80 60" fill="none" strokeLinecap="round" strokeLinejoin="round">
     <rect width="80" height="60" fill="#111110" rx="3"/>
-    <rect x="2" y="2"  width="76" height="17" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
-    <rect x="2" y="21" width="76" height="17" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
-    <rect x="2" y="40" width="76" height="17" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
-    <line x1="4" y1="7"  x2="76" y2="7"  stroke="#c9a96e" strokeWidth="0.8" opacity="0.3"/>
-    <line x1="4" y1="11" x2="76" y2="11" stroke="#c9a96e" strokeWidth="0.8" opacity="0.3"/>
-    <line x1="4" y1="15" x2="76" y2="15" stroke="#c9a96e" strokeWidth="0.8" opacity="0.3"/>
-    <line x1="4" y1="25" x2="76" y2="25" stroke="#c9a96e" strokeWidth="0.8" opacity="0.3"/>
-    <line x1="4" y1="29" x2="76" y2="29" stroke="#c9a96e" strokeWidth="0.8" opacity="0.3"/>
-    <line x1="4" y1="33" x2="76" y2="33" stroke="#c9a96e" strokeWidth="0.8" opacity="0.3"/>
-    <line x1="4" y1="44" x2="76" y2="44" stroke="#c9a96e" strokeWidth="0.8" opacity="0.3"/>
-    <line x1="4" y1="48" x2="76" y2="48" stroke="#c9a96e" strokeWidth="0.8" opacity="0.3"/>
-    <line x1="4" y1="52" x2="76" y2="52" stroke="#c9a96e" strokeWidth="0.8" opacity="0.3"/>
-  </svg>
-);
-const VinylSlateCard = () => (
-  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" strokeLinecap="round" strokeLinejoin="round">
-    <rect width="80" height="60" fill="#111110" rx="3"/>
-    {[[2,4],[42,4],[2,25],[42,25],[2,46],[42,46]].map(([tx,ty],i) => (
-      <g key={i}>
-        <rect x={tx} y={ty} width="36" height="18" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
-        <line x1={tx+4} y1={ty+4} x2={tx+32} y2={ty+14} stroke="#c9a96e" strokeWidth="0.7" opacity="0.2"/>
+    {[3,22,41,60].map((px,pi) => (
+      <g key={pi}>
+        <rect x={px} y="2" width="17" height="56" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
+        <line x1={px}    y1="20" x2={px+17} y2="20" stroke="#c9a96e" strokeWidth="0.8" opacity="0.5"/>
+        <line x1={px}    y1="42" x2={px+17} y2="42" stroke="#c9a96e" strokeWidth="0.8" opacity="0.5"/>
+        {[8,13,28,33,48,53].map((gy,gi) => (
+          <path key={gi} d={`M${px+1},${gy} Q${px+8},${gy+(gi%2===0?-1:1)} ${px+16},${gy}`} stroke="#c9a96e" strokeWidth="0.5" opacity="0.3" fill="none"/>
+        ))}
       </g>
     ))}
   </svg>
 );
-const VinylPatternedCard = () => {
-  const diamonds = [
-    ...[12,28,44,60].map(cx => ({ cx, cy: 14 })),
-    ...[20,36,52,68].map(cx => ({ cx, cy: 32 })),
-    ...[12,28,44,60].map(cx => ({ cx, cy: 50 })),
-  ];
+const VinylMarbleCard = () => (
+  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="80" height="60" fill="#111110" rx="3"/>
+    <rect x="2"  y="2"  width="36" height="26" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
+    <rect x="42" y="2"  width="36" height="26" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
+    <rect x="2"  y="32" width="36" height="26" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
+    <rect x="42" y="32" width="36" height="26" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
+    <path d="M5,6 Q12,12 20,18 Q26,22 36,25"   stroke="#c9a96e" strokeWidth="0.7" opacity="0.25" fill="none"/>
+    <path d="M8,2 Q14,8 18,14"                  stroke="#c9a96e" strokeWidth="0.5" opacity="0.2"  fill="none"/>
+    <path d="M44,5 Q52,10 60,15 Q66,19 78,24"   stroke="#c9a96e" strokeWidth="0.7" opacity="0.25" fill="none"/>
+    <path d="M3,36 Q10,40 18,46 Q24,50 34,56"   stroke="#c9a96e" strokeWidth="0.7" opacity="0.25" fill="none"/>
+    <path d="M46,35 Q54,40 62,46 Q68,50 78,56"  stroke="#c9a96e" strokeWidth="0.7" opacity="0.25" fill="none"/>
+  </svg>
+);
+const VinylStoneCard = () => (
+  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="80" height="60" fill="#111110" rx="3"/>
+    <rect x="2"  y="2"  width="38" height="38" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
+    <rect x="44" y="2"  width="34" height="17" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
+    <rect x="44" y="22" width="16" height="16" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
+    <rect x="63" y="22" width="15" height="16" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
+    <rect x="2"  y="43" width="19" height="15" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
+    <rect x="24" y="43" width="18" height="15" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
+    <rect x="45" y="43" width="33" height="15" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
+    <path d="M5,12 Q14,14 22,11 Q30,14 38,12"  stroke="#c9a96e" strokeWidth="0.6" opacity="0.2" fill="none"/>
+    <path d="M4,26 Q12,22 20,26 Q28,22 38,26"  stroke="#c9a96e" strokeWidth="0.6" opacity="0.15" fill="none"/>
+  </svg>
+);
+const VinylGeomCard = () => {
+  const tiles = [];
+  for (let row = 0; row < 3; row++) for (let col = 0; col < 3; col++) tiles.push({ cx: 12+col*26, cy: 10+row*20 });
   return (
     <svg width="80" height="60" viewBox="0 0 80 60" fill="none" strokeLinecap="round" strokeLinejoin="round">
       <rect width="80" height="60" fill="#111110" rx="3"/>
-      {diamonds.map(({cx,cy}) => (
-        <path key={`${cx}-${cy}`} d={`M${cx},${cy-7} L${cx+8},${cy} L${cx},${cy+7} L${cx-8},${cy} Z`} stroke="#c9a96e" strokeWidth="1.1" fill="none"/>
+      {tiles.map(({cx,cy}) => (
+        <g key={`${cx}-${cy}`}>
+          <rect x={cx-12} y={cy-10} width="24" height="20" rx="0.5" stroke="#c9a96e" strokeWidth="0.7" opacity="0.4"/>
+          <path d={`M${cx},${cy} Q${cx-3},${cy-5} ${cx},${cy-8} Q${cx+3},${cy-5} ${cx},${cy} Z`} stroke="#c9a96e" strokeWidth="0.9" fill="none"/>
+          <path d={`M${cx},${cy} Q${cx-3},${cy+5} ${cx},${cy+8} Q${cx+3},${cy+5} ${cx},${cy} Z`} stroke="#c9a96e" strokeWidth="0.9" fill="none"/>
+          <path d={`M${cx},${cy} Q${cx+5},${cy-3} ${cx+8},${cy} Q${cx+5},${cy+3} ${cx},${cy} Z`} stroke="#c9a96e" strokeWidth="0.9" fill="none"/>
+          <path d={`M${cx},${cy} Q${cx-5},${cy-3} ${cx-8},${cy} Q${cx-5},${cy+3} ${cx},${cy} Z`} stroke="#c9a96e" strokeWidth="0.9" fill="none"/>
+          <circle cx={cx} cy={cy} r="1.5" stroke="#c9a96e" strokeWidth="0.8"/>
+        </g>
       ))}
     </svg>
   );
 };
-const VinylPlainCard = () => (
-  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" strokeLinecap="round" strokeLinejoin="round">
-    <rect width="80" height="60" fill="#111110" rx="3"/>
-    <rect x="2" y="2" width="76" height="56" rx="1" stroke="#c9a96e" strokeWidth="1.1" opacity="0.1"/>
-    {[10,18,26,34,42,50].map(y => (
-      <line key={y} x1="4" y1={y} x2="76" y2={y} stroke="#c9a96e" strokeWidth="1" opacity="0.18"/>
-    ))}
-  </svg>
-);
 
 // LVT: top-down plank / tile / herringbone layouts
 const LVTPlankSVG = () => (
@@ -1991,6 +2001,9 @@ export default function StrataPage() {
   // ── Phone intercept modal
   const [showPhoneModal, setShowPhoneModal] = useState(false);
 
+  // ── localStorage welcome-back
+  const [showWelcomeBack, setShowWelcomeBack] = useState(false);
+
   // ── Flo intercept state (Step 2 / know sub-step timer)
   const [showFloIntercept,  setShowFloIntercept]  = useState(false);
   const [interceptOpen,     setInterceptOpen]     = useState(false);
@@ -2053,6 +2066,54 @@ export default function StrataPage() {
     }
     return () => clearTimeout(floInterceptTimer.current);
   }, [step, step2Sub, selectedFlooring]);
+
+  // ── localStorage restore (mount only)
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("strata_quote_v1");
+      if (!raw) return;
+      const { data, savedAt } = JSON.parse(raw);
+      if (!data || data.step === 0) return;
+      if (Date.now() - savedAt > 7 * 24 * 60 * 60 * 1000) { localStorage.removeItem("strata_quote_v1"); return; }
+      setStep(data.step);
+      setMeasureSubStep(data.measureSubStep || "educate");
+      setStep2Sub(data.step2Sub || "path");
+      setPropertyType(data.propertyType || "");
+      setSelectedRooms(data.selectedRooms || []);
+      setBedroomCount(data.bedroomCount || 1);
+      setDimensions(data.dimensions || {});
+      setSelectedFlooring(data.selectedFlooring || "");
+      setFlooringGrade(data.flooringGrade || "");
+      setSelectedPileStyle(data.selectedPileStyle || "");
+      setSelectedVinylStyle(data.selectedVinylStyle || "");
+      setCurrentFloor(data.currentFloor || "");
+      setSubfloor(data.subfloor || "");
+      setSelectedExtras(data.selectedExtras || []);
+      setBudget(data.budget || "");
+      setTiming(data.timing || "");
+      setServiceType(data.serviceType || "");
+      setRoomConfigs(data.roomConfigs || {});
+      setPathChoice(data.pathChoice || null);
+      setFlooringPath(data.flooringPath || "know");
+      setShowWelcomeBack(true);
+    } catch(e) {}
+  }, []);
+
+  // ── localStorage auto-save
+  useEffect(() => {
+    if (step === 0) return;
+    try {
+      localStorage.setItem("strata_quote_v1", JSON.stringify({
+        data: { step, measureSubStep, step2Sub, propertyType, selectedRooms, bedroomCount, dimensions, selectedFlooring, flooringGrade, selectedPileStyle, selectedVinylStyle, currentFloor, subfloor, selectedExtras, budget, timing, serviceType, roomConfigs, pathChoice, flooringPath },
+        savedAt: Date.now(),
+      }));
+    } catch(e) {}
+  }, [step, measureSubStep, step2Sub, propertyType, selectedRooms, bedroomCount, dimensions, selectedFlooring, flooringGrade, selectedPileStyle, selectedVinylStyle, currentFloor, subfloor, selectedExtras, budget, timing, serviceType, roomConfigs, pathChoice, flooringPath]);
+
+  // ── localStorage clear on submit
+  useEffect(() => {
+    if (submitted) { try { localStorage.removeItem("strata_quote_v1"); } catch(e) {} }
+  }, [submitted]);
 
   useEffect(() => {
     const onScroll = () => setScrollY(window.scrollY);
@@ -2434,6 +2495,22 @@ export default function StrataPage() {
 
         ) : (
           <>
+            {showWelcomeBack && (
+              <div style={{ background: "rgba(201,169,110,0.08)", border: "1px solid rgba(201,169,110,0.25)", borderRadius: "4px", padding: "12px 16px", marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px" }}>
+                <div>
+                  <div style={{ fontFamily: "system-ui,sans-serif", fontSize: "12px", color: "rgba(242,237,224,0.7)" }}>◆ Welcome back — your quote has been saved.</div>
+                  <div style={{ fontFamily: "system-ui,sans-serif", fontSize: "11px", color: s.dim, marginTop: "3px" }}>You were on step {step + 1} of 6.</div>
+                </div>
+                <div style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
+                  <button onClick={() => setShowWelcomeBack(false)} style={{ background: "#c9a96e", color: "#111", border: "none", padding: "7px 14px", fontSize: "11px", fontWeight: 600, borderRadius: "3px", cursor: "pointer", fontFamily: "system-ui,sans-serif" }}>Continue</button>
+                  <button onClick={() => {
+                    setStep(0); setMeasureSubStep("educate"); setStep2Sub("path"); setPropertyType(""); setSelectedRooms([]); setBedroomCount(1); setDimensions({}); setSelectedFlooring(""); setFlooringGrade(""); setSelectedPileStyle(""); setSelectedVinylStyle(""); setCurrentFloor(""); setSubfloor(""); setSelectedExtras([]); setBudget(""); setTiming(""); setServiceType(""); setRoomConfigs({}); setPathChoice(null); setFlooringPath("know"); setRecommendations(null);
+                    try { localStorage.removeItem("strata_quote_v1"); } catch(e) {}
+                    setShowWelcomeBack(false);
+                  }} style={{ background: "transparent", color: "rgba(242,237,224,0.4)", border: "1px solid #2a2a28", padding: "7px 14px", fontSize: "11px", borderRadius: "3px", cursor: "pointer", fontFamily: "system-ui,sans-serif" }}>Start fresh</button>
+                </div>
+              </div>
+            )}
             <div style={{ fontFamily: s.serif, fontSize: "28px", fontWeight: 700, color: s.text, lineHeight: 1.05, marginBottom: "8px" }}>{stepTitles[step]}</div>
             <Divider />
             <ProgressBar current={step + 1} total={6} />
@@ -2567,7 +2644,7 @@ export default function StrataPage() {
                           {f.name === "Carpet" && isSelected && (
                             <div style={{ borderLeft: "1px solid rgba(201,169,110,0.3)", borderRight: "1px solid rgba(201,169,110,0.3)", borderBottom: "1px solid rgba(201,169,110,0.3)", borderRadius: "0 0 4px 4px", background: "rgba(201,169,110,0.04)", padding: "14px 16px", overflow: "hidden", maxHeight: "1000px", transition: "max-height 0.3s ease" }}>
                               <div style={{ fontSize: "9px", color: s.gold, fontFamily: "system-ui,sans-serif", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "10px" }}>Pile style</div>
-                              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", justifyContent: "center" }}>
                                 {[
                                   { id: "twist",   title: "Twist pile",    desc: "Durable · Most popular",           svg: <CarpetTwistSVG/> },
                                   { id: "berber",  title: "Berber / Loop",  desc: "Indestructible · Hides footprints", svg: <CarpetBerberSVG/> },
@@ -2588,12 +2665,12 @@ export default function StrataPage() {
                           {f.name === "Vinyl" && isSelected && (
                             <div style={{ borderLeft: "1px solid rgba(201,169,110,0.3)", borderRight: "1px solid rgba(201,169,110,0.3)", borderBottom: "1px solid rgba(201,169,110,0.3)", borderRadius: "0 0 4px 4px", background: "rgba(201,169,110,0.04)", padding: "14px 16px", overflow: "hidden", maxHeight: "400px", transition: "max-height 0.3s ease" }}>
                               <div style={{ fontSize: "9px", color: s.gold, fontFamily: "system-ui,sans-serif", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "10px" }}>Style</div>
-                              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", justifyContent: "center" }}>
                                 {[
-                                  { id: "Wood effect",   title: "Wood effect",   desc: "Warm · Easy to clean", svg: <VinylWoodCard/> },
-                                  { id: "Stone / slate", title: "Stone / slate", desc: "Clean · Modern",        svg: <VinylSlateCard/> },
-                                  { id: "Patterned",     title: "Patterned",     desc: "Bold · Decorative",     svg: <VinylPatternedCard/> },
-                                  { id: "Plain",         title: "Plain",         desc: "Simple · Hygienic",     svg: <VinylPlainCard/> },
+                                  { id: "Wood effect",   title: "Wood effect",   desc: "Warm · Natural look",   svg: <VinylWoodCard/> },
+                                  { id: "Marble effect", title: "Marble effect", desc: "Elegant · Statement",   svg: <VinylMarbleCard/> },
+                                  { id: "Stone / tile",  title: "Stone / tile",  desc: "Clean · Contemporary",  svg: <VinylStoneCard/> },
+                                  { id: "Patterned",     title: "Patterned",     desc: "Bold · Decorative",     svg: <VinylGeomCard/> },
                                 ].map(({ id, title, desc, svg }) => (
                                   <div key={id} className={`pile-card${selectedVinylStyle === id ? " selected" : ""}`} onClick={() => setSelectedVinylStyle(id)}>
                                     {svg}
