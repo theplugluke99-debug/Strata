@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import ReactDOM from "react-dom";
 import Image from "next/image";
 import FloSection from "./components/FloSection";
@@ -459,33 +459,33 @@ const Chip = ({ label, selected, onClick, icon }) => {
     <button
       onClick={() => {
         setPressed(true);
-        if (!selected) { setJustSelected(true); setTimeout(() => setJustSelected(false), 550); }
+        if (!selected) { setJustSelected(true); setTimeout(() => setJustSelected(false), 400); }
         setTimeout(() => { setPressed(false); onClick(); }, 120);
       }}
       style={{
         position: "relative", overflow: "hidden",
-        background: selected ? s.gold : "transparent",
-        border: `1px solid ${selected ? s.gold : s.border}`,
-        color: selected ? "#111" : s.dim,
+        background: pressed ? "rgba(201,169,110,0.08)" : selected ? "rgba(201,169,110,0.15)" : "transparent",
+        border: `1px solid ${selected ? "#c9a96e" : "#2a2a28"}`,
+        color: selected ? "#c9a96e" : "rgba(242,237,224,0.45)",
         padding: "10px 12px",
         borderRadius: "3px", fontSize: "13px", fontFamily: s.sans,
         cursor: "pointer", textAlign: "left",
-        fontWeight: selected ? "600" : "400",
-        transition: "all 0.35s cubic-bezier(0.34,1.56,0.64,1)",
+        fontWeight: selected ? 600 : 400,
+        transition: "all 0.2s cubic-bezier(0.34,1.56,0.64,1)",
         display: "flex", alignItems: "center", gap: "8px",
-        transform: pressed ? "scale(0.94)" : "scale(1)",
-        boxShadow: selected ? "0 0 10px rgba(201,169,110,0.3)" : "none",
+        transform: pressed ? "scale(0.98)" : selected ? "scale(1.02)" : "scale(1)",
+        boxShadow: selected ? "0 0 0 1px rgba(201,169,110,0.3)" : "none",
       }}
     >
       {justSelected && (
-        <span style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.28) 50%,transparent 100%)", animation: "shimmerSweep 0.5s ease-out forwards", pointerEvents: "none" }} />
+        <span style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg,transparent,rgba(201,169,110,0.25),transparent)", animation: "shimmerSweep 0.4s ease-out forwards", pointerEvents: "none" }} />
       )}
       {icon && (
-        <span style={{ color: selected ? "#111" : s.gold, display: "flex", alignItems: "center", flexShrink: 0 }}>
+        <span style={{ color: s.gold, display: "flex", alignItems: "center", flexShrink: 0 }}>
           {icon}
         </span>
       )}
-      {selected && <span style={{ fontSize: "10px", marginRight: "1px" }}>✓</span>}{label}
+      {label}
     </button>
   );
 };
@@ -498,36 +498,64 @@ const RoomChip = ({ label, selected, onClick }) => {
     <button
       onClick={() => {
         setPressed(true);
-        if (!selected) { setJustSelected(true); setTimeout(() => setJustSelected(false), 550); }
+        if (!selected) { setJustSelected(true); setTimeout(() => setJustSelected(false), 400); }
         setTimeout(() => { setPressed(false); onClick(); }, 120);
       }}
       style={{
         position: "relative", overflow: "hidden",
-        background: selected ? s.gold : "transparent",
-        border: `1px solid ${selected ? s.gold : s.border}`,
-        color: selected ? "#111" : s.dim,
+        background: pressed ? "rgba(201,169,110,0.08)" : selected ? "rgba(201,169,110,0.15)" : "transparent",
+        border: `1px solid ${selected ? "#c9a96e" : "#2a2a28"}`,
+        color: selected ? "#c9a96e" : "rgba(242,237,224,0.45)",
         padding: "10px 12px",
         borderRadius: "3px", fontSize: "12px", fontFamily: s.sans,
         cursor: "pointer", textAlign: "left",
-        fontWeight: selected ? "600" : "400",
-        transition: "all 0.35s cubic-bezier(0.34,1.56,0.64,1)",
-        transform: pressed ? "scale(0.94)" : "scale(1)",
-        boxShadow: selected ? "0 0 10px rgba(201,169,110,0.3)" : "none",
+        fontWeight: selected ? 600 : 400,
+        transition: "all 0.2s cubic-bezier(0.34,1.56,0.64,1)",
+        transform: pressed ? "scale(0.98)" : selected ? "scale(1.02)" : "scale(1)",
+        boxShadow: selected ? "0 0 0 1px rgba(201,169,110,0.3)" : "none",
         display: "flex", alignItems: "center", gap: "7px",
       }}
     >
       {justSelected && (
-        <span style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.28) 50%,transparent 100%)", animation: "shimmerSweep 0.5s ease-out forwards", pointerEvents: "none" }} />
+        <span style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg,transparent,rgba(201,169,110,0.25),transparent)", animation: "shimmerSweep 0.4s ease-out forwards", pointerEvents: "none" }} />
       )}
       {icon && (
-        <span style={{ color: selected ? "#111" : s.gold, display: "flex", alignItems: "center", flexShrink: 0 }}>
+        <span style={{ color: s.gold, display: "flex", alignItems: "center", flexShrink: 0 }}>
           {icon}
         </span>
       )}
-      {selected && <span style={{ fontSize: "10px" }}>✓</span>}{label}
+      {label}
     </button>
   );
 };
+const SelectCard = ({ selected, onClick, padding = "12px 14px", children }) => {
+  const [pressed, setPressed] = useState(false);
+  const [justSelected, setJustSelected] = useState(false);
+  return (
+    <button
+      onClick={() => {
+        setPressed(true);
+        if (!selected) { setJustSelected(true); setTimeout(() => setJustSelected(false), 400); }
+        setTimeout(() => { setPressed(false); onClick(); }, 120);
+      }}
+      style={{
+        position: "relative", overflow: "hidden",
+        background: pressed ? "rgba(201,169,110,0.08)" : selected ? "rgba(201,169,110,0.15)" : "transparent",
+        border: `1px solid ${selected ? "#c9a96e" : "#2a2a28"}`,
+        borderRadius: "3px", padding, cursor: "pointer", textAlign: "left", width: "100%",
+        transition: "all 0.2s cubic-bezier(0.34,1.56,0.64,1)",
+        transform: pressed ? "scale(0.98)" : selected ? "scale(1.02)" : "scale(1)",
+        boxShadow: selected ? "0 0 0 1px rgba(201,169,110,0.3)" : "none",
+      }}
+    >
+      {justSelected && (
+        <span style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg,transparent,rgba(201,169,110,0.25),transparent)", animation: "shimmerSweep 0.4s ease-out forwards", pointerEvents: "none", zIndex: 1 }} />
+      )}
+      {children}
+    </button>
+  );
+};
+
 const GoldNote = ({ children }) => (
   <div style={{ display: "flex", gap: "10px", alignItems: "flex-start", padding: "10px 14px", marginBottom: "14px", background: "rgba(201,169,110,0.07)", borderLeft: `2px solid ${s.gold}` }}>
     <span style={{ color: s.gold, fontSize: "7px", marginTop: "4px", flexShrink: 0 }}>◆</span>
@@ -1053,12 +1081,12 @@ function RoomCalculator({ room, data, onChange, flooringType, propertyType }) {
               {ml("Fit type")}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "8px" }}>
                 {["Waterfall", "Cap and band"].map(type => (
-                  <button key={type} onClick={() => set("fitType", type)} style={{ background: data?.fitType === type ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.fitType === type ? s.gold : s.border}`, borderRadius: "3px", padding: "10px 12px", cursor: "pointer", textAlign: "left", transition: "all 0.2s" }}>
+                  <SelectCard key={type} selected={data?.fitType === type} onClick={() => set("fitType", type)} padding="10px 12px">
                     <div style={{ fontFamily: s.sans, fontSize: "12px", fontWeight: 600, color: data?.fitType === type ? s.gold : s.text }}>{type}</div>
                     <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim, fontWeight: 300, marginTop: "2px" }}>
                       {type === "Waterfall" ? "Over the nose — uses less carpet" : "Wrapped around each tread — more tailored, uses slightly more"}
                     </div>
-                  </button>
+                  </SelectCard>
                 ))}
               </div>
             </div>
@@ -1067,9 +1095,7 @@ function RoomCalculator({ room, data, onChange, flooringType, propertyType }) {
               {ml("Landing")}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "10px" }}>
                 {["No landing", "Quarter landing", "Half landing", "Full landing"].map(type => (
-                  <button key={type} onClick={() => set("landingType", type)} style={{ background: data?.landingType === type ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.landingType === type ? s.gold : s.border}`, borderRadius: "3px", padding: "8px 10px", cursor: "pointer", transition: "all 0.2s" }}>
-                    <div style={{ fontFamily: s.sans, fontSize: "11px", color: data?.landingType === type ? s.gold : s.dim }}>{type}</div>
-                  </button>
+                  <Chip key={type} label={type} selected={data?.landingType === type} onClick={() => set("landingType", type)} />
                 ))}
               </div>
               {data?.landingType && data?.landingType !== "No landing" && (
@@ -1112,9 +1138,9 @@ function RoomCalculator({ room, data, onChange, flooringType, propertyType }) {
               <div>{ml("Width (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.w || ""} onChange={e => set("w", e.target.value)} /></div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: data?.hasStairwell ? "10px" : "0" }}>
-              <div onClick={() => set("hasStairwell", !data?.hasStairwell)} style={{ background: data?.hasStairwell ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.hasStairwell ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasStairwell ? s.gold : "rgba(242,237,224,0.3)", fontFamily: s.sans, fontSize: "11px", padding: "7px 12px", cursor: "pointer", flex: 1, transition: "all 0.2s" }}>
+              <button onClick={() => set("hasStairwell", !data?.hasStairwell)} style={{ background: data?.hasStairwell ? "rgba(201,169,110,0.15)" : "transparent", border: `1px solid ${data?.hasStairwell ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasStairwell ? s.gold : "rgba(242,237,224,0.45)", fontFamily: s.sans, fontSize: "11px", fontWeight: data?.hasStairwell ? 600 : 400, padding: "7px 12px", cursor: "pointer", flex: 1, textAlign: "left", transition: "all 0.2s cubic-bezier(0.34,1.56,0.64,1)", transform: data?.hasStairwell ? "scale(1.02)" : "scale(1)", boxShadow: data?.hasStairwell ? "0 0 0 1px rgba(201,169,110,0.3)" : "none" }}>
                 {data?.hasStairwell ? "✓ " : "+ "}Stairwell opening (open landings)
-              </div>
+              </button>
             </div>
             {data?.hasStairwell && (
               <div style={{ paddingLeft: "12px", borderLeft: "1px solid rgba(201,169,110,0.2)", marginBottom: "10px" }}>
@@ -1146,9 +1172,9 @@ function RoomCalculator({ room, data, onChange, flooringType, propertyType }) {
 
             {/* Bay window */}
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: data?.hasBay ? "10px" : "6px" }}>
-              <div onClick={() => set("hasBay", !data?.hasBay)} style={{ background: data?.hasBay ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.hasBay ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasBay ? s.gold : "rgba(242,237,224,0.3)", fontFamily: s.sans, fontSize: "11px", padding: "7px 12px", cursor: "pointer", flex: 1, transition: "all 0.2s" }}>
+              <button onClick={() => set("hasBay", !data?.hasBay)} style={{ background: data?.hasBay ? "rgba(201,169,110,0.15)" : "transparent", border: `1px solid ${data?.hasBay ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasBay ? s.gold : "rgba(242,237,224,0.45)", fontFamily: s.sans, fontSize: "11px", fontWeight: data?.hasBay ? 600 : 400, padding: "7px 12px", cursor: "pointer", flex: 1, textAlign: "left", transition: "all 0.2s cubic-bezier(0.34,1.56,0.64,1)", transform: data?.hasBay ? "scale(1.02)" : "scale(1)", boxShadow: data?.hasBay ? "0 0 0 1px rgba(201,169,110,0.3)" : "none" }}>
                 {data?.hasBay ? "✓ " : "+ "}Bay window
-              </div>
+              </button>
               <InfoTooltip title="What is a bay window?">
                 A bay window projects outward from the main wall creating a recess. Measure the main room first then measure the bay separately — its width × how far it projects into the room. Add them as two rectangles.
               </InfoTooltip>
@@ -1165,9 +1191,9 @@ function RoomCalculator({ room, data, onChange, flooringType, propertyType }) {
 
             {/* Alcove */}
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: data?.hasAlc ? "10px" : "0" }}>
-              <div onClick={() => set("hasAlc", !data?.hasAlc)} style={{ background: data?.hasAlc ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.hasAlc ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasAlc ? s.gold : "rgba(242,237,224,0.3)", fontFamily: s.sans, fontSize: "11px", padding: "7px 12px", cursor: "pointer", flex: 1, transition: "all 0.2s" }}>
+              <button onClick={() => set("hasAlc", !data?.hasAlc)} style={{ background: data?.hasAlc ? "rgba(201,169,110,0.15)" : "transparent", border: `1px solid ${data?.hasAlc ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasAlc ? s.gold : "rgba(242,237,224,0.45)", fontFamily: s.sans, fontSize: "11px", fontWeight: data?.hasAlc ? 600 : 400, padding: "7px 12px", cursor: "pointer", flex: 1, textAlign: "left", transition: "all 0.2s cubic-bezier(0.34,1.56,0.64,1)", transform: data?.hasAlc ? "scale(1.02)" : "scale(1)", boxShadow: data?.hasAlc ? "0 0 0 1px rgba(201,169,110,0.3)" : "none" }}>
                 {data?.hasAlc ? "✓ " : "+ "}Alcove
-              </div>
+              </button>
               <InfoTooltip title="What is an alcove?">
                 A recess built into a wall — most commonly either side of a chimney breast. Measure the width of the opening and how deep it goes back into the wall.
               </InfoTooltip>
@@ -1202,9 +1228,9 @@ function RoomCalculator({ room, data, onChange, flooringType, propertyType }) {
 
             {/* Additional sections (L-shapes, corridors) */}
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: data?.hasExtra1 ? "10px" : "6px" }}>
-              <div onClick={() => set("hasExtra1", !data?.hasExtra1)} style={{ background: data?.hasExtra1 ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.hasExtra1 ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasExtra1 ? s.gold : "rgba(242,237,224,0.3)", fontFamily: s.sans, fontSize: "11px", padding: "7px 12px", cursor: "pointer", flex: 1, transition: "all 0.2s" }}>
+              <button onClick={() => set("hasExtra1", !data?.hasExtra1)} style={{ background: data?.hasExtra1 ? "rgba(201,169,110,0.15)" : "transparent", border: `1px solid ${data?.hasExtra1 ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasExtra1 ? s.gold : "rgba(242,237,224,0.45)", fontFamily: s.sans, fontSize: "11px", fontWeight: data?.hasExtra1 ? 600 : 400, padding: "7px 12px", cursor: "pointer", flex: 1, textAlign: "left", transition: "all 0.2s cubic-bezier(0.34,1.56,0.64,1)", transform: data?.hasExtra1 ? "scale(1.02)" : "scale(1)", boxShadow: data?.hasExtra1 ? "0 0 0 1px rgba(201,169,110,0.3)" : "none" }}>
                 {data?.hasExtra1 ? "✓ " : "+ "}Add another section (L-shapes, corridors)
-              </div>
+              </button>
             </div>
             {data?.hasExtra1 && (
               <div style={{ paddingLeft: "12px", borderLeft: "1px solid rgba(201,169,110,0.2)", marginBottom: "10px" }}>
@@ -1214,9 +1240,9 @@ function RoomCalculator({ room, data, onChange, flooringType, propertyType }) {
                   <div>{ml("Section 2 width (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.extra1W || ""} onChange={e => set("extra1W", e.target.value)} /></div>
                 </div>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: data?.hasExtra2 ? "10px" : "0" }}>
-                  <div onClick={() => set("hasExtra2", !data?.hasExtra2)} style={{ background: data?.hasExtra2 ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.hasExtra2 ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasExtra2 ? s.gold : "rgba(242,237,224,0.3)", fontFamily: s.sans, fontSize: "11px", padding: "7px 12px", cursor: "pointer", flex: 1, transition: "all 0.2s" }}>
+                  <button onClick={() => set("hasExtra2", !data?.hasExtra2)} style={{ background: data?.hasExtra2 ? "rgba(201,169,110,0.15)" : "transparent", border: `1px solid ${data?.hasExtra2 ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasExtra2 ? s.gold : "rgba(242,237,224,0.45)", fontFamily: s.sans, fontSize: "11px", fontWeight: data?.hasExtra2 ? 600 : 400, padding: "7px 12px", cursor: "pointer", flex: 1, textAlign: "left", transition: "all 0.2s cubic-bezier(0.34,1.56,0.64,1)", transform: data?.hasExtra2 ? "scale(1.02)" : "scale(1)", boxShadow: data?.hasExtra2 ? "0 0 0 1px rgba(201,169,110,0.3)" : "none" }}>
                     {data?.hasExtra2 ? "✓ " : "+ "}Add section 3
-                  </div>
+                  </button>
                 </div>
                 {data?.hasExtra2 && (
                   <div style={{ paddingLeft: "12px", borderLeft: "1px solid rgba(201,169,110,0.2)", marginBottom: "10px" }}>
@@ -1225,9 +1251,9 @@ function RoomCalculator({ room, data, onChange, flooringType, propertyType }) {
                       <div>{ml("Section 3 width (m)")}<input style={inp} type="number" placeholder="0.0" step="0.1" value={data?.extra2W || ""} onChange={e => set("extra2W", e.target.value)} /></div>
                     </div>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <div onClick={() => set("hasExtra3", !data?.hasExtra3)} style={{ background: data?.hasExtra3 ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.hasExtra3 ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasExtra3 ? s.gold : "rgba(242,237,224,0.3)", fontFamily: s.sans, fontSize: "11px", padding: "7px 12px", cursor: "pointer", flex: 1, transition: "all 0.2s" }}>
+                      <button onClick={() => set("hasExtra3", !data?.hasExtra3)} style={{ background: data?.hasExtra3 ? "rgba(201,169,110,0.15)" : "transparent", border: `1px solid ${data?.hasExtra3 ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasExtra3 ? s.gold : "rgba(242,237,224,0.45)", fontFamily: s.sans, fontSize: "11px", fontWeight: data?.hasExtra3 ? 600 : 400, padding: "7px 12px", cursor: "pointer", flex: 1, textAlign: "left", transition: "all 0.2s cubic-bezier(0.34,1.56,0.64,1)", transform: data?.hasExtra3 ? "scale(1.02)" : "scale(1)", boxShadow: data?.hasExtra3 ? "0 0 0 1px rgba(201,169,110,0.3)" : "none" }}>
                         {data?.hasExtra3 ? "✓ " : "+ "}Add section 4
-                      </div>
+                      </button>
                     </div>
                     {data?.hasExtra3 && (
                       <div style={{ paddingLeft: "12px", borderLeft: "1px solid rgba(201,169,110,0.2)", marginTop: "10px" }}>
@@ -1244,9 +1270,9 @@ function RoomCalculator({ room, data, onChange, flooringType, propertyType }) {
 
             {/* Structural columns */}
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: data?.hasColumns ? "10px" : "6px", marginTop: "6px" }}>
-              <div onClick={() => set("hasColumns", !data?.hasColumns)} style={{ background: data?.hasColumns ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.hasColumns ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasColumns ? s.gold : "rgba(242,237,224,0.3)", fontFamily: s.sans, fontSize: "11px", padding: "7px 12px", cursor: "pointer", flex: 1, transition: "all 0.2s" }}>
+              <button onClick={() => set("hasColumns", !data?.hasColumns)} style={{ background: data?.hasColumns ? "rgba(201,169,110,0.15)" : "transparent", border: `1px solid ${data?.hasColumns ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasColumns ? s.gold : "rgba(242,237,224,0.45)", fontFamily: s.sans, fontSize: "11px", fontWeight: data?.hasColumns ? 600 : 400, padding: "7px 12px", cursor: "pointer", flex: 1, textAlign: "left", transition: "all 0.2s cubic-bezier(0.34,1.56,0.64,1)", transform: data?.hasColumns ? "scale(1.02)" : "scale(1)", boxShadow: data?.hasColumns ? "0 0 0 1px rgba(201,169,110,0.3)" : "none" }}>
                 {data?.hasColumns ? "✓ " : "+ "}Structural columns
-              </div>
+              </button>
               <InfoTooltip title="Structural columns">
                 Floor to ceiling columns within the room. Flooring fits around them and their footprint is subtracted from your total floor area.
               </InfoTooltip>
@@ -1268,9 +1294,9 @@ function RoomCalculator({ room, data, onChange, flooringType, propertyType }) {
 
             {/* Fixed counters / built-in units */}
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: data?.hasFixedUnits ? "10px" : "6px" }}>
-              <div onClick={() => set("hasFixedUnits", !data?.hasFixedUnits)} style={{ background: data?.hasFixedUnits ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.hasFixedUnits ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasFixedUnits ? s.gold : "rgba(242,237,224,0.3)", fontFamily: s.sans, fontSize: "11px", padding: "7px 12px", cursor: "pointer", flex: 1, transition: "all 0.2s" }}>
+              <button onClick={() => set("hasFixedUnits", !data?.hasFixedUnits)} style={{ background: data?.hasFixedUnits ? "rgba(201,169,110,0.15)" : "transparent", border: `1px solid ${data?.hasFixedUnits ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasFixedUnits ? s.gold : "rgba(242,237,224,0.45)", fontFamily: s.sans, fontSize: "11px", fontWeight: data?.hasFixedUnits ? 600 : 400, padding: "7px 12px", cursor: "pointer", flex: 1, textAlign: "left", transition: "all 0.2s cubic-bezier(0.34,1.56,0.64,1)", transform: data?.hasFixedUnits ? "scale(1.02)" : "scale(1)", boxShadow: data?.hasFixedUnits ? "0 0 0 1px rgba(201,169,110,0.3)" : "none" }}>
                 {data?.hasFixedUnits ? "✓ " : "+ "}Fixed counters or built-in units
-              </div>
+              </button>
               <InfoTooltip title="Fixed counters and built-in units">
                 Permanently fixed items that cannot be moved before fitting — reception desks, fixed shelving, bar counters, kitchen islands. Measure their footprint (width × depth from wall). Their area is subtracted from your total.
               </InfoTooltip>
@@ -1287,9 +1313,9 @@ function RoomCalculator({ room, data, onChange, flooringType, propertyType }) {
 
             {/* Raised access floor */}
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: data?.hasRaisedAccess ? "4px" : "6px" }}>
-              <div onClick={() => set("hasRaisedAccess", !data?.hasRaisedAccess)} style={{ background: data?.hasRaisedAccess ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.hasRaisedAccess ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasRaisedAccess ? s.gold : "rgba(242,237,224,0.3)", fontFamily: s.sans, fontSize: "11px", padding: "7px 12px", cursor: "pointer", flex: 1, transition: "all 0.2s" }}>
+              <button onClick={() => set("hasRaisedAccess", !data?.hasRaisedAccess)} style={{ background: data?.hasRaisedAccess ? "rgba(201,169,110,0.15)" : "transparent", border: `1px solid ${data?.hasRaisedAccess ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasRaisedAccess ? s.gold : "rgba(242,237,224,0.45)", fontFamily: s.sans, fontSize: "11px", fontWeight: data?.hasRaisedAccess ? 600 : 400, padding: "7px 12px", cursor: "pointer", flex: 1, textAlign: "left", transition: "all 0.2s cubic-bezier(0.34,1.56,0.64,1)", transform: data?.hasRaisedAccess ? "scale(1.02)" : "scale(1)", boxShadow: data?.hasRaisedAccess ? "0 0 0 1px rgba(201,169,110,0.3)" : "none" }}>
                 {data?.hasRaisedAccess ? "✓ " : "+ "}Raised access flooring
-              </div>
+              </button>
             </div>
             {data?.hasRaisedAccess && (
               <GoldNote>Raised access flooring affects which products can be used and how they are fixed. Some adhesive products cannot be applied to raised access panels. We will specify the correct product at survey.</GoldNote>
@@ -1297,9 +1323,9 @@ function RoomCalculator({ room, data, onChange, flooringType, propertyType }) {
 
             {/* Wet zone */}
             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: data?.hasWetZone ? "4px" : "6px" }}>
-              <div onClick={() => set("hasWetZone", !data?.hasWetZone)} style={{ background: data?.hasWetZone ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${data?.hasWetZone ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasWetZone ? s.gold : "rgba(242,237,224,0.3)", fontFamily: s.sans, fontSize: "11px", padding: "7px 12px", cursor: "pointer", flex: 1, transition: "all 0.2s" }}>
+              <button onClick={() => set("hasWetZone", !data?.hasWetZone)} style={{ background: data?.hasWetZone ? "rgba(201,169,110,0.15)" : "transparent", border: `1px solid ${data?.hasWetZone ? s.gold : s.border}`, borderRadius: "3px", color: data?.hasWetZone ? s.gold : "rgba(242,237,224,0.45)", fontFamily: s.sans, fontSize: "11px", fontWeight: data?.hasWetZone ? 600 : 400, padding: "7px 12px", cursor: "pointer", flex: 1, textAlign: "left", transition: "all 0.2s cubic-bezier(0.34,1.56,0.64,1)", transform: data?.hasWetZone ? "scale(1.02)" : "scale(1)", boxShadow: data?.hasWetZone ? "0 0 0 1px rgba(201,169,110,0.3)" : "none" }}>
                 {data?.hasWetZone ? "✓ " : "+ "}This area includes a wet zone
-              </div>
+              </button>
             </div>
             {data?.hasWetZone && (
               <GoldNote>Wet areas require fully waterproof flooring with appropriate slip ratings. Commercial kitchens need R11 anti-slip rated flooring as a minimum. We will specify the correct product for this zone at survey.</GoldNote>
@@ -1738,76 +1764,6 @@ export default function StrataPage() {
   // ── Phone intercept modal
   const [showPhoneModal, setShowPhoneModal] = useState(false);
 
-  // ── FloVoice
-  const [floVoiceMessage, setFloVoiceMessage] = useState("");
-  const [floVoiceVisible, setFloVoiceVisible] = useState(false);
-  const floVoiceTimerRef = useRef(null);
-  const showFloVoice = useCallback((msg) => {
-    setFloVoiceVisible(false);
-    clearTimeout(floVoiceTimerRef.current);
-    floVoiceTimerRef.current = setTimeout(() => {
-      setFloVoiceMessage(msg);
-      setFloVoiceVisible(true);
-      floVoiceTimerRef.current = setTimeout(() => setFloVoiceVisible(false), 5800);
-    }, 60);
-  }, []);
-
-  // FloVoice: property type
-  const prevPropertyType = useRef("");
-  useEffect(() => {
-    if (!propertyType || propertyType === prevPropertyType.current) return;
-    prevPropertyType.current = propertyType;
-    showFloVoice(propertyType === "Residential"
-      ? "Perfect — let's build your home flooring quote."
-      : "Got it — I'll tailor this for a commercial space.");
-  }, [propertyType, showFloVoice]);
-
-  // FloVoice: first room, then every 3rd room
-  const prevRoomsLen = useRef(0);
-  useEffect(() => {
-    const len = selectedRooms.length;
-    if (len <= prevRoomsLen.current) { prevRoomsLen.current = len; return; }
-    prevRoomsLen.current = len;
-    const room = selectedRooms[len - 1];
-    const msgs = {
-      "Living Room": "The centrepiece of the home. Carpet or herringbone both look stunning here.",
-      "Bedroom": "Carpet is the most popular bedroom choice — warm underfoot every morning.",
-      "Kitchen": "Kitchens need something waterproof. LVT or vinyl are your best friends here.",
-      "Bathroom": "Bathrooms need fully waterproof flooring. LVT is ideal.",
-      "Hallway": "Hallways take a beating — LVT or a durable carpet handles the traffic well.",
-      "Stairs": "Stairs are best confirmed in person — we'll sort it at survey.",
-      "Office Space": "Commercial carpet tiles are ideal here — easy to replace individual tiles.",
-      "Reception": "Reception areas benefit from an impressive floor — herringbone or LVT both work brilliantly.",
-    };
-    if (len === 1) showFloVoice(msgs[room] || `${room} added. Keep selecting rooms below.`);
-    else if (len % 3 === 0) showFloVoice(`${len} rooms added. Looking good — keep going or continue.`);
-  }, [selectedRooms, showFloVoice]);
-
-  // FloVoice: flooring selected
-  const prevFlooring = useRef("");
-  useEffect(() => {
-    if (!selectedFlooring || selectedFlooring === prevFlooring.current) return;
-    prevFlooring.current = selectedFlooring;
-    const msgs = {
-      "Carpet": "Great choice. Carpet's having a real moment — warm, quiet, and the range has never been better.",
-      "Herringbone": "Statement flooring. It transforms a space. Just make sure the subfloor is level.",
-      "LVT": "Versatile and fully waterproof. Goes in practically every room — including kitchens and bathrooms.",
-      "Laminate": "Good value laminate is genuinely impressive today. Hard to tell from real wood.",
-      "Vinyl": "Practical perfection — soft underfoot, very easy to clean, and very affordable.",
-    };
-    showFloVoice(msgs[selectedFlooring] || `${selectedFlooring} selected. Good choice.`);
-  }, [selectedFlooring, showFloVoice]);
-
-  // FloVoice: step transitions
-  const prevStep = useRef(0);
-  useEffect(() => {
-    if (step === prevStep.current) return;
-    prevStep.current = step;
-    if (step === 1) showFloVoice("Time to measure. Rough figures are completely fine — we confirm everything in person.");
-    if (step === 3) showFloVoice("Almost done. Just your current floor and any extras, then the estimate is yours.");
-    if (step === 5) showFloVoice("Last step — your personalised estimate is waiting on the other side.");
-  }, [step, showFloVoice]);
-
   // ── Flo intercept state (Step 2 / know sub-step timer)
   const [showFloIntercept,  setShowFloIntercept]  = useState(false);
   const [interceptOpen,     setInterceptOpen]     = useState(false);
@@ -1911,18 +1867,6 @@ export default function StrataPage() {
     step === 3 ? "This takes 30 seconds and helps us bring exactly what's needed on the day. No surprises." :
     step === 4 ? "Two more quick questions and you're done." :
     step === 5 ? "Last step. Your personalised estimate is ready and waiting." : null;
-  const latestRoomWithFlooring = [...expandedRooms].reverse().find(r => roomConfigs[r]?.flooring);
-  const latestConfiguredFlooring = latestRoomWithFlooring ? roomConfigs[latestRoomWithFlooring]?.flooring : selectedFlooring;
-  const visualiserFloMessage = floVoiceVisible && floVoiceMessage ? floVoiceMessage :
-    step === 1 && measureSubStep === "educate" ? "First we get the shape right, then the floor choice starts to make sense." :
-    step === 1 && measureSubStep === "measure" ? "Those selected rooms are locked in. Rough measurements are fine for now." :
-    step === 2 && step2Sub === "path" ? "Choose one route and I'll keep the room plan updated as you go." :
-    step === 2 && step2Sub === "room-config" && latestRoomWithFlooring ? `${latestRoomWithFlooring} is set to ${latestConfiguredFlooring}. The plan is starting to come alive.` :
-    step === 2 && latestConfiguredFlooring ? `${latestConfiguredFlooring} noted. We'll show it room by room as you configure the quote.` :
-    step === 3 ? "Now we check what is underneath, because prep is what keeps a floor behaving properly." :
-    step === 4 ? "Budget and timing help us bring the right samples and fit the job around you." :
-    step === 5 ? "Last details now. Your estimate is ready on the other side." :
-    selectedRooms.length ? `${selectedRooms[selectedRooms.length - 1]} added. I'll keep the miniature updated from here.` : "";
   const residentialVisualiserShowTextures = step > 2 || (step === 2 && step2Sub === "room-config");
 
   const stepTitles = [
@@ -2261,6 +2205,7 @@ export default function StrataPage() {
           <>
             <div style={{ fontFamily: s.serif, fontSize: "28px", fontWeight: 700, color: s.text, lineHeight: 1.05, marginBottom: "8px" }}>{stepTitles[step]}</div>
             <Divider />
+            <ProgressBar current={step + 1} total={6} />
             {step > 0 && selectedRooms.length > 0 && (
               <>
                 {propertyType === "Commercial" ? (
@@ -2269,7 +2214,6 @@ export default function StrataPage() {
                   <ResidentialMiniVisualiser selectedRooms={expandedRooms} roomConfigs={roomConfigs} selectedFlooring={selectedFlooring} showTextures={residentialVisualiserShowTextures} />
                 )}
                 <VisualiserRoomLabelRow selectedRooms={expandedRooms} roomConfigs={roomConfigs} selectedFlooring={selectedFlooring} />
-                <FloNudge message={visualiserFloMessage} />
               </>
             )}
             {currentEncouragement && (
@@ -2296,10 +2240,7 @@ export default function StrataPage() {
                       </svg>
                     )},
                   ].map(({ type, icon }) => (
-                    <button key={type} onClick={() => { setPropertyType(type); setSelectedRooms([]); }} style={{ background: propertyType === type ? s.gold : "transparent", border: `1px solid ${propertyType === type ? s.gold : s.border}`, color: propertyType === type ? "#111" : s.dim, padding: "16px 14px", borderRadius: "3px", fontSize: "14px", fontFamily: s.serif, fontWeight: 700, cursor: "pointer", transition: "all 0.2s", letterSpacing: "0.04em", display: "flex", flexDirection: "row", alignItems: "center", gap: "10px" }}>
-                      <span style={{ color: propertyType === type ? "#111" : s.gold, display: "flex", alignItems: "center", flexShrink: 0 }}>{icon}</span>
-                      {type}
-                    </button>
+                    <Chip key={type} label={type} selected={propertyType === type} icon={icon} onClick={() => { setPropertyType(type); setSelectedRooms([]); }} />
                   ))}
                 </div>
                 {propertyType && (
@@ -2363,16 +2304,14 @@ export default function StrataPage() {
                     <BackBtn onClick={() => { setStep(1); setMeasureSubStep("measure"); }}/>
                     <Sub>How would you like to choose your flooring?</Sub>
                     <div style={{ display: "flex", flexDirection: "column", gap: "12px", marginBottom: "16px" }}>
-                      <button onClick={() => setPathChoice("know")} style={{ background: pathChoice === "know" ? "rgba(201,169,110,0.1)" : s.card, border: `1px solid ${pathChoice === "know" ? s.gold : s.border}`, borderRadius: "4px", padding: "22px 20px", cursor: "pointer", textAlign: "left", transition: "all 0.2s", width: "100%" }}>
+                      <SelectCard selected={pathChoice === "know"} onClick={() => setPathChoice("know")} padding="22px 20px">
                         <div style={{ fontFamily: s.serif, fontSize: "22px", fontWeight: 700, color: pathChoice === "know" ? s.gold : s.text, marginBottom: "6px" }}>I know what I want</div>
                         <div style={{ fontFamily: s.sans, fontSize: "12px", color: s.dim, fontWeight: 300, lineHeight: 1.5 }}>Browse flooring types and select your grade</div>
-                        {pathChoice === "know" && <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.gold, marginTop: "8px" }}>✓ Selected</div>}
-                      </button>
-                      <button onClick={() => setPathChoice("help")} style={{ background: pathChoice === "help" ? "rgba(201,169,110,0.1)" : "rgba(201,169,110,0.03)", border: `1px solid ${pathChoice === "help" ? s.gold : "rgba(201,169,110,0.3)"}`, borderRadius: "4px", padding: "22px 20px", cursor: "pointer", textAlign: "left", transition: "all 0.2s", width: "100%" }}>
+                      </SelectCard>
+                      <SelectCard selected={pathChoice === "help"} onClick={() => setPathChoice("help")} padding="22px 20px">
                         <div style={{ fontFamily: s.serif, fontSize: "22px", fontWeight: 700, color: pathChoice === "help" ? s.gold : s.text, marginBottom: "6px" }}>Help me choose</div>
                         <div style={{ fontFamily: s.sans, fontSize: "12px", color: s.dim, fontWeight: 300, lineHeight: 1.5 }}>Describe your home and we'll recommend the best flooring for each room</div>
-                        {pathChoice === "help" && <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.gold, marginTop: "8px" }}>✓ Selected</div>}
-                      </button>
+                      </SelectCard>
                     </div>
 
                     {pathChoice && <GoldBtn onClick={() => setStep2Sub(pathChoice)}>Continue →</GoldBtn>}
@@ -2398,7 +2337,7 @@ export default function StrataPage() {
                           }
                         }} style={{ borderColor: selectedFlooring === f.name ? s.gold : s.border }}>
                           {f.img && <img src={f.img} alt={f.name} style={{ width: "72px", height: "64px", objectFit: "cover", flexShrink: 0 }}/>}
-                          <div style={{ padding: "10px 12px", flex: 1, background: selectedFlooring === f.name ? "#1a1918" : "transparent" }}>
+                          <div style={{ padding: "10px 12px", flex: 1, background: selectedFlooring === f.name ? "rgba(201,169,110,0.08)" : "transparent" }}>
                             <div style={{ fontFamily: s.serif, fontSize: "16px", fontWeight: 700, color: s.text, marginBottom: "3px" }}>{f.name}</div>
                             <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, fontWeight: 300 }}>{f.desc}</div>
                             {selectedFlooring === f.name && <div style={{ fontSize: "9px", color: s.gold, fontFamily: s.sans, marginTop: "4px" }}>✓ Selected</div>}
@@ -2413,10 +2352,10 @@ export default function StrataPage() {
                             <div style={{ fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "10px" }}>Which grade?</div>
                             <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                               {f.grades.map(g => (
-                                <button key={g.label} onClick={() => setFlooringGrade(g.label)} style={{ background: flooringGrade === g.label ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${flooringGrade === g.label ? s.gold : s.border}`, borderRadius: "3px", padding: "10px 14px", cursor: "pointer", textAlign: "left", transition: "all 0.2s" }}>
+                                <SelectCard key={g.label} selected={flooringGrade === g.label} onClick={() => setFlooringGrade(g.label)} padding="10px 14px">
                                   <div style={{ fontFamily: s.sans, fontSize: "12px", fontWeight: 600, color: flooringGrade === g.label ? s.gold : s.text, marginBottom: "3px" }}>{g.label}</div>
                                   <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, fontWeight: 300 }}>{g.desc}</div>
-                                </button>
+                                </SelectCard>
                               ))}
                             </div>
                             <div style={{ fontFamily: s.sans, fontSize: "10px", color: "rgba(242,237,224,0.2)", marginTop: "10px", lineHeight: 1.5 }}>Exact pricing per grade confirmed at survey. Our surveyor brings samples from all tiers.</div>
@@ -2723,10 +2662,10 @@ export default function StrataPage() {
                                           { id: "Whipping", desc: "Edges stitched with thread for a clean, durable, tailored finish." },
                                           { id: "Binding", desc: "Fabric tape bound around edges — more decorative than whipping." },
                                         ].map(({ id, desc }) => (
-                                          <button key={id} onClick={() => setRoomConfig(room, "edgeFinish", id)} style={{ background: config.edgeFinish === id ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${config.edgeFinish === id ? s.gold : s.border}`, borderRadius: "3px", padding: "10px 14px", cursor: "pointer", textAlign: "left", transition: "all 0.2s" }}>
+                                          <SelectCard key={id} selected={config.edgeFinish === id} onClick={() => setRoomConfig(room, "edgeFinish", id)} padding="10px 14px">
                                             <div style={{ fontFamily: s.sans, fontSize: "12px", fontWeight: 600, color: config.edgeFinish === id ? s.gold : s.text }}>{id}</div>
                                             <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, fontWeight: 300, marginTop: "2px" }}>{desc}</div>
-                                          </button>
+                                          </SelectCard>
                                         ))}
                                       </div>
                                     </>
@@ -2787,13 +2726,10 @@ export default function StrataPage() {
                 <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, marginBottom: "12px", fontWeight: 300, lineHeight: 1.6 }}>Select anything you'll need — we'll include these in your estimate.</div>
                 <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "20px" }}>
                   {EXTRAS_LIST.map(ex => (
-                    <button key={ex.id} onClick={() => toggleExtra(ex.id)} style={{ background: selectedExtras.includes(ex.id) ? "rgba(201,169,110,0.1)" : "transparent", border: `1px solid ${selectedExtras.includes(ex.id) ? s.gold : s.border}`, borderRadius: "3px", padding: "12px 14px", cursor: "pointer", textAlign: "left", transition: "all 0.2s" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3px" }}>
-                        <span style={{ fontFamily: s.sans, fontSize: "13px", fontWeight: 600, color: selectedExtras.includes(ex.id) ? s.gold : s.text }}>{ex.label}</span>
-                        {selectedExtras.includes(ex.id) && <span style={{ fontSize: "10px", color: s.gold, fontFamily: s.sans }}>✓</span>}
-                      </div>
+                    <SelectCard key={ex.id} selected={selectedExtras.includes(ex.id)} onClick={() => toggleExtra(ex.id)} padding="12px 14px">
+                      <div style={{ fontFamily: s.sans, fontSize: "13px", fontWeight: 600, color: selectedExtras.includes(ex.id) ? s.gold : s.text, marginBottom: "3px" }}>{ex.label}</div>
                       <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, fontWeight: 300, lineHeight: 1.5 }}>{ex.desc}</div>
-                    </button>
+                    </SelectCard>
                   ))}
                 </div>
                 <GoldBtn onClick={() => setStep(4)}>Continue →</GoldBtn>
