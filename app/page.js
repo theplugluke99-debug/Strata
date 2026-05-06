@@ -1867,7 +1867,7 @@ export default function StrataPage() {
     step === 3 ? "This takes 30 seconds and helps us bring exactly what's needed on the day. No surprises." :
     step === 4 ? "Two more quick questions and you're done." :
     step === 5 ? "Last step. Your personalised estimate is ready and waiting." : null;
-  const residentialVisualiserShowTextures = step > 2 || (step === 2 && step2Sub === "room-config");
+
 
   const stepTitles = [
     "Your project",
@@ -2206,16 +2206,6 @@ export default function StrataPage() {
             <div style={{ fontFamily: s.serif, fontSize: "28px", fontWeight: 700, color: s.text, lineHeight: 1.05, marginBottom: "8px" }}>{stepTitles[step]}</div>
             <Divider />
             <ProgressBar current={step + 1} total={6} />
-            {step > 0 && selectedRooms.length > 0 && (
-              <>
-                {propertyType === "Commercial" ? (
-                  <CommercialMiniVisualiser selectedRooms={expandedRooms} roomConfigs={roomConfigs} selectedFlooring={selectedFlooring} />
-                ) : (
-                  <ResidentialMiniVisualiser selectedRooms={expandedRooms} roomConfigs={roomConfigs} selectedFlooring={selectedFlooring} showTextures={residentialVisualiserShowTextures} />
-                )}
-                <VisualiserRoomLabelRow selectedRooms={expandedRooms} roomConfigs={roomConfigs} selectedFlooring={selectedFlooring} />
-              </>
-            )}
             {currentEncouragement && (
               <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.35)", lineHeight: 1.6, marginBottom: "16px", fontStyle: "italic" }}>{currentEncouragement}</div>
             )}
