@@ -156,61 +156,63 @@ const _BathroomSVG = (
 // ── Illustration SVGs — bird's-eye top-down views (120×80) ──────
 // Carpet: side cross-section pile views
 const CarpetTwistSVG = () => (
-  <svg width="100%" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M4 72 L116 72" stroke="#c9a96e" strokeWidth="1" opacity="0.4"/>
-    {[8,23,38,53,68,83,98,113].map((x,i) => (
+  <svg width="100%" height="56" viewBox="0 0 100 72" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="100" height="72" fill="#111110"/>
+    <line x1="2" y1="68" x2="98" y2="68" stroke="#c9a96e" strokeWidth="1.5"/>
+    {[10,24,38,52,66,80,94].map((x,i) => (
       <g key={i}>
-        <path d={`M${x} 72 C${x-7} 58 ${x+7} 44 ${x} 30 C${x-7} 16 ${x+7} 8 ${x} 8`} stroke="#c9a96e" strokeWidth="1" fill="none"/>
-        <path d={`M${x+3} 72 C${x-4} 58 ${x+10} 44 ${x+3} 30 C${x-4} 16 ${x+10} 8 ${x+3} 8`} stroke="#c9a96e" strokeWidth="1" fill="none" opacity="0.45"/>
+        <path d={`M${x},68 C${x-6},54 ${x+6},42 ${x},30 C${x-6},18 ${x+6},8 ${x},4`} stroke="#c9a96e" strokeWidth="1.5" fill="none"/>
+        <path d={`M${x+1.5},68 C${x-4.5},54 ${x+7.5},42 ${x+1.5},30 C${x-4.5},18 ${x+7.5},8 ${x+1.5},4`} stroke="#c9a96e" strokeWidth="1.5" fill="none" opacity="0.2"/>
       </g>
     ))}
   </svg>
 );
 const CarpetBerberSVG = () => (
-  <svg width="100%" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M4 72 L116 72" stroke="#c9a96e" strokeWidth="1" opacity="0.4"/>
-    <path d="M4 58 L116 58" stroke="#c9a96e" strokeWidth="0.5" opacity="0.18"/>
-    {[4,18,32,46,60,74,88,102].map((x,i) => (
-      <path key={i} d={`M${x} 72 Q${x+7} 28 ${x+14} 72`} stroke="#c9a96e" strokeWidth="1" fill="none"/>
-    ))}
+  <svg width="100%" height="56" viewBox="0 0 100 72" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="100" height="72" fill="#111110"/>
+    <line x1="2" y1="66" x2="98" y2="66" stroke="#c9a96e" strokeWidth="1.5"/>
+    {Array.from({length:8},(_,i) => {
+      const x = 4 + i*12;
+      return <path key={i} d={`M${x},66 C${x},32 ${x+12},32 ${x+12},66`} stroke="#c9a96e" strokeWidth="1.5" fill="none"/>;
+    })}
   </svg>
 );
 const CarpetSaxonySVG = () => (
-  <svg width="100%" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M4 72 L116 72" stroke="#c9a96e" strokeWidth="1" opacity="0.4"/>
-    {[8,20,32,44,56,68,80,92,104,114].map((x,i) => {
-      const tipY = [14,10,16,8,12,18,10,14,8,16][i];
-      const lean = i%2===0 ? -2 : 2;
+  <svg width="100%" height="56" viewBox="0 0 100 72" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="100" height="72" fill="#111110"/>
+    <line x1="2" y1="68" x2="98" y2="68" stroke="#c9a96e" strokeWidth="1.5"/>
+    {[6,16,26,36,46,56,66,76,86,96].map((x,i) => {
+      const tipY = [8,6,10,7,8,6,9,7,8,6][i];
       return (
         <g key={i}>
-          <line x1={x} y1="72" x2={x+lean} y2={tipY} stroke="#c9a96e" strokeWidth="1" opacity={i%3===0?"0.9":"0.65"}/>
-          <path d={`M${x+lean} ${tipY} Q${x+lean+3} ${tipY-3} ${x+lean+5} ${tipY+1}`} stroke="#c9a96e" strokeWidth="0.8" fill="none" opacity="0.7"/>
-          <line x1={x+1} y1="72" x2={x+lean+2} y2={tipY+4} stroke="#c9a96e" strokeWidth="0.8" opacity="0.3"/>
+          <line x1={x} y1="68" x2={x} y2={tipY} stroke="#c9a96e" strokeWidth="1.5"/>
+          <path d={`M${x-2},${tipY+4} Q${x},${tipY} ${x+2},${tipY+4}`} stroke="#c9a96e" strokeWidth="1.5" fill="none"/>
+          <line x1={x+1} y1="68" x2={x+1} y2={tipY} stroke="#c9a96e" strokeWidth="1.5" opacity="0.25"/>
         </g>
       );
     })}
   </svg>
 );
 const CarpetVelvetSVG = () => (
-  <svg width="100%" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M4 72 L116 72" stroke="#c9a96e" strokeWidth="1" opacity="0.4"/>
-    <path d="M4 14 L90 8" stroke="#c9a96e" strokeWidth="0.8" fill="none" opacity="0.12"/>
-    {[6,15,24,33,42,51,60,69,78,87,96,105].map((x,i) => (
-      <g key={i}>
-        <path d={`M${x} 72 Q${x+1} 42 ${x+13} 10`} stroke="#c9a96e" strokeWidth="1" fill="none" opacity={i%2===0?"0.9":"0.55"}/>
-        <path d={`M${x+13} 10 Q${x+15} 8 ${x+14} 11`} stroke="#c9a96e" strokeWidth="0.7" fill="none" opacity="0.6"/>
-      </g>
-    ))}
+  <svg width="100%" height="56" viewBox="0 0 100 72" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="100" height="72" fill="#111110"/>
+    <line x1="2" y1="68" x2="98" y2="68" stroke="#c9a96e" strokeWidth="1.5"/>
+    {Array.from({length:11},(_,i) => {
+      const x = 6 + i*9;
+      return <line key={i} x1={x} y1="68" x2={x+16} y2="8" stroke="#c9a96e" strokeWidth="1.5"/>;
+    })}
+    <line x1="22" y1="12" x2="82" y2="8" stroke="#c9a96e" strokeWidth="1" opacity="0.18"/>
   </svg>
 );
 const CarpetCutLoopSVG = () => (
-  <svg width="100%" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M4 72 L116 72" stroke="#c9a96e" strokeWidth="1" opacity="0.4"/>
-    {[0,24,48,72,96].map((gx,gi) => (
-      <g key={gi}>
-        <line x1={gx+4}  y1="72" x2={gx+4}  y2="14" stroke="#c9a96e" strokeWidth="1" opacity="0.9"/>
-        <line x1={gx+10} y1="72" x2={gx+10} y2="14" stroke="#c9a96e" strokeWidth="1" opacity="0.9"/>
-        <path d={`M${gx+14} 72 Q${gx+19} 46 ${gx+24} 72`} stroke="#c9a96e" strokeWidth="1" fill="none" opacity="0.9"/>
+  <svg width="100%" height="56" viewBox="0 0 100 72" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="100" height="72" fill="#111110"/>
+    <line x1="2" y1="68" x2="98" y2="68" stroke="#c9a96e" strokeWidth="1.5"/>
+    {[2,26,50,74].map((x,i) => (
+      <g key={i}>
+        <line x1={x}    y1="68" x2={x}    y2="10" stroke="#c9a96e" strokeWidth="1.5"/>
+        <line x1={x+7}  y1="68" x2={x+7}  y2="10" stroke="#c9a96e" strokeWidth="1.5"/>
+        <path d={`M${x+13},68 C${x+13},44 ${x+21},44 ${x+21},68`} stroke="#c9a96e" strokeWidth="1.5" fill="none"/>
       </g>
     ))}
   </svg>
@@ -2493,7 +2495,7 @@ export default function StrataPage() {
                             style={hasPanel ? { borderRadius: "4px 4px 0 0", borderBottom: "none" } : {}}
                             onClick={() => { setSelectedFlooring(f.name); setFlooringGrade(""); }}
                           >
-                            {f.img && <img src={f.img} alt={f.name} style={{ width: 72, height: 64, objectFit: "cover", flexShrink: 0, display: "block" }}/>}
+                            {f.img && <img src={f.img} alt={f.name} style={{ width: 100, height: 90, objectFit: "cover", flexShrink: 0, display: "block" }}/>}
                             <div style={{ padding: "10px 14px", flex: 1, minWidth: 0 }}>
                               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3px" }}>
                                 <div style={{ fontFamily: s.serif, fontSize: "15px", fontWeight: 700, color: s.text }}>{f.name}</div>
@@ -2506,34 +2508,43 @@ export default function StrataPage() {
                           {f.name === "Carpet" && isSelected && (
                             <div style={{ borderLeft: "1px solid rgba(201,169,110,0.3)", borderRight: "1px solid rgba(201,169,110,0.3)", borderBottom: "1px solid rgba(201,169,110,0.3)", borderRadius: "0 0 4px 4px", background: "rgba(201,169,110,0.04)", padding: "14px 16px", overflow: "hidden", maxHeight: "1000px", transition: "max-height 0.3s ease" }}>
                               <div style={{ fontSize: "9px", color: s.gold, fontFamily: "system-ui,sans-serif", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "10px" }}>Pile style</div>
-                              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+                              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px" }}>
                                 {[
                                   { id: "twist",   title: "Twist pile",   desc: "Durable · Most popular",           svg: <CarpetTwistSVG/> },
                                   { id: "berber",  title: "Berber / Loop", desc: "Indestructible · Hides footprints", svg: <CarpetBerberSVG/> },
                                   { id: "saxony",  title: "Saxony",        desc: "Deep · Luxurious · Bedroom",       svg: <CarpetSaxonySVG/> },
                                   { id: "velvet",  title: "Velvet",        desc: "Directional sheen · Formal rooms", svg: <CarpetVelvetSVG/> },
                                   { id: "cutloop", title: "Cut & loop",    desc: "Geometric · Contemporary",         svg: <CarpetCutLoopSVG/> },
-                                ].map(({ id, title, desc, svg }, idx, arr) => (
-                                  <div key={id} style={{ gridColumn: idx === arr.length - 1 && arr.length % 2 !== 0 ? "1 / -1" : undefined }}>
-                                    <IlCard selected={selectedPileStyle === id} onClick={() => setSelectedPileStyle(id)}>
+                                ].map(({ id, title, desc, svg }) => (
+                                  <IlCard key={id} selected={selectedPileStyle === id} onClick={() => setSelectedPileStyle(id)}>
+                                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "10px 8px 8px" }}>
                                       {svg}
-                                      <div style={{ padding: "6px 8px 8px" }}>
-                                        <div style={{ fontFamily: s.serif, fontSize: "13px", fontWeight: 700, color: "#f2ede0", marginBottom: "2px" }}>{title}</div>
-                                        <div style={{ fontFamily: "system-ui,sans-serif", fontSize: "10px", color: "rgba(242,237,224,0.45)" }}>{desc}</div>
-                                      </div>
-                                    </IlCard>
-                                  </div>
+                                      <div style={{ fontFamily: s.serif, fontSize: "12px", fontWeight: 700, color: "#f2ede0", marginTop: "5px", marginBottom: "2px", textAlign: "center" }}>{title}</div>
+                                      <div style={{ fontFamily: "system-ui,sans-serif", fontSize: "9px", color: "rgba(242,237,224,0.4)", textAlign: "center" }}>{desc}</div>
+                                    </div>
+                                  </IlCard>
                                 ))}
                               </div>
                             </div>
                           )}
                           {/* Vinyl expansion panel */}
                           {f.name === "Vinyl" && isSelected && (
-                            <div style={{ borderLeft: "1px solid rgba(201,169,110,0.3)", borderRight: "1px solid rgba(201,169,110,0.3)", borderBottom: "1px solid rgba(201,169,110,0.3)", borderRadius: "0 0 4px 4px", background: "rgba(201,169,110,0.04)", padding: "14px 16px", overflow: "hidden", maxHeight: "200px", transition: "max-height 0.3s ease" }}>
+                            <div style={{ borderLeft: "1px solid rgba(201,169,110,0.3)", borderRight: "1px solid rgba(201,169,110,0.3)", borderBottom: "1px solid rgba(201,169,110,0.3)", borderRadius: "0 0 4px 4px", background: "rgba(201,169,110,0.04)", padding: "14px 16px", overflow: "hidden", maxHeight: "400px", transition: "max-height 0.3s ease" }}>
                               <div style={{ fontSize: "9px", color: s.gold, fontFamily: "system-ui,sans-serif", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "10px" }}>Style</div>
                               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
-                                {["Wood effect", "Stone / slate", "Patterned", "Plain"].map(o => (
-                                  <Chip key={o} label={o} selected={selectedVinylStyle === o} onClick={() => setSelectedVinylStyle(o)}/>
+                                {[
+                                  { id: "Wood effect",   img: "/wood-effect-style-vinyl.png" },
+                                  { id: "Stone / slate", img: "/marble-effect-style-vinyl.png" },
+                                  { id: "Tiled",         img: "/tile-effect-style-vinyl-png.png" },
+                                  { id: "Patterned",     img: "/pattern-effect-style-vinyl.png" },
+                                ].map(({ id, img }) => (
+                                  <IlCard key={id} selected={selectedVinylStyle === id} onClick={() => setSelectedVinylStyle(id)}>
+                                    <div style={{ position: "relative", height: "90px", overflow: "hidden" }}>
+                                      <img src={img} alt={id} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}/>
+                                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(17,17,16,0.9) 0%, transparent 60%)" }}/>
+                                      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "8px 10px", fontFamily: s.serif, fontSize: "13px", fontWeight: 700, color: "#f2ede0" }}>{id}</div>
+                                    </div>
+                                  </IlCard>
                                 ))}
                               </div>
                             </div>
