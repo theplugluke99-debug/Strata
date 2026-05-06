@@ -22,59 +22,32 @@ const desktopImages = [
 // ── Flooring types ───────────────────────────────────────────────
 const flooringTypes = [
   {
-    name: "Carpet", tag: "Most popular", grade: true,
+    name: "Carpet", tag: "Most popular", grade: false,
     desc: "Warm, textured, and making a serious comeback. Available in budget twist to premium wool-blend.",
-    img: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&q=85&fit=crop",
+    img: "/carpet.png",
     subfloorNote: null,
-    grades: [
-      { label: "Budget",  desc: "Hard-wearing twist pile. Great for rentals, stairs, and high-traffic areas." },
-      { label: "Mid",     desc: "Comfortable underfoot with a good range of textures and colours. Most popular." },
-      { label: "Premium", desc: "Wool-blend or luxury synthetic. Plush, long-lasting, and worth every penny." },
-    ],
+    grades: [],
   },
   {
-    name: "Herringbone", tag: "Trending now", grade: true,
-    desc: "The classic V-shaped pattern that makes any room look considered. Available in laminate, LVT, or solid hardwood.",
-    img: "https://images.unsplash.com/photo-1562113530-57ba467cea38?w=400&q=85&fit=crop",
-    subfloorNote: "Herringbone is unforgiving of an uneven subfloor — any dips or ridges will show in the pattern. Timber subfloors usually need ply boarding first. We'll check this at survey.",
-    grades: [
-      { label: "Budget",  desc: "Laminate herringbone. Realistic look, very affordable, and easy to maintain." },
-      { label: "Mid",     desc: "LVT herringbone. Waterproof, durable, and works beautifully in kitchens and hallways." },
-      { label: "Premium", desc: "Solid hardwood. The real thing — sanded and refinishable for decades." },
-    ],
-  },
-  {
-    name: "LVT", tag: "Best for wet rooms", grade: true,
+    name: "LVT", tag: "Best for wet rooms", grade: false,
     desc: "Luxury Vinyl Tile — fully waterproof, incredibly durable, and works in every room including kitchens and bathrooms.",
-    img: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400&q=85&fit=crop",
+    img: "/lvt-herringbone-oak.png",
     subfloorNote: "LVT must go down on a perfectly flat surface — it's unforgiving of lumps. Concrete subfloors often need latex levelling compound. Timber subfloors usually need ply boarding. We'll assess and quote for this at survey.",
-    grades: [
-      { label: "Budget",  desc: "Glue-down LVT. Thin, flat, and practical." },
-      { label: "Mid",     desc: "Click-fit LVT with built-in underlay. Easy to replace individual planks." },
-      { label: "Premium", desc: "Karndean or Amtico-equivalent. Thicker wear layer, more realistic, longer warranty." },
-    ],
+    grades: [],
   },
   {
-    name: "Laminate", tag: "Great value", grade: true,
+    name: "Laminate", tag: "Great value", grade: false,
     desc: "Modern laminate is surprisingly good. Durable, clean lines, and a fraction of the cost of real wood.",
-    img: "https://images.unsplash.com/photo-1484154218962-a197022b5858?w=400&q=85&fit=crop",
+    img: "/laminate-greige-oak.png",
     subfloorNote: "Laminate needs a flat, dry base. Concrete may need latex levelling. Timber boards should be screwed down with no flex or bounce before we start.",
-    grades: [
-      { label: "Budget",  desc: "8mm standard. Gets the job done well." },
-      { label: "Mid",     desc: "10–12mm with acoustic underlay. Quieter and more solid underfoot." },
-      { label: "Premium", desc: "12mm+ with premium underlay. The closest thing to real wood without the price tag." },
-    ],
+    grades: [],
   },
   {
-    name: "Vinyl", tag: "Practical & affordable", grade: true,
+    name: "Vinyl", tag: "Practical & affordable", grade: false,
     desc: "Sheet vinyl or vinyl planks. Fully waterproof, soft underfoot, very easy to maintain.",
-    img: "https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?w=400&q=85&fit=crop",
+    img: "/vinyl-wood.jpg",
     subfloorNote: "Vinyl is thin, which means any bumps or old adhesive residue underneath will show through over time. The subfloor needs to be smooth and clean before we lay it.",
-    grades: [
-      { label: "Budget",  desc: "Sheet vinyl. Practical, hygienic, and very cost-effective." },
-      { label: "Mid",     desc: "Cushioned vinyl or vinyl planks. Warmer and softer underfoot." },
-      { label: "Premium", desc: "Heavy-duty commercial-grade or luxury vinyl planks. Extremely durable." },
-    ],
+    grades: [],
   },
   {
     name: "Not sure yet", tag: "We'll guide you", grade: false,
@@ -110,7 +83,6 @@ const EXTRAS_COSTS = {
 // Rates are slightly generous — better to over-order than under-order
 const WASTAGE = {
   "Carpet":       0.12,  // 12% — straight lay no pattern
-  "Herringbone":  0.18,  // 18% — pattern cutting waste is significant
   "LVT":          0.12,  // 12% — click system standard
   "LVT Glue Down":0.08,  // 8%  — glue down, more precise cutting
   "Laminate":     0.12,  // 12% — industry standard
@@ -123,7 +95,6 @@ const WASTAGE = {
 const ESTIMATE_PRICES = {
   flooring: {
     "Carpet":       { Budget: { low: 15, high: 19 }, Mid: { low: 28, high: 35 }, Premium: { low: 48, high: 58 }, default: { low: 28, high: 35 } },
-    "Herringbone":  { Budget: { low: 28, high: 36 }, Mid: { low: 52, high: 62 }, Premium: { low: 88, high: 108 }, default: { low: 52, high: 62 } },
     "LVT":          { Budget: { low: 24, high: 30 }, Mid: { low: 36, high: 44 }, Premium: { low: 54, high: 64 }, default: { low: 36, high: 44 } },
     "Laminate":     { Budget: { low: 15, high: 19 }, Mid: { low: 24, high: 30 }, Premium: { low: 32, high: 40 }, default: { low: 24, high: 30 } },
     "Vinyl":        { Budget: { low: 12, high: 16 }, Mid: { low: 20, high: 25 }, Premium: { low: 28, high: 36 }, default: { low: 20, high: 25 } },
@@ -189,195 +160,177 @@ const _BathroomSVG = (
     <path d="M1 8h14"/>
   </svg>
 );
-// ── Carpet pile SVGs ─────────────────────────────────────────────
+// ── Illustration SVGs — bird's-eye top-down views (120×80) ──────
+// Carpet: side cross-section pile views
 const CarpetTwistSVG = () => (
-  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="80" height="60" fill="#111110"/>
-    <rect x="0" y="52" width="80" height="8" fill="#1a1a18"/>
-    {[8,16,24,32,40,48,56,64,72].map((x, i) => (
+  <svg width="100%" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M4 72 L116 72" stroke="#c9a96e" strokeWidth="1" opacity="0.4"/>
+    {[8,23,38,53,68,83,98,113].map((x,i) => (
       <g key={i}>
-        <path d={`M${x} 52 C${x-4} 38 ${x+4} 28 ${x} 14`} stroke="#c9a96e" strokeWidth="1.5" fill="none" opacity="0.9"/>
-        <path d={`M${x+4} 52 C${x+8} 38 ${x} 28 ${x+4} 14`} stroke="#c9a96e" strokeWidth="1.5" fill="none" opacity="0.7"/>
+        <path d={`M${x} 72 C${x-7} 58 ${x+7} 44 ${x} 30 C${x-7} 16 ${x+7} 8 ${x} 8`} stroke="#c9a96e" strokeWidth="1" fill="none"/>
+        <path d={`M${x+3} 72 C${x-4} 58 ${x+10} 44 ${x+3} 30 C${x-4} 16 ${x+10} 8 ${x+3} 8`} stroke="#c9a96e" strokeWidth="1" fill="none" opacity="0.45"/>
       </g>
     ))}
-    <line x1="0" y1="52" x2="80" y2="52" stroke="#c9a96e" strokeWidth="1" opacity="0.4"/>
   </svg>
 );
 const CarpetBerberSVG = () => (
-  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="80" height="60" fill="#111110"/>
-    <rect x="0" y="52" width="80" height="8" fill="#1a1a18"/>
-    {[6,18,30,42,54,66].map((x, i) => (
-      <g key={i}>
-        <path d={`M${x} 52 Q${x+6} 36 ${x+12} 52`} stroke="#c9a96e" strokeWidth="1.8" fill="none" opacity="0.9"/>
-        <path d={`M${x} 52 Q${x+6} 42 ${x+12} 52`} stroke="rgba(201,169,110,0.3)" strokeWidth="1" fill="none"/>
-      </g>
+  <svg width="100%" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M4 72 L116 72" stroke="#c9a96e" strokeWidth="1" opacity="0.4"/>
+    <path d="M4 58 L116 58" stroke="#c9a96e" strokeWidth="0.5" opacity="0.18"/>
+    {[4,18,32,46,60,74,88,102].map((x,i) => (
+      <path key={i} d={`M${x} 72 Q${x+7} 28 ${x+14} 72`} stroke="#c9a96e" strokeWidth="1" fill="none"/>
     ))}
-    <line x1="0" y1="52" x2="80" y2="52" stroke="#c9a96e" strokeWidth="1" opacity="0.4"/>
   </svg>
 );
 const CarpetSaxonySVG = () => (
-  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="80" height="60" fill="#111110"/>
-    <rect x="0" y="52" width="80" height="8" fill="#1a1a18"/>
-    {[5,10,15,20,25,30,35,40,45,50,55,60,65,70,75].map((x, i) => (
-      <line key={i} x1={x} y1="52" x2={x + (i%2===0 ? -2 : 2)} y2="8" stroke="#c9a96e" strokeWidth="1.2" opacity={i%3===0 ? "0.9" : "0.6"}/>
-    ))}
-    <line x1="0" y1="52" x2="80" y2="52" stroke="#c9a96e" strokeWidth="1" opacity="0.4"/>
+  <svg width="100%" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M4 72 L116 72" stroke="#c9a96e" strokeWidth="1" opacity="0.4"/>
+    {[8,20,32,44,56,68,80,92,104,114].map((x,i) => {
+      const tipY = [14,10,16,8,12,18,10,14,8,16][i];
+      const lean = i%2===0 ? -2 : 2;
+      return (
+        <g key={i}>
+          <line x1={x} y1="72" x2={x+lean} y2={tipY} stroke="#c9a96e" strokeWidth="1" opacity={i%3===0?"0.9":"0.65"}/>
+          <path d={`M${x+lean} ${tipY} Q${x+lean+3} ${tipY-3} ${x+lean+5} ${tipY+1}`} stroke="#c9a96e" strokeWidth="0.8" fill="none" opacity="0.7"/>
+          <line x1={x+1} y1="72" x2={x+lean+2} y2={tipY+4} stroke="#c9a96e" strokeWidth="0.8" opacity="0.3"/>
+        </g>
+      );
+    })}
   </svg>
 );
 const CarpetVelvetSVG = () => (
-  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="80" height="60" fill="#111110"/>
-    <rect x="0" y="52" width="80" height="8" fill="#1a1a18"/>
-    {[4,8,12,16,20,24,28,32,36,40,44,48,52,56,60,64,68,72,76].map((x, i) => (
-      <line key={i} x1={x} y1="52" x2={x} y2="10" stroke="#c9a96e" strokeWidth="1" opacity={i%2===0 ? "0.9" : "0.5"}/>
+  <svg width="100%" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M4 72 L116 72" stroke="#c9a96e" strokeWidth="1" opacity="0.4"/>
+    <path d="M4 14 L90 8" stroke="#c9a96e" strokeWidth="0.8" fill="none" opacity="0.12"/>
+    {[6,15,24,33,42,51,60,69,78,87,96,105].map((x,i) => (
+      <g key={i}>
+        <path d={`M${x} 72 Q${x+1} 42 ${x+13} 10`} stroke="#c9a96e" strokeWidth="1" fill="none" opacity={i%2===0?"0.9":"0.55"}/>
+        <path d={`M${x+13} 10 Q${x+15} 8 ${x+14} 11`} stroke="#c9a96e" strokeWidth="0.7" fill="none" opacity="0.6"/>
+      </g>
     ))}
-    <path d="M0 10 Q40 6 80 10" stroke="rgba(201,169,110,0.4)" strokeWidth="1" fill="none"/>
-    <line x1="0" y1="52" x2="80" y2="52" stroke="#c9a96e" strokeWidth="1" opacity="0.4"/>
   </svg>
 );
 const CarpetCutLoopSVG = () => (
-  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="80" height="60" fill="#111110"/>
-    <rect x="0" y="52" width="80" height="8" fill="#1a1a18"/>
-    {[4,12,20,28,36,44,52,60,68,76].map((x, i) => (
-      i % 2 === 0
-        ? <line key={i} x1={x} y1="52" x2={x} y2="12" stroke="#c9a96e" strokeWidth="1.5" opacity="0.9"/>
-        : <path key={i} d={`M${x-4} 52 Q${x} 36 ${x+4} 52`} stroke="#c9a96e" strokeWidth="1.5" fill="none" opacity="0.9"/>
+  <svg width="100%" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M4 72 L116 72" stroke="#c9a96e" strokeWidth="1" opacity="0.4"/>
+    {[0,24,48,72,96].map((gx,gi) => (
+      <g key={gi}>
+        <line x1={gx+4}  y1="72" x2={gx+4}  y2="14" stroke="#c9a96e" strokeWidth="1" opacity="0.9"/>
+        <line x1={gx+10} y1="72" x2={gx+10} y2="14" stroke="#c9a96e" strokeWidth="1" opacity="0.9"/>
+        <path d={`M${gx+14} 72 Q${gx+19} 46 ${gx+24} 72`} stroke="#c9a96e" strokeWidth="1" fill="none" opacity="0.9"/>
+      </g>
     ))}
-    <line x1="0" y1="52" x2="80" y2="52" stroke="#c9a96e" strokeWidth="1" opacity="0.4"/>
   </svg>
 );
 
-// ── LVT format SVGs ───────────────────────────────────────────────
+// LVT: top-down plank / tile / herringbone layouts
 const LVTPlankSVG = () => (
-  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="80" height="60" fill="#111110"/>
-    {[0,15,30,45].map((y, i) => (
+  <svg width="100%" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {[[2,2,55],[60,2,58],[2,22,55],[60,22,58],[2,42,55],[60,42,58],[2,62,55],[60,62,56]].map(([x,y,w],i) => (
       <g key={i}>
-        <rect x="2" y={y+2} width="38" height="12" rx="0.5" stroke="#c9a96e" strokeWidth="0.8" fill="rgba(201,169,110,0.05)" opacity="0.8"/>
-        <rect x="42" y={y+8} width="36" height="12" rx="0.5" stroke="#c9a96e" strokeWidth="0.8" fill="rgba(201,169,110,0.05)" opacity="0.8"/>
-        <line x1="8" y1={y+2} x2="6" y2={y+14} stroke="#c9a96e" strokeWidth="0.4" opacity="0.3"/>
-        <line x1="20" y1={y+2} x2="18" y2={y+14} stroke="#c9a96e" strokeWidth="0.4" opacity="0.3"/>
+        <rect x={x} y={y} width={w} height="18" rx="0.5" stroke="#c9a96e" strokeWidth="0.8" fill="none"/>
+        <line x1={x+12} y1={y} x2={x+11} y2={y+18} stroke="#c9a96e" strokeWidth="0.5" opacity="0.25"/>
+        <line x1={x+30} y1={y} x2={x+29} y2={y+18} stroke="#c9a96e" strokeWidth="0.5" opacity="0.18"/>
       </g>
     ))}
   </svg>
 );
-const LVTHerringboneSVG = () => (
-  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="80" height="60" fill="#111110"/>
-    {[0,1,2,3,4,5].map((row) =>
-      [0,1,2,3].map((col) => (
-        <g key={`${row}-${col}`}>
-          <rect x={col*20} y={row*10} width="18" height="8" rx="0.5"
-            stroke="#c9a96e" strokeWidth="0.8" fill="rgba(201,169,110,0.05)"
-            transform={`rotate(${row%2===0 ? 45 : -45} ${col*20+9} ${row*10+4})`}
-            opacity="0.7"/>
-        </g>
-      ))
-    )}
-  </svg>
-);
+const LVTHerringboneSVG = () => {
+  const pieces = [];
+  for (let row=0; row<6; row++) {
+    for (let col=0; col<5; col++) {
+      const isRight = (row+col)%2===0;
+      const cx = col*24 + (isRight ? 0 : 12);
+      const cy = row*14;
+      const angle = isRight ? 45 : -45;
+      pieces.push(<g key={`${row}-${col}`} transform={`rotate(${angle} ${cx+10} ${cy+3.5})`}>
+        <rect x={cx} y={cy} width="20" height="7" rx="0.3" stroke="#c9a96e" strokeWidth="0.8" fill="none" opacity="0.8"/>
+        <line x1={cx+6} y1={cy} x2={cx+5} y2={cy+7} stroke="#c9a96e" strokeWidth="0.4" opacity="0.3"/>
+      </g>);
+    }
+  }
+  return <svg width="100%" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">{pieces}</svg>;
+};
 const LVTTileSVG = () => (
-  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="80" height="60" fill="#111110"/>
-    {[0,1,2].map(row =>
-      [0,1,2,3].map(col => (
-        <rect key={`${row}-${col}`}
-          x={col*20+2} y={row*20+2} width="17" height="17" rx="0.5"
-          stroke="#c9a96e" strokeWidth="0.8" fill="rgba(201,169,110,0.04)" opacity="0.8"/>
-      ))
-    )}
+  <svg width="100%" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {[0,1].map(col => [0,1,2].map(row => (
+      <g key={`${row}-${col}`}>
+        <rect x={col*60+2} y={row*26+2} width="56" height="22" rx="0.5" stroke="#c9a96e" strokeWidth="0.8" fill="none"/>
+        <line x1={col*60+14} y1={row*26+2} x2={col*60+40} y2={row*26+24} stroke="#c9a96e" strokeWidth="0.4" opacity="0.18"/>
+        <line x1={col*60+40} y1={row*26+2} x2={col*60+14} y2={row*26+24} stroke="#c9a96e" strokeWidth="0.4" opacity="0.12"/>
+      </g>
+    )))}
   </svg>
 );
 
-// ── Laminate effect SVGs ──────────────────────────────────────────
-const LaminateLightSVG = () => (
-  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="80" height="60" fill="#111110"/>
-    {[0,1,2,3,4].map((row) => (
-      <g key={row}>
-        <rect x="1" y={row*12+1} width="50" height="10" rx="0.5" stroke="rgba(201,169,110,0.9)" strokeWidth="0.8" fill="rgba(201,169,110,0.04)"/>
-        <rect x="53" y={row*12+1} width="26" height="10" rx="0.5" stroke="rgba(201,169,110,0.7)" strokeWidth="0.8" fill="rgba(201,169,110,0.04)"/>
-        <line x1="8" y1={row*12+1} x2="8" y2={row*12+11} stroke="rgba(201,169,110,0.2)" strokeWidth="0.5"/>
-        <line x1="22" y1={row*12+1} x2="22" y2={row*12+11} stroke="rgba(201,169,110,0.15)" strokeWidth="0.5"/>
+// Laminate: top-down plank layouts
+const LaminateNaturalSVG = () => (
+  <svg width="100%" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {[[1,2,60],[63,2,55],[1,22,45],[48,22,70],[1,42,60],[63,42,55],[1,62,45],[48,62,70]].map(([x,y,w],i) => (
+      <g key={i}>
+        <rect x={x} y={y} width={w} height="18" rx="0.5" stroke="#c9a96e" strokeWidth="0.8" fill="none"/>
+        <line x1={x+15} y1={y+3} x2={x+w-8} y2={y+5} stroke="#c9a96e" strokeWidth="0.5" opacity="0.22"/>
+        <line x1={x+10} y1={y+10} x2={x+w-5} y2={y+12} stroke="#c9a96e" strokeWidth="0.5" opacity="0.16"/>
       </g>
     ))}
   </svg>
 );
-const LaminateDarkSVG = () => (
-  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="80" height="60" fill="#111110"/>
-    {[0,1,2,3,4].map((row) => (
-      <g key={row}>
-        <rect x="1" y={row*12+1} width="40" height="10" rx="0.5" stroke="rgba(201,169,110,0.6)" strokeWidth="0.8" fill="rgba(201,169,110,0.08)"/>
-        <rect x="43" y={row*12+1} width="36" height="10" rx="0.5" stroke="rgba(201,169,110,0.6)" strokeWidth="0.8" fill="rgba(201,169,110,0.08)"/>
-        <line x1="10" y1={row*12+1} x2="9" y2={row*12+11} stroke="rgba(201,169,110,0.3)" strokeWidth="0.5"/>
-        <line x1="28" y1={row*12+1} x2="27" y2={row*12+11} stroke="rgba(201,169,110,0.2)" strokeWidth="0.5"/>
+const LaminateGreySVG = () => (
+  <svg width="100%" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {[[1,2,60],[63,2,55],[1,22,45],[48,22,70],[1,42,60],[63,42,55],[1,62,45],[48,62,70]].map(([x,y,w],i) => (
+      <g key={i}>
+        <rect x={x} y={y} width={w} height="18" rx="0.5" stroke="#c9a96e" strokeWidth="0.8" fill="none"/>
+        <line x1={x+8} y1={y+2} x2={x+w-4} y2={y+16} stroke="#c9a96e" strokeWidth="0.4" opacity="0.2"/>
+        <line x1={x+w-8} y1={y+2} x2={x+4} y2={y+16} stroke="#c9a96e" strokeWidth="0.4" opacity="0.14"/>
       </g>
     ))}
   </svg>
 );
+const LaminateHerringboneSVG = () => {
+  const pieces = [];
+  for (let row=0; row<5; row++) {
+    for (let col=0; col<4; col++) {
+      const isRight = (row+col)%2===0;
+      const cx = col*28 + (isRight ? 0 : 14);
+      const cy = row*17;
+      const angle = isRight ? 45 : -45;
+      pieces.push(<g key={`${row}-${col}`} transform={`rotate(${angle} ${cx+12} ${cy+4})`}>
+        <rect x={cx} y={cy} width="24" height="8" rx="0.3" stroke="#c9a96e" strokeWidth="0.8" fill="none" opacity="0.85"/>
+        <line x1={cx+7} y1={cy} x2={cx+6} y2={cy+8} stroke="#c9a96e" strokeWidth="0.4" opacity="0.28"/>
+        <line x1={cx+14} y1={cy} x2={cx+13} y2={cy+8} stroke="#c9a96e" strokeWidth="0.4" opacity="0.2"/>
+      </g>);
+    }
+  }
+  return <svg width="100%" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">{pieces}</svg>;
+};
 
-// ── Vinyl sheet SVGs ──────────────────────────────────────────────
-const VinylVictorianSVG = () => (
-  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="80" height="60" fill="#111110"/>
-    {[0,1,2,3,4,5].map(row =>
-      [0,1,2,3,4,5,6,7].map(col => (
-        <rect key={`${row}-${col}`}
-          x={col*10+1} y={row*10+1} width="8" height="8"
-          fill={(row+col)%2===0 ? "rgba(201,169,110,0.15)" : "rgba(201,169,110,0.03)"}
-          stroke="#c9a96e" strokeWidth="0.4" opacity="0.8"/>
-      ))
-    )}
-  </svg>
-);
-const VinylHexagonSVG = () => (
-  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="80" height="60" fill="#111110"/>
-    {[0,1,2,3].map(row =>
-      [0,1,2,3,4].map(col => {
-        const cx = col*18 + (row%2)*9 + 9;
-        const cy = row*16 + 8;
-        const r = 8;
-        const points = [0,1,2,3,4,5].map(i => {
-          const angle = (i*60 - 30) * Math.PI/180;
-          return `${cx + r*Math.cos(angle)},${cy + r*Math.sin(angle)}`;
-        }).join(' ');
-        return <polygon key={`${row}-${col}`} points={points} stroke="#c9a96e" strokeWidth="0.7" fill="rgba(201,169,110,0.04)" opacity="0.8"/>;
-      })
-    )}
-  </svg>
-);
+// Vinyl: top-down layouts
 const VinylWoodSVG = () => (
-  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="80" height="60" fill="#111110"/>
-    {[0,1,2,3,4,5,6,7].map((row) => (
-      <g key={row}>
-        <rect x="1" y={row*8+1} width="78" height="6" rx="0.5" stroke="rgba(201,169,110,0.6)" strokeWidth="0.6" fill="rgba(201,169,110,0.04)"/>
-        <line x1="25" y1={row*8+1} x2="24" y2={row*8+7} stroke="rgba(201,169,110,0.2)" strokeWidth="0.5"/>
-        <line x1="55" y1={row*8+1} x2="54" y2={row*8+7} stroke="rgba(201,169,110,0.2)" strokeWidth="0.5"/>
+  <svg width="100%" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {[[1,2,72],[75,2,43],[1,16,50],[53,16,65],[1,30,72],[75,30,43],[1,44,50],[53,44,65],[1,58,72],[75,58,43],[1,72,50],[53,72,65]].map(([x,y,w],i) => (
+      <g key={i}>
+        <rect x={x} y={y} width={w} height="12" rx="0.3" stroke="#c9a96e" strokeWidth="0.7" fill="none"/>
+        <line x1={x+18} y1={y+1} x2={x+17} y2={y+11} stroke="#c9a96e" strokeWidth="0.4" opacity="0.2"/>
+        <line x1={x+40} y1={y+1} x2={x+39} y2={y+11} stroke="#c9a96e" strokeWidth="0.4" opacity="0.15"/>
       </g>
     ))}
   </svg>
 );
 const VinylStoneSVG = () => (
-  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="80" height="60" fill="#111110"/>
-    {[0,1].map(row =>
-      [0,1].map(col => (
-        <g key={`${row}-${col}`}>
-          <rect x={col*40+2} y={row*30+2} width="36" height="26" rx="1"
-            stroke="rgba(201,169,110,0.7)" strokeWidth="0.8" fill="rgba(201,169,110,0.04)"/>
-          <path d={`M${col*40+8} ${row*30+12} Q${col*40+20} ${row*30+8} ${col*40+32} ${row*30+14}`}
-            stroke="rgba(201,169,110,0.2)" strokeWidth="0.5" fill="none"/>
-          <path d={`M${col*40+5} ${row*30+20} Q${col*40+18} ${row*30+16} ${col*40+35} ${row*30+22}`}
-            stroke="rgba(201,169,110,0.15)" strokeWidth="0.5" fill="none"/>
-        </g>
-      ))
-    )}
+  <svg width="100%" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {[0,1,2].map(row => [0,1,2].map(col => (
+      <g key={`${row}-${col}`}>
+        <rect x={col*40+2} y={row*26+2} width="36" height="22" rx="0.5" stroke="#c9a96e" strokeWidth="0.8" fill="none"/>
+        <path d={`M${col*40+8} ${row*26+10} Q${col*40+20} ${row*26+6} ${col*40+32} ${row*26+12}`} stroke="#c9a96e" strokeWidth="0.5" fill="none" opacity={col%2===0?"0.22":"0.14"}/>
+      </g>
+    )))}
+  </svg>
+);
+const VinylPlainSVG = () => (
+  <svg width="100%" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    {[10,30,50,70].map((y,i) => (
+      <line key={i} x1="4" y1={y} x2="116" y2={y} stroke="#c9a96e" strokeWidth="0.8" opacity="0.2"/>
+    ))}
   </svg>
 );
 
@@ -742,6 +695,37 @@ const SelectCard = ({ selected, onClick, padding = "12px 14px", children }) => {
     >
       {justSelected && (
         <span style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg,transparent,rgba(201,169,110,0.25),transparent)", animation: "shimmerSweep 0.4s ease-out forwards", pointerEvents: "none", zIndex: 1 }} />
+      )}
+      {children}
+    </button>
+  );
+};
+
+const IlCard = ({ selected, onClick, children }) => {
+  const [hovered, setHovered] = useState(false);
+  const [pressed, setPressed] = useState(false);
+  const [justSelected, setJustSelected] = useState(false);
+  return (
+    <button
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      onClick={() => {
+        setPressed(true);
+        if (!selected) { setJustSelected(true); setTimeout(() => setJustSelected(false), 400); }
+        setTimeout(() => { setPressed(false); onClick(); }, 120);
+      }}
+      style={{
+        position: "relative", overflow: "hidden",
+        background: selected ? "rgba(201,169,110,0.15)" : "transparent",
+        border: `1px solid ${selected ? "#c9a96e" : hovered ? "rgba(201,169,110,0.6)" : "#2a2a28"}`,
+        borderRadius: "3px", cursor: "pointer", textAlign: "left", width: "100%", padding: 0,
+        transition: "all 0.25s ease",
+        transform: pressed ? "scale(0.97)" : hovered ? "translateY(-3px) scale(1.03)" : selected ? "scale(1.02)" : "scale(1)",
+        boxShadow: hovered ? "0 8px 32px rgba(0,0,0,0.5)" : selected ? "0 0 0 1px rgba(201,169,110,0.3)" : "none",
+      }}
+    >
+      {justSelected && (
+        <span style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg,transparent,rgba(201,169,110,0.25),transparent)", animation: "shimmerSweep 0.4s ease-out forwards", pointerEvents: "none", zIndex: 2 }} />
       )}
       {children}
     </button>
@@ -1198,8 +1182,7 @@ function RoomCalculator({ room, data, onChange, flooringType, propertyType }) {
   const isStairs     = room === "Stairs";
   const isLanding    = room === "Landing";
   const wastageRate  = WASTAGE[flooringType] || 0.12;
-  const wastageLabel = flooringType === "Herringbone" ? "18% wastage"
-    : flooringType === "Vinyl" ? "15% wastage"
+  const wastageLabel = flooringType === "Vinyl" ? "15% wastage"
     : `${Math.round(wastageRate * 100)}% wastage`;
   const grossM2 = getRoomGrossM2(room, data, flooringType);
   const set = (key, val) => onChange({ ...data, [key]: val });
@@ -1585,7 +1568,6 @@ const FLOORING_TEXTURE_IDS = {
   "LVT": "texture-lvt",
   "SPC": "texture-lvt",
   "Laminate": "texture-laminate",
-  "Herringbone": "texture-herringbone",
   "Vinyl": "texture-vinyl",
   "Carpet Tiles": "texture-carpet-tiles",
   "Commercial carpet tiles": "texture-carpet-tiles",
@@ -2093,7 +2075,7 @@ export default function StrataPage() {
       }
       const data = await res.json();
       const responseText = data.response || "I'd suggest LVT for most rooms — it's durable, waterproof, and looks great.";
-      const knownFloorings = ["Carpet", "Herringbone", "LVT", "Laminate", "Vinyl"];
+      const knownFloorings = ["Carpet", "LVT", "Laminate", "Vinyl"];
       const detected = knownFloorings.find(f => responseText.toLowerCase().includes(f.toLowerCase()));
       setInterceptInput("");
       setInterceptResponse({ text: responseText, flooring: detected || null });
@@ -2126,8 +2108,9 @@ export default function StrataPage() {
         .mq-track { display: flex; gap: 48px; animation: mq 28s linear infinite; white-space: nowrap; will-change: transform; }
         @keyframes mq { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
         .row-card { background: #1a1a18; border: 1px solid #2a2a28; border-radius: 4px; padding: 14px 16px; margin-bottom: 6px; }
-        .floor-card { border: 1px solid #2a2a28; border-radius: 4px; overflow: hidden; display: flex; cursor: pointer; transition: border-color 0.2s; margin-bottom: 6px; }
-        .floor-card:hover { border-color: #c9a96e; }
+        .floor-card { position: relative; border: 1px solid #2a2a28; border-radius: 4px; overflow: hidden; cursor: pointer; transition: all 0.25s ease; margin-bottom: 6px; height: 160px; display: flex; flex-direction: column; justify-content: flex-end; }
+        .floor-card:hover { border-color: rgba(201,169,110,0.6); transform: translateY(-2px) scale(1.01); box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+        .floor-card.selected { border-color: #c9a96e; background: rgba(201,169,110,0.05); transform: scale(1.01); box-shadow: 0 0 0 1px rgba(201,169,110,0.3); }
         .mat-card { border-radius: 6px; overflow: hidden; position: relative; height: 140px; cursor: pointer; }
         .mat-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s; display: block; }
         .mat-card:hover img { transform: scale(1.05); }
@@ -2468,7 +2451,7 @@ export default function StrataPage() {
                   <div style={{ background: "rgba(201,169,110,0.07)", border: "1px solid rgba(201,169,110,0.2)", borderRadius: "3px", padding: "14px 16px", marginTop: "8px", marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <div>
                       <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "3px" }}>Total to order</div>
-                      <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.3)" }}>Includes {selectedFlooring === "Herringbone" ? "15%" : "10%"} wastage allowance</div>
+                      <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.3)" }}>Includes {selectedFlooring === "Vinyl" ? "15%" : "10%"} wastage allowance</div>
                     </div>
                     <div style={{ fontFamily: s.serif, fontSize: "32px", color: s.gold, fontWeight: 300 }}>{totalGrossM2.toFixed(1)} <span style={{ fontSize: "16px" }}>m²</span></div>
                   </div>
@@ -2507,42 +2490,40 @@ export default function StrataPage() {
                     <Sub>Not sure? Our surveyor brings samples — choose in your own home.</Sub>
                     {flooringTypes.map(f => (
                       <div key={f.name}>
-                        <div className="floor-card" onClick={() => {
-                          if (f.name === "Not sure yet") {
-                            setShowFloIntercept(true);
-                            setInterceptOpen(false);
-                            setInterceptResponse(null);
-                            setSelectedFlooring("");
-                          } else {
-                            setSelectedFlooring(f.name);
-                            setFlooringGrade("");
-                          }
-                        }} style={{ borderColor: selectedFlooring === f.name ? s.gold : s.border }}>
-                          {f.img && <img src={f.img} alt={f.name} style={{ width: "72px", height: "64px", objectFit: "cover", flexShrink: 0 }}/>}
-                          <div style={{ padding: "10px 12px", flex: 1, background: selectedFlooring === f.name ? "rgba(201,169,110,0.08)" : "transparent" }}>
-                            <div style={{ fontFamily: s.serif, fontSize: "16px", fontWeight: 700, color: s.text, marginBottom: "3px" }}>{f.name}</div>
-                            <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, fontWeight: 300 }}>{f.desc}</div>
-                            {selectedFlooring === f.name && <div style={{ fontSize: "9px", color: s.gold, fontFamily: s.sans, marginTop: "4px" }}>✓ Selected</div>}
-                          </div>
-                          <div style={{ padding: "10px", display: "flex", alignItems: "center", flexShrink: 0 }}>
-                            <div style={{ fontSize: "9px", color: s.gold, fontFamily: s.sans, letterSpacing: "0.06em", textAlign: "right" }}>{f.tag}</div>
+                        <div
+                          className={`floor-card${selectedFlooring === f.name ? " selected" : ""}`}
+                          onClick={() => {
+                            if (f.name === "Not sure yet") {
+                              setShowFloIntercept(true);
+                              setInterceptOpen(false);
+                              setInterceptResponse(null);
+                              setSelectedFlooring("");
+                            } else {
+                              setSelectedFlooring(f.name);
+                              setFlooringGrade("");
+                            }
+                          }}
+                        >
+                          {/* Full-bleed image */}
+                          {f.img && (
+                            <div style={{ position: "absolute", inset: 0 }}>
+                              <img src={f.img} alt={f.name} style={{ width: "100%", height: "110px", objectFit: "cover", display: "block" }}/>
+                              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "110px", background: "linear-gradient(to top, rgba(17,17,16,0.97) 0%, rgba(17,17,16,0.3) 60%, transparent 100%)" }}/>
+                            </div>
+                          )}
+                          {/* Content */}
+                          <div style={{ position: "relative", padding: "10px 12px 12px", marginTop: "auto" }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "4px" }}>
+                              <div style={{ fontFamily: s.serif, fontSize: "18px", fontWeight: 700, color: s.text, lineHeight: 1.1 }}>{f.name}</div>
+                              <div style={{ fontSize: "9px", color: s.gold, fontFamily: s.sans, letterSpacing: "0.08em", textAlign: "right", marginTop: "2px", flexShrink: 0, marginLeft: "8px" }}>{f.tag}</div>
+                            </div>
+                            <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.5)", fontWeight: 300, lineHeight: 1.5 }}>{f.desc}</div>
+                            {selectedFlooring === f.name && (
+                              <div style={{ fontSize: "9px", color: s.gold, fontFamily: s.sans, marginTop: "6px", letterSpacing: "0.06em" }}>✓ Selected</div>
+                            )}
                           </div>
                         </div>
                         {selectedFlooring === f.name && f.subfloorNote && <GoldNote>{f.subfloorNote}</GoldNote>}
-                        {selectedFlooring === f.name && f.grade && f.grades.length > 0 && (
-                          <div style={{ background: "#161614", border: `1px solid rgba(201,169,110,0.15)`, borderRadius: "0 0 4px 4px", padding: "14px 16px", marginBottom: "6px" }}>
-                            <div style={{ fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "10px" }}>Which grade?</div>
-                            <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-                              {f.grades.map(g => (
-                                <SelectCard key={g.label} selected={flooringGrade === g.label} onClick={() => setFlooringGrade(g.label)} padding="10px 14px">
-                                  <div style={{ fontFamily: s.sans, fontSize: "12px", fontWeight: 600, color: flooringGrade === g.label ? s.gold : s.text, marginBottom: "3px" }}>{g.label}</div>
-                                  <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, fontWeight: 300 }}>{g.desc}</div>
-                                </SelectCard>
-                              ))}
-                            </div>
-                            <div style={{ fontFamily: s.sans, fontSize: "10px", color: "rgba(242,237,224,0.2)", marginTop: "10px", lineHeight: 1.5 }}>Exact pricing per grade confirmed at survey. Our surveyor brings samples from all tiers.</div>
-                          </div>
-                        )}
                       </div>
                     ))}
                     {/* Flo intercept — warm split layout (appears after 9 seconds) */}
@@ -2790,35 +2771,25 @@ export default function StrataPage() {
                               {/* ── CARPET CONFIG ─────────────────────── */}
                               {roomFlooring === "Carpet" && (
                                 <>
-                                  {/* Pile style */}
                                   <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Pile style</div>
                                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "14px" }}>
                                     {[
-                                      {id:"twist",   label:"Twist pile",    desc:"Durable and practical — the most popular choice",       svg:<CarpetTwistSVG/>},
-                                      {id:"berber",  label:"Berber / Loop", desc:"Virtually indestructible — hides footprints brilliantly",svg:<CarpetBerberSVG/>},
-                                      {id:"saxony",  label:"Saxony",        desc:"Deep and luxurious — perfect for bedrooms",              svg:<CarpetSaxonySVG/>},
-                                      {id:"velvet",  label:"Velvet pile",   desc:"Ultra smooth with a directional sheen — formal rooms",   svg:<CarpetVelvetSVG/>},
-                                      {id:"cutloop", label:"Cut and loop",  desc:"Textured geometric pattern — contemporary spaces",       svg:<CarpetCutLoopSVG/>},
+                                      {id:"twist",   label:"Twist pile",    desc:"Durable · Practical · Most popular",       svg:<CarpetTwistSVG/>},
+                                      {id:"berber",  label:"Berber / Loop", desc:"Indestructible · Hides footprints",        svg:<CarpetBerberSVG/>},
+                                      {id:"saxony",  label:"Saxony",        desc:"Deep · Luxurious · Bedroom perfect",       svg:<CarpetSaxonySVG/>},
+                                      {id:"velvet",  label:"Velvet",        desc:"Directional sheen · Formal rooms",         svg:<CarpetVelvetSVG/>},
+                                      {id:"cutloop", label:"Cut & loop",    desc:"Geometric texture · Contemporary",         svg:<CarpetCutLoopSVG/>},
                                     ].map(({ id, label, desc, svg }) => (
-                                      <SelectCard key={id} selected={config.pileStyle === id} onClick={() => setRoomConfig(room, "pileStyle", id)} padding="0">
-                                        <div style={{ borderRadius: "2px", overflow: "hidden", width: "100%", display: "flex", justifyContent: "center", background: "#111110" }}>{svg}</div>
+                                      <IlCard key={id} selected={config.pileStyle === id} onClick={() => setRoomConfig(room, "pileStyle", id)}>
+                                        <div style={{ padding: "10px 10px 2px", borderBottom: "1px solid rgba(201,169,110,0.08)" }}>{svg}</div>
                                         <div style={{ padding: "8px 10px 10px" }}>
-                                          <div style={{ fontFamily: s.sans, fontSize: "12px", fontWeight: 600, color: config.pileStyle === id ? s.gold : s.text, marginBottom: "2px" }}>{label}</div>
-                                          <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim, lineHeight: 1.4 }}>{desc}</div>
+                                          <div style={{ fontFamily: s.serif, fontSize: "14px", fontWeight: 700, color: config.pileStyle === id ? s.gold : s.text, marginBottom: "3px" }}>{label}</div>
+                                          <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim }}>{desc}</div>
                                         </div>
-                                      </SelectCard>
+                                      </IlCard>
                                     ))}
                                   </div>
 
-                                  {/* Colour tone */}
-                                  <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Colour tone</div>
-                                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px", marginBottom: "14px" }}>
-                                    {["Light / Natural", "Mid / Warm", "Dark / Bold"].map(o => (
-                                      <Chip key={o} label={o} selected={config.colourTone === o} onClick={() => setRoomConfig(room, "colourTone", o)}/>
-                                    ))}
-                                  </div>
-
-                                  {/* Grade */}
                                   <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Grade</div>
                                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px", marginBottom: "14px" }}>
                                     {["Budget", "Mid", "Premium"].map(g => (
@@ -2826,15 +2797,14 @@ export default function StrataPage() {
                                     ))}
                                   </div>
 
-                                  {/* Underlay */}
                                   <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Underlay</div>
                                   <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "14px" }}>
                                     {[
-                                      {id:"keep",     label:"Keep existing",    desc:"Only available if current floor is carpet"},
-                                      {id:"budget",   label:"Budget",           desc:"7mm PU foam"},
-                                      {id:"mid",      label:"Mid",              desc:"10mm PU foam"},
-                                      {id:"premium",  label:"Premium",          desc:"12mm memory foam"},
-                                      {id:"acoustic", label:"Acoustic",         desc:"Required in flats and apartments"},
+                                      {id:"keep",     label:"Keep existing",  desc:"Only available if current floor is carpet"},
+                                      {id:"budget",   label:"Budget",         desc:"7mm PU foam"},
+                                      {id:"mid",      label:"Mid",            desc:"10mm PU foam"},
+                                      {id:"premium",  label:"Premium",        desc:"12mm memory foam"},
+                                      {id:"acoustic", label:"Acoustic",       desc:"Required in flats and apartments"},
                                     ].filter(u => u.id !== "keep" || config.currentFloor === "Carpet").map(({ id, label, desc }) => (
                                       <SelectCard key={id} selected={config.underlay === id} onClick={() => setRoomConfig(room, "underlay", id)} padding="10px 12px">
                                         <div style={{ fontFamily: s.sans, fontSize: "12px", fontWeight: 600, color: config.underlay === id ? s.gold : s.text, marginBottom: "2px" }}>{label}</div>
@@ -2846,7 +2816,6 @@ export default function StrataPage() {
                                     <GoldNote>Building regulations in most leases require acoustic underlay above ground floor. Check your lease before proceeding.</GoldNote>
                                   )}
 
-                                  {/* Gripper rods */}
                                   <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Gripper rods</div>
                                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px", marginBottom: "14px" }}>
                                     {["Replace all (recommended)", "Top up only", "Not needed"].map(o => (
@@ -2854,7 +2823,6 @@ export default function StrataPage() {
                                     ))}
                                   </div>
 
-                                  {/* Edge finishing — stairs only */}
                                   {room === "Stairs" && (
                                     <>
                                       <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Edge finishing</div>
@@ -2874,7 +2842,6 @@ export default function StrataPage() {
                                     </>
                                   )}
 
-                                  {/* Current floor */}
                                   <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Current floor covering</div>
                                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
                                     {["Carpet", "Hard floor", "Tiles", "Vinyl", "Bare / nothing"].map(o => (
@@ -2887,25 +2854,23 @@ export default function StrataPage() {
                               {/* ── LVT CONFIG ────────────────────────── */}
                               {roomFlooring === "LVT" && (
                                 <>
-                                  {/* Format */}
                                   <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Format</div>
                                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px", marginBottom: "14px" }}>
                                     {[
-                                      {id:"plank",       label:"Plank",       desc:"Wood effect — most popular",                svg:<LVTPlankSVG/>},
-                                      {id:"tile",        label:"Large tile",  desc:"Stone or concrete — clean and modern",     svg:<LVTTileSVG/>},
-                                      {id:"herringbone", label:"Herringbone", desc:"Premium pattern — makes a statement",      svg:<LVTHerringboneSVG/>},
+                                      {id:"plank",       label:"Plank",       desc:"Wood effect · Most popular",    svg:<LVTPlankSVG/>},
+                                      {id:"tile",        label:"Large tile",  desc:"Stone / concrete effect",       svg:<LVTTileSVG/>},
+                                      {id:"herringbone", label:"Herringbone", desc:"Pattern statement · Premium",   svg:<LVTHerringboneSVG/>},
                                     ].map(({ id, label, desc, svg }) => (
-                                      <SelectCard key={id} selected={config.lvtFormat === id} onClick={() => setRoomConfig(room, "lvtFormat", id)} padding="0">
-                                        <div style={{ borderRadius: "2px", overflow: "hidden", width: "100%", display: "flex", justifyContent: "center", background: "#111110" }}>{svg}</div>
+                                      <IlCard key={id} selected={config.lvtFormat === id} onClick={() => setRoomConfig(room, "lvtFormat", id)}>
+                                        <div style={{ padding: "10px 10px 2px", borderBottom: "1px solid rgba(201,169,110,0.08)" }}>{svg}</div>
                                         <div style={{ padding: "8px 8px 10px" }}>
-                                          <div style={{ fontFamily: s.sans, fontSize: "11px", fontWeight: 600, color: config.lvtFormat === id ? s.gold : s.text, marginBottom: "2px" }}>{label}</div>
-                                          <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim, lineHeight: 1.3 }}>{desc}</div>
+                                          <div style={{ fontFamily: s.serif, fontSize: "14px", fontWeight: 700, color: config.lvtFormat === id ? s.gold : s.text, marginBottom: "3px" }}>{label}</div>
+                                          <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim }}>{desc}</div>
                                         </div>
-                                      </SelectCard>
+                                      </IlCard>
                                     ))}
                                   </div>
 
-                                  {/* Effect — only after format chosen */}
                                   {config.lvtFormat && (
                                     <>
                                       <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Effect</div>
@@ -2917,13 +2882,12 @@ export default function StrataPage() {
                                     </>
                                   )}
 
-                                  {/* Core type */}
                                   <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Core type</div>
                                   <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "14px" }}>
                                     {[
-                                      {id:"click",  label:"Click floating",  desc:"Easiest install — most popular for residential"},
-                                      {id:"rigid",  label:"Rigid core SPC",  desc:"Best for underfloor heating, most dimensionally stable"},
-                                      {id:"glue",   label:"Glue down",       desc:"Flattest finish — true commercial grade"},
+                                      {id:"click", label:"Click floating",  desc:"Easiest install — most popular for residential"},
+                                      {id:"rigid", label:"Rigid core SPC",  desc:"Best for underfloor heating, most dimensionally stable"},
+                                      {id:"glue",  label:"Glue down",       desc:"Flattest finish — true commercial grade"},
                                     ].map(({ id, label, desc }) => (
                                       <SelectCard key={id} selected={config.lvtCore === id} onClick={() => setRoomConfig(room, "lvtCore", id)} padding="10px 12px">
                                         <div style={{ fontFamily: s.sans, fontSize: "12px", fontWeight: 600, color: config.lvtCore === id ? s.gold : s.text, marginBottom: "2px" }}>{label}</div>
@@ -2932,19 +2896,16 @@ export default function StrataPage() {
                                     ))}
                                   </div>
 
-                                  {/* Grade */}
-                                  <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Grade</div>
+                                  <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Wear layer grade</div>
                                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px", marginBottom: "14px" }}>
                                     {["Budget 0.3mm", "Mid 0.55mm", "Premium 0.7mm+"].map(g => (
                                       <Chip key={g} label={g} selected={roomGrade === g} onClick={() => setRoomConfig(room, "grade", g)}/>
                                     ))}
                                   </div>
 
-                                  {/* Subfloor notes */}
                                   {subfloor === "Concrete" && <GoldNote>Concrete subfloors often need latex levelling before LVT can be laid. We'll assess at survey.</GoldNote>}
                                   {subfloor === "Timber / boards" && <GoldNote>Timber subfloors usually need ply boarding before LVT is laid. We'll assess at survey.</GoldNote>}
 
-                                  {/* Current floor */}
                                   <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Current floor covering</div>
                                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
                                     {["Carpet", "Hard floor", "Tiles", "Vinyl", "Bare / nothing"].map(o => (
@@ -2957,35 +2918,37 @@ export default function StrataPage() {
                               {/* ── LAMINATE CONFIG ───────────────────── */}
                               {roomFlooring === "Laminate" && (
                                 <>
-                                  {/* Effect */}
                                   <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Effect</div>
                                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "14px" }}>
                                     {[
-                                      {id:"whitewash",  label:"Light whitewash", desc:"Bright, Scandinavian, contemporary",   svg:<LaminateLightSVG/>},
-                                      {id:"natural",    label:"Natural oak",     desc:"Warm and classic — most popular",      svg:<LaminateLightSVG/>},
-                                      {id:"smoked",     label:"Dark smoked",     desc:"Rich, dramatic, premium feel",         svg:<LaminateDarkSVG/>},
-                                      {id:"grey",       label:"Cool grey",       desc:"Modern and versatile",                 svg:<LaminateDarkSVG/>},
-                                      {id:"herringbone",label:"Herringbone",     desc:"Pattern layout — adds visual drama",   svg:<LaminateDarkSVG/>},
+                                      {id:"natural",     label:"Natural oak",    desc:"Classic · Warm · Timeless",         svg:<LaminateNaturalSVG/>},
+                                      {id:"grey",        label:"Grey / smoked",  desc:"Contemporary · Sophisticated",      svg:<LaminateGreySVG/>},
+                                      {id:"herringbone", label:"Herringbone",    desc:"Bold pattern · Statement floors",   svg:<LaminateHerringboneSVG/>},
                                     ].map(({ id, label, desc, svg }) => (
-                                      <SelectCard key={id} selected={config.laminateEffect === id} onClick={() => setRoomConfig(room, "laminateEffect", id)} padding="0">
-                                        <div style={{ borderRadius: "2px", overflow: "hidden", width: "100%", display: "flex", justifyContent: "center", background: "#111110" }}>{svg}</div>
+                                      <IlCard key={id} selected={config.laminateEffect === id} onClick={() => setRoomConfig(room, "laminateEffect", id)}>
+                                        <div style={{ padding: "10px 10px 2px", borderBottom: "1px solid rgba(201,169,110,0.08)" }}>{svg}</div>
                                         <div style={{ padding: "8px 10px 10px" }}>
-                                          <div style={{ fontFamily: s.sans, fontSize: "12px", fontWeight: 600, color: config.laminateEffect === id ? s.gold : s.text, marginBottom: "2px" }}>{label}</div>
-                                          <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim, lineHeight: 1.4 }}>{desc}</div>
+                                          <div style={{ fontFamily: s.serif, fontSize: "14px", fontWeight: 700, color: config.laminateEffect === id ? s.gold : s.text, marginBottom: "3px" }}>{label}</div>
+                                          <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim }}>{desc}</div>
                                         </div>
+                                      </IlCard>
+                                    ))}
+                                  </div>
+
+                                  <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Grade</div>
+                                  <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "14px" }}>
+                                    {[
+                                      {label:"8mm Budget",     desc:"Standard entry-level laminate"},
+                                      {label:"10–12mm Mid",    desc:"Acoustic underlay — quieter and more solid underfoot"},
+                                      {label:"12mm+ Premium",  desc:"The closest to real wood without the price tag"},
+                                    ].map(({ label, desc }) => (
+                                      <SelectCard key={label} selected={roomGrade === label} onClick={() => setRoomConfig(room, "grade", label)} padding="10px 12px">
+                                        <div style={{ fontFamily: s.sans, fontSize: "12px", fontWeight: 600, color: roomGrade === label ? s.gold : s.text, marginBottom: "2px" }}>{label}</div>
+                                        <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim }}>{desc}</div>
                                       </SelectCard>
                                     ))}
                                   </div>
 
-                                  {/* Grade */}
-                                  <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Grade</div>
-                                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px", marginBottom: "14px" }}>
-                                    {["8mm budget", "10mm mid", "12mm premium"].map(g => (
-                                      <Chip key={g} label={g} selected={roomGrade === g} onClick={() => setRoomConfig(room, "grade", g)}/>
-                                    ))}
-                                  </div>
-
-                                  {/* Current floor */}
                                   <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Current floor covering</div>
                                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
                                     {["Carpet", "Hard floor", "Tiles", "Vinyl", "Bare / nothing"].map(o => (
@@ -2998,40 +2961,38 @@ export default function StrataPage() {
                               {/* ── VINYL SHEET CONFIG ────────────────── */}
                               {roomFlooring === "Vinyl" && (
                                 <>
-                                  {/* Style */}
                                   <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Style</div>
                                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "14px" }}>
                                     {[
-                                      {id:"wood",      label:"Wood effect",         desc:"Realistic plank look, warm and practical",      svg:<VinylWoodSVG/>},
-                                      {id:"stone",     label:"Stone / slate",       desc:"Natural stone look, cool and contemporary",     svg:<VinylStoneSVG/>},
-                                      {id:"victorian", label:"Victorian geometric", desc:"Classic black and white tile pattern",           svg:<VinylVictorianSVG/>},
-                                      {id:"moroccan",  label:"Moroccan tile",       desc:"Decorative encaustic tile pattern",              svg:null},
-                                      {id:"hexagon",   label:"Hexagon tile",        desc:"Classic hex pattern — bathrooms and kitchens",  svg:<VinylHexagonSVG/>},
-                                      {id:"plain",     label:"Plain / solid",       desc:"Clean single colour — practical and versatile", svg:null},
+                                      {id:"wood",  label:"Wood effect",      desc:"Warm · Easy to maintain",       svg:<VinylWoodSVG/>},
+                                      {id:"stone", label:"Stone / geometric", desc:"Clean · Modern · Durable",     svg:<VinylStoneSVG/>},
+                                      {id:"plain", label:"Plain / solid",     desc:"Practical · Hygienic · Simple", svg:<VinylPlainSVG/>},
                                     ].map(({ id, label, desc, svg }) => (
-                                      <SelectCard key={id} selected={config.vinylStyle === id} onClick={() => setRoomConfig(room, "vinylStyle", id)} padding={svg ? "0" : "12px 10px"}>
-                                        {svg && <div style={{ borderRadius: "2px", overflow: "hidden", width: "100%", display: "flex", justifyContent: "center", background: "#111110" }}>{svg}</div>}
-                                        <div style={{ padding: svg ? "8px 10px 10px" : "0" }}>
-                                          <div style={{ fontFamily: s.sans, fontSize: "12px", fontWeight: 600, color: config.vinylStyle === id ? s.gold : s.text, marginBottom: "2px" }}>{label}</div>
-                                          <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim, lineHeight: 1.4 }}>{desc}</div>
+                                      <IlCard key={id} selected={config.vinylStyle === id} onClick={() => setRoomConfig(room, "vinylStyle", id)}>
+                                        <div style={{ padding: "10px 10px 2px", borderBottom: "1px solid rgba(201,169,110,0.08)" }}>{svg}</div>
+                                        <div style={{ padding: "8px 10px 10px" }}>
+                                          <div style={{ fontFamily: s.serif, fontSize: "14px", fontWeight: 700, color: config.vinylStyle === id ? s.gold : s.text, marginBottom: "3px" }}>{label}</div>
+                                          <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim }}>{desc}</div>
                                         </div>
+                                      </IlCard>
+                                    ))}
+                                  </div>
+
+                                  <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "14px" }}>
+                                    {[
+                                      {label:"Domestic cushioned", desc:"Soft underfoot — residential and light commercial"},
+                                      {label:"Heavy duty",         desc:"Reinforced backing — high traffic and commercial"},
+                                    ].map(({ label, desc }) => (
+                                      <SelectCard key={label} selected={roomGrade === label} onClick={() => setRoomConfig(room, "grade", label)} padding="10px 12px">
+                                        <div style={{ fontFamily: s.sans, fontSize: "12px", fontWeight: 600, color: roomGrade === label ? s.gold : s.text, marginBottom: "2px" }}>{label}</div>
+                                        <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim }}>{desc}</div>
                                       </SelectCard>
                                     ))}
                                   </div>
 
-                                  {/* Grade */}
-                                  <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Grade</div>
-                                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "14px" }}>
-                                    {["Domestic cushioned", "Heavy duty"].map(g => (
-                                      <Chip key={g} label={g} selected={roomGrade === g} onClick={() => setRoomConfig(room, "grade", g)}/>
-                                    ))}
-                                  </div>
-
-                                  {/* Subfloor notes */}
                                   {subfloor === "Concrete" && <GoldNote>Concrete subfloors often need latex levelling before vinyl can be laid. We'll assess at survey.</GoldNote>}
                                   {subfloor === "Timber / boards" && <GoldNote>Timber subfloors usually need ply boarding before vinyl is laid. We'll assess at survey.</GoldNote>}
 
-                                  {/* Current floor */}
                                   <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Current floor covering</div>
                                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
                                     {["Carpet", "Hard floor", "Tiles", "Vinyl", "Bare / nothing"].map(o => (
@@ -3041,28 +3002,21 @@ export default function StrataPage() {
                                 </>
                               )}
 
-                              {/* ── HERRINGBONE / OTHER CONFIG ────────── */}
+                              {/* ── OTHER / FALLBACK ──────────────────── */}
                               {roomFlooring !== "Carpet" && roomFlooring !== "LVT" && roomFlooring !== "Laminate" && roomFlooring !== "Vinyl" && (
                                 <>
-                                  {/* Grade */}
                                   <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Grade</div>
                                   <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px", marginBottom: "14px" }}>
                                     {["Budget", "Mid", "Premium"].map(g => (
                                       <Chip key={g} label={g} selected={roomGrade === g} onClick={() => setRoomConfig(room, "grade", g)}/>
                                     ))}
                                   </div>
-
-                                  {/* Current floor */}
                                   <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Current floor covering</div>
-                                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "14px" }}>
+                                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
                                     {["Carpet", "Hard floor", "Tiles", "Vinyl", "Bare / nothing"].map(o => (
                                       <Chip key={o} label={o} selected={config.currentFloor === o} onClick={() => setRoomConfig(room, "currentFloor", o)}/>
                                     ))}
                                   </div>
-
-                                  {roomFlooring === "Herringbone" && (
-                                    <GoldNote>15% wastage already applied for the herringbone pattern. Your subfloor must be perfectly flat — we'll check this at survey.</GoldNote>
-                                  )}
                                 </>
                               )}
                             </div>
