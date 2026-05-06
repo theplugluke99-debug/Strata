@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import ReactDOM from "react-dom";
 import Image from "next/image";
 import FloSection from "./components/FloSection";
@@ -454,10 +454,16 @@ const ProgressBar = ({ current, total }) => (
 );
 const Chip = ({ label, selected, onClick, icon }) => {
   const [pressed, setPressed] = useState(false);
+  const [justSelected, setJustSelected] = useState(false);
   return (
     <button
-      onClick={() => { setPressed(true); setTimeout(() => { setPressed(false); onClick(); }, 120); }}
+      onClick={() => {
+        setPressed(true);
+        if (!selected) { setJustSelected(true); setTimeout(() => setJustSelected(false), 550); }
+        setTimeout(() => { setPressed(false); onClick(); }, 120);
+      }}
       style={{
+        position: "relative", overflow: "hidden",
         background: selected ? s.gold : "transparent",
         border: `1px solid ${selected ? s.gold : s.border}`,
         color: selected ? "#111" : s.dim,
@@ -465,28 +471,38 @@ const Chip = ({ label, selected, onClick, icon }) => {
         borderRadius: "3px", fontSize: "13px", fontFamily: s.sans,
         cursor: "pointer", textAlign: "left",
         fontWeight: selected ? "600" : "400",
-        transition: "all 0.2s",
+        transition: "all 0.35s cubic-bezier(0.34,1.56,0.64,1)",
         display: "flex", alignItems: "center", gap: "8px",
-        transform: pressed ? "scale(0.95)" : "scale(1)",
+        transform: pressed ? "scale(0.94)" : "scale(1)",
+        boxShadow: selected ? "0 0 10px rgba(201,169,110,0.3)" : "none",
       }}
     >
+      {justSelected && (
+        <span style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.28) 50%,transparent 100%)", animation: "shimmerSweep 0.5s ease-out forwards", pointerEvents: "none" }} />
+      )}
       {icon && (
         <span style={{ color: selected ? "#111" : s.gold, display: "flex", alignItems: "center", flexShrink: 0 }}>
           {icon}
         </span>
       )}
-      {label}
+      {selected && <span style={{ fontSize: "10px", marginRight: "1px" }}>✓</span>}{label}
     </button>
   );
 };
 
 const RoomChip = ({ label, selected, onClick }) => {
   const [pressed, setPressed] = useState(false);
+  const [justSelected, setJustSelected] = useState(false);
   const icon = ROOM_SVG_ICONS[label];
   return (
     <button
-      onClick={() => { setPressed(true); setTimeout(() => { setPressed(false); onClick(); }, 120); }}
+      onClick={() => {
+        setPressed(true);
+        if (!selected) { setJustSelected(true); setTimeout(() => setJustSelected(false), 550); }
+        setTimeout(() => { setPressed(false); onClick(); }, 120);
+      }}
       style={{
+        position: "relative", overflow: "hidden",
         background: selected ? s.gold : "transparent",
         border: `1px solid ${selected ? s.gold : s.border}`,
         color: selected ? "#111" : s.dim,
@@ -494,17 +510,21 @@ const RoomChip = ({ label, selected, onClick }) => {
         borderRadius: "3px", fontSize: "12px", fontFamily: s.sans,
         cursor: "pointer", textAlign: "left",
         fontWeight: selected ? "600" : "400",
-        transition: "all 0.2s",
-        transform: pressed ? "scale(0.95)" : "scale(1)",
+        transition: "all 0.35s cubic-bezier(0.34,1.56,0.64,1)",
+        transform: pressed ? "scale(0.94)" : "scale(1)",
+        boxShadow: selected ? "0 0 10px rgba(201,169,110,0.3)" : "none",
         display: "flex", alignItems: "center", gap: "7px",
       }}
     >
+      {justSelected && (
+        <span style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.28) 50%,transparent 100%)", animation: "shimmerSweep 0.5s ease-out forwards", pointerEvents: "none" }} />
+      )}
       {icon && (
         <span style={{ color: selected ? "#111" : s.gold, display: "flex", alignItems: "center", flexShrink: 0 }}>
           {icon}
         </span>
       )}
-      {label}
+      {selected && <span style={{ fontSize: "10px" }}>✓</span>}{label}
     </button>
   );
 };
@@ -1302,6 +1322,117 @@ function RoomCalculator({ room, data, onChange, flooringType, propertyType }) {
   );
 }
 
+// ── Isometric Room Builder ───────────────────────────────────────
+const RESIDENTIAL_ISO = {
+  "Living Room":  { gx:0, gy:0, w:3, d:2 },
+  "Dining Room":  { gx:3, gy:0, w:2, d:1 },
+  "Kitchen":      { gx:3, gy:1, w:2, d:1 },
+  "Hallway":      { gx:5, gy:0, w:1, d:2 },
+  "Bedroom":      { gx:0, gy:2, w:2, d:2 },
+  "Bathroom":     { gx:2, gy:2, w:1, d:1 },
+  "En-suite":     { gx:2, gy:3, w:1, d:1 },
+  "Landing":      { gx:3, gy:2, w:2, d:1 },
+  "Stairs":       { gx:5, gy:2, w:1, d:1 },
+  "Home Office":  { gx:3, gy:3, w:1, d:1 },
+  "Playroom":     { gx:4, gy:3, w:1, d:1 },
+  "Conservatory": { gx:5, gy:3, w:1, d:1 },
+  "Garage":       { gx:0, gy:4, w:3, d:1 },
+};
+const COMMERCIAL_ISO = {
+  "Office Space":        { gx:0, gy:0, w:3, d:2 },
+  "Reception":           { gx:3, gy:0, w:2, d:1 },
+  "Meeting Room":        { gx:3, gy:1, w:2, d:1 },
+  "Corridor / Hallway":  { gx:5, gy:0, w:1, d:2 },
+  "Retail Floor":        { gx:0, gy:2, w:2, d:2 },
+  "Showroom":            { gx:2, gy:2, w:2, d:1 },
+  "Gym / Studio":        { gx:2, gy:3, w:2, d:1 },
+  "Warehouse":           { gx:4, gy:2, w:2, d:2 },
+  "Restaurant / Café":   { gx:0, gy:4, w:2, d:1 },
+  "Hotel Room":          { gx:2, gy:4, w:2, d:1 },
+  "Bathroom / WC":       { gx:4, gy:4, w:1, d:1 },
+  "Staff Room":          { gx:5, gy:4, w:1, d:1 },
+};
+const FLOORING_ISO_COLORS = {
+  "Carpet":       "#c8a870", "Herringbone": "#d4a040",
+  "LVT":          "#6a9db5", "Laminate":    "#b08858",
+  "Vinyl":        "#7a9e82", "Carpet Tiles":"#c09878",
+  "Not sure yet": "#c9a96e",
+};
+
+function IsometricRoomBuilder({ selectedRooms, onToggleRoom, propertyType, roomConfigs, selectedFlooring }) {
+  const TW = 50, TH = 25, OX = 130, OY = 10;
+  const iso = (gx, gy) => ({ sx: (gx - gy) * TW / 2 + OX, sy: (gx + gy) * TH / 2 + OY });
+  const pts = (gx, gy, w, d) => {
+    const a = iso(gx, gy), b = iso(gx + w, gy), c = iso(gx + w, gy + d), dl = iso(gx, gy + d);
+    return `${a.sx},${a.sy} ${b.sx},${b.sy} ${c.sx},${c.sy} ${dl.sx},${dl.sy}`;
+  };
+  const layout = propertyType === "Commercial" ? COMMERCIAL_ISO : RESIDENTIAL_ISO;
+  const getColor = (room) => FLOORING_ISO_COLORS[roomConfigs?.[room]?.flooring || selectedFlooring] || "#c9a96e";
+  const getPattern = (room) => {
+    const fl = roomConfigs?.[room]?.flooring || selectedFlooring;
+    if (!fl) return null;
+    if (fl === "Carpet" || fl === "Carpet Tiles") return "iso-carpet";
+    if (fl === "Herringbone") return "iso-herring";
+    return "iso-plank";
+  };
+  if (!propertyType) return null;
+  return (
+    <div style={{ marginBottom: "14px" }}>
+      <svg width="300" height="155" viewBox="0 0 300 155" style={{ width: "100%", height: "auto", display: "block" }}>
+        <defs>
+          <pattern id="iso-carpet" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
+            <line x1="0" y1="0" x2="8" y2="8" stroke="rgba(255,255,255,0.13)" strokeWidth="0.7"/>
+            <line x1="0" y1="8" x2="8" y2="0" stroke="rgba(255,255,255,0.13)" strokeWidth="0.7"/>
+          </pattern>
+          <pattern id="iso-plank" x="0" y="0" width="14" height="6" patternUnits="userSpaceOnUse">
+            <rect width="14" height="6" fill="none" stroke="rgba(255,255,255,0.18)" strokeWidth="0.5"/>
+            <line x1="7" y1="0" x2="7" y2="6" stroke="rgba(255,255,255,0.08)" strokeWidth="0.5"/>
+          </pattern>
+          <pattern id="iso-herring" x="0" y="0" width="8" height="8" patternUnits="userSpaceOnUse">
+            <path d="M0,4 L4,0 L8,4 M0,8 L4,4 L8,8" fill="none" stroke="rgba(255,255,255,0.16)" strokeWidth="0.6"/>
+          </pattern>
+        </defs>
+        {Object.entries(layout).map(([room, { gx, gy, w, d }]) => {
+          const selected = selectedRooms.includes(room);
+          const poly = pts(gx, gy, w, d);
+          const ctr = iso(gx + w / 2, gy + d / 2);
+          const area = w * d;
+          const pat = selected ? getPattern(room) : null;
+          return (
+            <g key={room} onClick={() => onToggleRoom?.(room)} style={{ cursor: onToggleRoom ? "pointer" : "default" }}>
+              <polygon points={poly} fill={selected ? getColor(room) : "#1c1c1a"} stroke={selected ? "#e8c47e" : "#2a2a28"} strokeWidth={selected ? 1.2 : 0.7} style={{ transition: "fill 0.3s cubic-bezier(0.34,1.56,0.64,1), stroke 0.2s" }}/>
+              {pat && <polygon points={poly} fill={`url(#${pat})`} opacity="0.65" style={{ pointerEvents: "none" }}/>}
+              {area >= 1 && (
+                <text x={ctr.sx} y={ctr.sy} textAnchor="middle" dominantBaseline="middle" fill={selected ? "rgba(17,17,16,0.85)" : "rgba(242,237,224,0.18)"} fontSize={area >= 4 ? 7 : area >= 2 ? 6 : 5.5} fontFamily="system-ui,sans-serif" fontWeight={selected ? "700" : "400"} style={{ pointerEvents: "none", userSelect: "none" }}>
+                  {room.replace(" / ", "/").length > 13 ? room.replace(" / ", "/").slice(0, 11) + "…" : room.replace(" / ", "/")}
+                </text>
+              )}
+            </g>
+          );
+        })}
+      </svg>
+      {onToggleRoom && (
+        <div style={{ fontFamily: s.sans, fontSize: "10px", color: "rgba(242,237,224,0.2)", textAlign: "center", letterSpacing: "0.06em", marginTop: "2px" }}>
+          Tap rooms to select · chip list below
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Flo Voice ────────────────────────────────────────────────────
+function FloVoice({ message, visible }) {
+  if (!visible || !message) return null;
+  return (
+    <div style={{ display: "flex", alignItems: "flex-start", gap: "10px", padding: "11px 14px", background: "rgba(201,169,110,0.07)", border: "1px solid rgba(201,169,110,0.18)", borderRadius: "5px", marginBottom: "14px", animation: "floVoiceFade 6s ease-in-out forwards" }}>
+      <div style={{ width: 26, height: 26, borderRadius: "50%", background: s.gold, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: "1px" }}>
+        <span style={{ fontFamily: s.serif, fontStyle: "italic", fontSize: 12, fontWeight: 700, color: "#111" }}>F</span>
+      </div>
+      <div style={{ fontFamily: s.serif, fontSize: "14px", fontStyle: "italic", color: s.text, lineHeight: 1.55, paddingTop: "2px" }}>{message}</div>
+    </div>
+  );
+}
+
 // ── AI Quote Block ───────────────────────────────────────────────
 const fmt = (n) => new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 0 }).format(n);
 
@@ -1478,10 +1609,75 @@ export default function StrataPage() {
   // ── Phone intercept modal
   const [showPhoneModal, setShowPhoneModal] = useState(false);
 
-  const handlePhoneClick = (e) => {
-    e.preventDefault();
-    setShowPhoneModal(true);
-  };
+  // ── FloVoice
+  const [floVoiceMessage, setFloVoiceMessage] = useState("");
+  const [floVoiceVisible, setFloVoiceVisible] = useState(false);
+  const floVoiceTimerRef = useRef(null);
+  const showFloVoice = useCallback((msg) => {
+    setFloVoiceVisible(false);
+    clearTimeout(floVoiceTimerRef.current);
+    floVoiceTimerRef.current = setTimeout(() => {
+      setFloVoiceMessage(msg);
+      setFloVoiceVisible(true);
+      floVoiceTimerRef.current = setTimeout(() => setFloVoiceVisible(false), 5800);
+    }, 60);
+  }, []);
+
+  // FloVoice: property type
+  const prevPropertyType = useRef("");
+  useEffect(() => {
+    if (!propertyType || propertyType === prevPropertyType.current) return;
+    prevPropertyType.current = propertyType;
+    showFloVoice(propertyType === "Residential"
+      ? "Perfect — let's build your home flooring quote."
+      : "Got it — I'll tailor this for a commercial space.");
+  }, [propertyType, showFloVoice]);
+
+  // FloVoice: first room, then every 3rd room
+  const prevRoomsLen = useRef(0);
+  useEffect(() => {
+    const len = selectedRooms.length;
+    if (len <= prevRoomsLen.current) { prevRoomsLen.current = len; return; }
+    prevRoomsLen.current = len;
+    const room = selectedRooms[len - 1];
+    const msgs = {
+      "Living Room": "The centrepiece of the home. Carpet or herringbone both look stunning here.",
+      "Bedroom": "Carpet is the most popular bedroom choice — warm underfoot every morning.",
+      "Kitchen": "Kitchens need something waterproof. LVT or vinyl are your best friends here.",
+      "Bathroom": "Bathrooms need fully waterproof flooring. LVT is ideal.",
+      "Hallway": "Hallways take a beating — LVT or a durable carpet handles the traffic well.",
+      "Stairs": "Stairs are best confirmed in person — we'll sort it at survey.",
+      "Office Space": "Commercial carpet tiles are ideal here — easy to replace individual tiles.",
+      "Reception": "Reception areas benefit from an impressive floor — herringbone or LVT both work brilliantly.",
+    };
+    if (len === 1) showFloVoice(msgs[room] || `${room} added. Keep selecting rooms below.`);
+    else if (len % 3 === 0) showFloVoice(`${len} rooms added. Looking good — keep going or continue.`);
+  }, [selectedRooms, showFloVoice]);
+
+  // FloVoice: flooring selected
+  const prevFlooring = useRef("");
+  useEffect(() => {
+    if (!selectedFlooring || selectedFlooring === prevFlooring.current) return;
+    prevFlooring.current = selectedFlooring;
+    const msgs = {
+      "Carpet": "Great choice. Carpet's having a real moment — warm, quiet, and the range has never been better.",
+      "Herringbone": "Statement flooring. It transforms a space. Just make sure the subfloor is level.",
+      "LVT": "Versatile and fully waterproof. Goes in practically every room — including kitchens and bathrooms.",
+      "Laminate": "Good value laminate is genuinely impressive today. Hard to tell from real wood.",
+      "Vinyl": "Practical perfection — soft underfoot, very easy to clean, and very affordable.",
+    };
+    showFloVoice(msgs[selectedFlooring] || `${selectedFlooring} selected. Good choice.`);
+  }, [selectedFlooring, showFloVoice]);
+
+  // FloVoice: step transitions
+  const prevStep = useRef(0);
+  useEffect(() => {
+    if (step === prevStep.current) return;
+    prevStep.current = step;
+    if (step === 1) showFloVoice("Time to measure. Rough figures are completely fine — we confirm everything in person.");
+    if (step === 3) showFloVoice("Almost done. Just your current floor and any extras, then the estimate is yours.");
+    if (step === 5) showFloVoice("Last step — your personalised estimate is waiting on the other side.");
+  }, [step, showFloVoice]);
 
   // ── Flo intercept state (Step 2 / know sub-step timer)
   const [showFloIntercept,  setShowFloIntercept]  = useState(false);
@@ -1674,6 +1870,8 @@ export default function StrataPage() {
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         @keyframes calcPulse { 0%,100%{opacity:0.35} 50%{opacity:0.85} }
         @keyframes slideUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes shimmerSweep { 0% { transform:translateX(-100%); } 100% { transform:translateX(200%); } }
+        @keyframes floVoiceFade { 0%{opacity:0;transform:translateY(6px)} 15%{opacity:1;transform:translateY(0)} 80%{opacity:1} 100%{opacity:0;transform:translateY(-4px)} }
         @keyframes progressIn { from { transform:scaleX(0); } to { transform:scaleX(1); } }
         @keyframes waveform { 0%, 100% { transform: scaleY(0.4); } 50% { transform: scaleY(1); } }
         .nav-expert-short { display: inline; }
@@ -1919,7 +2117,14 @@ export default function StrataPage() {
           <>
             <div style={{ fontFamily: s.serif, fontSize: "28px", fontWeight: 700, color: s.text, lineHeight: 1.05, marginBottom: "8px" }}>{stepTitles[step]}</div>
             <Divider />
-            <ProgressBar current={step + 1} total={6} />
+            <IsometricRoomBuilder
+              selectedRooms={selectedRooms}
+              onToggleRoom={step === 0 ? toggleRoom : undefined}
+              propertyType={propertyType}
+              roomConfigs={roomConfigs}
+              selectedFlooring={selectedFlooring}
+            />
+            <FloVoice message={floVoiceMessage} visible={floVoiceVisible} />
             {currentEncouragement && (
               <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.35)", lineHeight: 1.6, marginBottom: "16px", fontStyle: "italic" }}>{currentEncouragement}</div>
             )}
