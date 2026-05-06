@@ -45,14 +45,9 @@ const flooringTypes = [
   {
     name: "Vinyl", tag: "Practical & affordable", grade: false,
     desc: "Sheet vinyl or vinyl planks. Fully waterproof, soft underfoot, very easy to maintain.",
-    img: "/vinyl-wood.jpg",
+    img: "/quote-vinyl.png",
     subfloorNote: "Vinyl is thin, which means any bumps or old adhesive residue underneath will show through over time. The subfloor needs to be smooth and clean before we lay it.",
     grades: [],
-  },
-  {
-    name: "Not sure yet", tag: "We'll guide you", grade: false,
-    desc: "No problem — just ask Flo. She'll ask you a couple of questions about your rooms and lifestyle and point you in the right direction.",
-    img: null, subfloorNote: null, grades: [],
   },
 ];
 
@@ -88,7 +83,6 @@ const WASTAGE = {
   "Laminate":     0.12,  // 12% — industry standard
   "Vinyl":        0.15,  // 15% — roll goods, cutting waste around obstacles
   "Carpet Tiles": 0.07,  // 7%  — modular, very little waste
-  "Not sure yet": 0.12,  // default
 };
 
 // ── Live Estimate Pricing ────────────────────────────────────────
@@ -98,7 +92,6 @@ const ESTIMATE_PRICES = {
     "LVT":          { Budget: { low: 24, high: 30 }, Mid: { low: 36, high: 44 }, Premium: { low: 54, high: 64 }, default: { low: 36, high: 44 } },
     "Laminate":     { Budget: { low: 15, high: 19 }, Mid: { low: 24, high: 30 }, Premium: { low: 32, high: 40 }, default: { low: 24, high: 30 } },
     "Vinyl":        { Budget: { low: 12, high: 16 }, Mid: { low: 20, high: 25 }, Premium: { low: 28, high: 36 }, default: { low: 20, high: 25 } },
-    "Not sure yet": { default: { low: 28, high: 44 } },
   },
   removal: {
     "Carpet":         { low: 3,  high: 6  },
@@ -2108,9 +2101,9 @@ export default function StrataPage() {
         .mq-track { display: flex; gap: 48px; animation: mq 28s linear infinite; white-space: nowrap; will-change: transform; }
         @keyframes mq { 0%{transform:translateX(0)} 100%{transform:translateX(-50%)} }
         .row-card { background: #1a1a18; border: 1px solid #2a2a28; border-radius: 4px; padding: 14px 16px; margin-bottom: 6px; }
-        .floor-card { position: relative; border: 1px solid #2a2a28; border-radius: 4px; overflow: hidden; cursor: pointer; transition: all 0.25s ease; margin-bottom: 6px; height: 160px; display: flex; flex-direction: column; justify-content: flex-end; }
-        .floor-card:hover { border-color: rgba(201,169,110,0.6); transform: translateY(-2px) scale(1.01); box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
-        .floor-card.selected { border-color: #c9a96e; background: rgba(201,169,110,0.05); transform: scale(1.01); box-shadow: 0 0 0 1px rgba(201,169,110,0.3); }
+        .floor-card { display: flex; align-items: center; border: 1px solid #2a2a28; border-radius: 4px; overflow: hidden; cursor: pointer; transition: all 0.25s ease; margin-bottom: 6px; }
+        .floor-card:hover { border-color: rgba(201,169,110,0.5); }
+        .floor-card.selected { border-color: #c9a96e; background: rgba(201,169,110,0.08); }
         .mat-card { border-radius: 6px; overflow: hidden; position: relative; height: 140px; cursor: pointer; }
         .mat-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s; display: block; }
         .mat-card:hover img { transform: scale(1.05); }
@@ -2493,34 +2486,17 @@ export default function StrataPage() {
                         <div
                           className={`floor-card${selectedFlooring === f.name ? " selected" : ""}`}
                           onClick={() => {
-                            if (f.name === "Not sure yet") {
-                              setShowFloIntercept(true);
-                              setInterceptOpen(false);
-                              setInterceptResponse(null);
-                              setSelectedFlooring("");
-                            } else {
-                              setSelectedFlooring(f.name);
-                              setFlooringGrade("");
-                            }
+                            setSelectedFlooring(f.name);
+                            setFlooringGrade("");
                           }}
                         >
-                          {/* Full-bleed image */}
-                          {f.img && (
-                            <div style={{ position: "absolute", inset: 0 }}>
-                              <img src={f.img} alt={f.name} style={{ width: "100%", height: "110px", objectFit: "cover", display: "block" }}/>
-                              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "110px", background: "linear-gradient(to top, rgba(17,17,16,0.97) 0%, rgba(17,17,16,0.3) 60%, transparent 100%)" }}/>
+                          {f.img && <img src={f.img} alt={f.name} style={{ width: 72, height: 64, objectFit: "cover", flexShrink: 0, display: "block" }}/>}
+                          <div style={{ padding: "10px 14px", flex: 1, minWidth: 0 }}>
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3px" }}>
+                              <div style={{ fontFamily: s.serif, fontSize: "15px", fontWeight: 700, color: s.text }}>{f.name}</div>
+                              <div style={{ fontSize: "9px", color: s.gold, fontFamily: s.sans, letterSpacing: "0.08em", flexShrink: 0, marginLeft: "8px" }}>{f.tag}</div>
                             </div>
-                          )}
-                          {/* Content */}
-                          <div style={{ position: "relative", padding: "10px 12px 12px", marginTop: "auto" }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "4px" }}>
-                              <div style={{ fontFamily: s.serif, fontSize: "18px", fontWeight: 700, color: s.text, lineHeight: 1.1 }}>{f.name}</div>
-                              <div style={{ fontSize: "9px", color: s.gold, fontFamily: s.sans, letterSpacing: "0.08em", textAlign: "right", marginTop: "2px", flexShrink: 0, marginLeft: "8px" }}>{f.tag}</div>
-                            </div>
-                            <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.5)", fontWeight: 300, lineHeight: 1.5 }}>{f.desc}</div>
-                            {selectedFlooring === f.name && (
-                              <div style={{ fontSize: "9px", color: s.gold, fontFamily: s.sans, marginTop: "6px", letterSpacing: "0.06em" }}>✓ Selected</div>
-                            )}
+                            <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.5)", fontWeight: 300, lineHeight: 1.45 }}>{f.desc}</div>
                           </div>
                         </div>
                         {selectedFlooring === f.name && f.subfloorNote && <GoldNote>{f.subfloorNote}</GoldNote>}
@@ -2739,7 +2715,7 @@ export default function StrataPage() {
                             }
                           </div>
                           <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                            {flooringTypes.filter(f => f.name !== "Not sure yet").map(f => (
+                            {flooringTypes.map(f => (
                               <Chip key={f.name} label={f.name} selected={roomFlooring === f.name} onClick={() => setRoomConfig(room, "flooring", f.name)}/>
                             ))}
                           </div>
