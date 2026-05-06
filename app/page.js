@@ -1902,8 +1902,10 @@ export default function StrataPage() {
   const [selectedRooms,    setSelectedRooms]    = useState([]);
   const [bedroomCount,     setBedroomCount]     = useState(1);
   const [dimensions,       setDimensions]       = useState({});
-  const [selectedFlooring, setSelectedFlooring] = useState("");
-  const [flooringGrade,    setFlooringGrade]    = useState("");
+  const [selectedFlooring,   setSelectedFlooring]   = useState("");
+  const [flooringGrade,      setFlooringGrade]      = useState("");
+  const [selectedPileStyle,  setSelectedPileStyle]  = useState("");
+  const [selectedVinylStyle, setSelectedVinylStyle] = useState("");
   const [currentFloor,     setCurrentFloor]     = useState("");
   const [subfloor,         setSubfloor]         = useState("");
   const [selectedExtras,   setSelectedExtras]   = useState([]);
@@ -2481,27 +2483,65 @@ export default function StrataPage() {
                   <>
                     <BackBtn onClick={() => setStep2Sub("path")}/>
                     <Sub>Not sure? Our surveyor brings samples — choose in your own home.</Sub>
-                    {flooringTypes.map(f => (
-                      <div key={f.name}>
-                        <div
-                          className={`floor-card${selectedFlooring === f.name ? " selected" : ""}`}
-                          onClick={() => {
-                            setSelectedFlooring(f.name);
-                            setFlooringGrade("");
-                          }}
-                        >
-                          {f.img && <img src={f.img} alt={f.name} style={{ width: 72, height: 64, objectFit: "cover", flexShrink: 0, display: "block" }}/>}
-                          <div style={{ padding: "10px 14px", flex: 1, minWidth: 0 }}>
-                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3px" }}>
-                              <div style={{ fontFamily: s.serif, fontSize: "15px", fontWeight: 700, color: s.text }}>{f.name}</div>
-                              <div style={{ fontSize: "9px", color: s.gold, fontFamily: s.sans, letterSpacing: "0.08em", flexShrink: 0, marginLeft: "8px" }}>{f.tag}</div>
+                    {flooringTypes.map(f => {
+                      const isSelected = selectedFlooring === f.name;
+                      const hasPanel = isSelected && (f.name === "Carpet" || f.name === "Vinyl");
+                      return (
+                        <div key={f.name}>
+                          <div
+                            className={`floor-card${isSelected ? " selected" : ""}`}
+                            style={hasPanel ? { borderRadius: "4px 4px 0 0", borderBottom: "none" } : {}}
+                            onClick={() => { setSelectedFlooring(f.name); setFlooringGrade(""); }}
+                          >
+                            {f.img && <img src={f.img} alt={f.name} style={{ width: 72, height: 64, objectFit: "cover", flexShrink: 0, display: "block" }}/>}
+                            <div style={{ padding: "10px 14px", flex: 1, minWidth: 0 }}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3px" }}>
+                                <div style={{ fontFamily: s.serif, fontSize: "15px", fontWeight: 700, color: s.text }}>{f.name}</div>
+                                <div style={{ fontSize: "9px", color: s.gold, fontFamily: s.sans, letterSpacing: "0.08em", flexShrink: 0, marginLeft: "8px" }}>{f.tag}</div>
+                              </div>
+                              <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.5)", fontWeight: 300, lineHeight: 1.45 }}>{f.desc}</div>
                             </div>
-                            <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.5)", fontWeight: 300, lineHeight: 1.45 }}>{f.desc}</div>
                           </div>
+                          {/* Carpet expansion panel */}
+                          {f.name === "Carpet" && isSelected && (
+                            <div style={{ borderLeft: "1px solid rgba(201,169,110,0.3)", borderRight: "1px solid rgba(201,169,110,0.3)", borderBottom: "1px solid rgba(201,169,110,0.3)", borderRadius: "0 0 4px 4px", background: "rgba(201,169,110,0.04)", padding: "14px 16px", overflow: "hidden", maxHeight: "1000px", transition: "max-height 0.3s ease" }}>
+                              <div style={{ fontSize: "9px", color: s.gold, fontFamily: "system-ui,sans-serif", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "10px" }}>Pile style</div>
+                              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px" }}>
+                                {[
+                                  { id: "twist",   title: "Twist pile",   desc: "Durable · Most popular",           svg: <CarpetTwistSVG/> },
+                                  { id: "berber",  title: "Berber / Loop", desc: "Indestructible · Hides footprints", svg: <CarpetBerberSVG/> },
+                                  { id: "saxony",  title: "Saxony",        desc: "Deep · Luxurious · Bedroom",       svg: <CarpetSaxonySVG/> },
+                                  { id: "velvet",  title: "Velvet",        desc: "Directional sheen · Formal rooms", svg: <CarpetVelvetSVG/> },
+                                  { id: "cutloop", title: "Cut & loop",    desc: "Geometric · Contemporary",         svg: <CarpetCutLoopSVG/> },
+                                ].map(({ id, title, desc, svg }, idx, arr) => (
+                                  <div key={id} style={{ gridColumn: idx === arr.length - 1 && arr.length % 2 !== 0 ? "1 / -1" : undefined }}>
+                                    <IlCard selected={selectedPileStyle === id} onClick={() => setSelectedPileStyle(id)}>
+                                      {svg}
+                                      <div style={{ padding: "6px 8px 8px" }}>
+                                        <div style={{ fontFamily: s.serif, fontSize: "13px", fontWeight: 700, color: "#f2ede0", marginBottom: "2px" }}>{title}</div>
+                                        <div style={{ fontFamily: "system-ui,sans-serif", fontSize: "10px", color: "rgba(242,237,224,0.45)" }}>{desc}</div>
+                                      </div>
+                                    </IlCard>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {/* Vinyl expansion panel */}
+                          {f.name === "Vinyl" && isSelected && (
+                            <div style={{ borderLeft: "1px solid rgba(201,169,110,0.3)", borderRight: "1px solid rgba(201,169,110,0.3)", borderBottom: "1px solid rgba(201,169,110,0.3)", borderRadius: "0 0 4px 4px", background: "rgba(201,169,110,0.04)", padding: "14px 16px", overflow: "hidden", maxHeight: "200px", transition: "max-height 0.3s ease" }}>
+                              <div style={{ fontSize: "9px", color: s.gold, fontFamily: "system-ui,sans-serif", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "10px" }}>Style</div>
+                              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
+                                {["Wood effect", "Stone / slate", "Patterned", "Plain"].map(o => (
+                                  <Chip key={o} label={o} selected={selectedVinylStyle === o} onClick={() => setSelectedVinylStyle(o)}/>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {isSelected && f.subfloorNote && <GoldNote>{f.subfloorNote}</GoldNote>}
                         </div>
-                        {selectedFlooring === f.name && f.subfloorNote && <GoldNote>{f.subfloorNote}</GoldNote>}
-                      </div>
-                    ))}
+                      );
+                    })}
                     {/* Flo intercept — warm split layout (appears after 9 seconds) */}
                     {showFloIntercept && !selectedFlooring && (
                       <div style={{ border: `1px solid rgba(201,169,110,0.3)`, borderRadius: "8px", overflow: "hidden", marginTop: "20px", animation: "slideUp 0.5s cubic-bezier(0.4,0,0.2,1)" }}>
@@ -2581,7 +2621,14 @@ export default function StrataPage() {
                       <GoldBtn onClick={() => {
                         setFlooringPath("know");
                         const pre = {};
-                        expandedRooms.forEach(r => { pre[r] = { ...(roomConfigs[r] || {}), flooring: selectedFlooring }; });
+                        expandedRooms.forEach(r => {
+                          pre[r] = {
+                            ...(roomConfigs[r] || {}),
+                            flooring: selectedFlooring,
+                            ...(selectedPileStyle  && { pileStyle: selectedPileStyle }),
+                            ...(selectedVinylStyle && { style: selectedVinylStyle }),
+                          };
+                        });
                         setRoomConfigs(p => ({ ...p, ...pre }));
                         setStep2Sub("room-config");
                       }} disabled={!selectedFlooring}>Configure rooms →</GoldBtn>
