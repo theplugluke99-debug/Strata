@@ -221,69 +221,6 @@ const CarpetCutLoopSVG = () => (
     ))}
   </svg>
 );
-const VinylWoodCard = () => (
-  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" strokeLinecap="round" strokeLinejoin="round">
-    <rect width="80" height="60" fill="#111110" rx="3"/>
-    {[3,22,41,60].map((px,pi) => (
-      <g key={pi}>
-        <rect x={px} y="2" width="17" height="56" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
-        <line x1={px}    y1="20" x2={px+17} y2="20" stroke="#c9a96e" strokeWidth="0.8" opacity="0.5"/>
-        <line x1={px}    y1="42" x2={px+17} y2="42" stroke="#c9a96e" strokeWidth="0.8" opacity="0.5"/>
-        {[8,13,28,33,48,53].map((gy,gi) => (
-          <path key={gi} d={`M${px+1},${gy} Q${px+8},${gy+(gi%2===0?-1:1)} ${px+16},${gy}`} stroke="#c9a96e" strokeWidth="0.5" opacity="0.3" fill="none"/>
-        ))}
-      </g>
-    ))}
-  </svg>
-);
-const VinylMarbleCard = () => (
-  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" strokeLinecap="round" strokeLinejoin="round">
-    <rect width="80" height="60" fill="#111110" rx="3"/>
-    <rect x="2"  y="2"  width="36" height="26" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
-    <rect x="42" y="2"  width="36" height="26" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
-    <rect x="2"  y="32" width="36" height="26" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
-    <rect x="42" y="32" width="36" height="26" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
-    <path d="M5,6 Q12,12 20,18 Q26,22 36,25"   stroke="#c9a96e" strokeWidth="0.7" opacity="0.25" fill="none"/>
-    <path d="M8,2 Q14,8 18,14"                  stroke="#c9a96e" strokeWidth="0.5" opacity="0.2"  fill="none"/>
-    <path d="M44,5 Q52,10 60,15 Q66,19 78,24"   stroke="#c9a96e" strokeWidth="0.7" opacity="0.25" fill="none"/>
-    <path d="M3,36 Q10,40 18,46 Q24,50 34,56"   stroke="#c9a96e" strokeWidth="0.7" opacity="0.25" fill="none"/>
-    <path d="M46,35 Q54,40 62,46 Q68,50 78,56"  stroke="#c9a96e" strokeWidth="0.7" opacity="0.25" fill="none"/>
-  </svg>
-);
-const VinylStoneCard = () => (
-  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" strokeLinecap="round" strokeLinejoin="round">
-    <rect width="80" height="60" fill="#111110" rx="3"/>
-    <rect x="2"  y="2"  width="38" height="38" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
-    <rect x="44" y="2"  width="34" height="17" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
-    <rect x="44" y="22" width="16" height="16" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
-    <rect x="63" y="22" width="15" height="16" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
-    <rect x="2"  y="43" width="19" height="15" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
-    <rect x="24" y="43" width="18" height="15" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
-    <rect x="45" y="43" width="33" height="15" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
-    <path d="M5,12 Q14,14 22,11 Q30,14 38,12"  stroke="#c9a96e" strokeWidth="0.6" opacity="0.2" fill="none"/>
-    <path d="M4,26 Q12,22 20,26 Q28,22 38,26"  stroke="#c9a96e" strokeWidth="0.6" opacity="0.15" fill="none"/>
-  </svg>
-);
-const VinylGeomCard = () => {
-  const tiles = [];
-  for (let row = 0; row < 3; row++) for (let col = 0; col < 3; col++) tiles.push({ cx: 12+col*26, cy: 10+row*20 });
-  return (
-    <svg width="80" height="60" viewBox="0 0 80 60" fill="none" strokeLinecap="round" strokeLinejoin="round">
-      <rect width="80" height="60" fill="#111110" rx="3"/>
-      {tiles.map(({cx,cy}) => (
-        <g key={`${cx}-${cy}`}>
-          <rect x={cx-12} y={cy-10} width="24" height="20" rx="0.5" stroke="#c9a96e" strokeWidth="0.7" opacity="0.4"/>
-          <path d={`M${cx},${cy} Q${cx-3},${cy-5} ${cx},${cy-8} Q${cx+3},${cy-5} ${cx},${cy} Z`} stroke="#c9a96e" strokeWidth="0.9" fill="none"/>
-          <path d={`M${cx},${cy} Q${cx-3},${cy+5} ${cx},${cy+8} Q${cx+3},${cy+5} ${cx},${cy} Z`} stroke="#c9a96e" strokeWidth="0.9" fill="none"/>
-          <path d={`M${cx},${cy} Q${cx+5},${cy-3} ${cx+8},${cy} Q${cx+5},${cy+3} ${cx},${cy} Z`} stroke="#c9a96e" strokeWidth="0.9" fill="none"/>
-          <path d={`M${cx},${cy} Q${cx-5},${cy-3} ${cx-8},${cy} Q${cx-5},${cy+3} ${cx},${cy} Z`} stroke="#c9a96e" strokeWidth="0.9" fill="none"/>
-          <circle cx={cx} cy={cy} r="1.5" stroke="#c9a96e" strokeWidth="0.8"/>
-        </g>
-      ))}
-    </svg>
-  );
-};
-
 // LVT: top-down plank / tile / herringbone layouts
 const LVTPlankSVG = () => (
   <svg width="100%" height="80" viewBox="0 0 120 80" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -2225,9 +2162,12 @@ export default function StrataPage() {
         .floor-card { display: flex; align-items: center; border: 1px solid #2a2a28; border-radius: 4px; overflow: hidden; cursor: pointer; transition: all 0.25s ease; margin-bottom: 6px; }
         .floor-card:hover { border-color: rgba(201,169,110,0.5); }
         .floor-card.selected { border-color: #c9a96e; background: rgba(201,169,110,0.08); }
-        .pile-card { width: 100px; flex-shrink: 0; border: 1px solid #2a2a28; border-radius: 6px; padding: 8px 6px; cursor: pointer; background: #111110; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: all 0.18s ease; }
-        .pile-card:hover { border-color: rgba(201,169,110,0.4); transform: translateY(-1px); }
-        .pile-card.selected { border-color: #c9a96e; background: rgba(201,169,110,0.1); }
+        .pile-card { width: 100px; flex-shrink: 0; border: 1px solid #2a2a28; border-radius: 6px; padding: 8px 6px; cursor: pointer; background: #111110; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: all 0.18s ease; overflow: hidden; }
+        .pile-card:hover { border-color: rgba(201,169,110,0.4); transform: translateY(-2px); }
+        .pile-card.selected { border-color: #c9a96e; background: rgba(201,169,110,0.1); box-shadow: 0 0 0 1px rgba(201,169,110,0.3); }
+        .vinyl-photo-card { width: 100px; flex-shrink: 0; border: 1px solid #2a2a28; border-radius: 6px; overflow: hidden; cursor: pointer; background: #111110; display: flex; flex-direction: column; align-items: center; transition: all 0.18s ease; padding: 0; }
+        .vinyl-photo-card:hover { border-color: rgba(201,169,110,0.4); transform: translateY(-2px); }
+        .vinyl-photo-card.selected { border-color: #c9a96e; box-shadow: 0 0 0 1px rgba(201,169,110,0.3); }
         .mat-card { border-radius: 6px; overflow: hidden; position: relative; height: 140px; cursor: pointer; }
         .mat-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s; display: block; }
         .mat-card:hover img { transform: scale(1.05); }
@@ -2631,7 +2571,7 @@ export default function StrataPage() {
                             style={hasPanel ? { borderRadius: "4px 4px 0 0", borderBottom: "none" } : {}}
                             onClick={() => { setSelectedFlooring(f.name); setFlooringGrade(""); }}
                           >
-                            {f.img && <img src={f.img} alt={f.name} style={{ width: 100, height: 90, objectFit: "cover", flexShrink: 0, display: "block" }}/>}
+                            {f.img && <img src={f.img} alt={f.name} loading="eager" fetchPriority="high" style={{ width: 100, height: 90, objectFit: "cover", flexShrink: 0, display: "block" }}/>}
                             <div style={{ padding: "10px 14px", flex: 1, minWidth: 0 }}>
                               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3px" }}>
                                 <div style={{ fontFamily: s.serif, fontSize: "15px", fontWeight: 700, color: s.text }}>{f.name}</div>
@@ -2644,7 +2584,7 @@ export default function StrataPage() {
                           {f.name === "Carpet" && isSelected && (
                             <div style={{ borderLeft: "1px solid rgba(201,169,110,0.3)", borderRight: "1px solid rgba(201,169,110,0.3)", borderBottom: "1px solid rgba(201,169,110,0.3)", borderRadius: "0 0 4px 4px", background: "rgba(201,169,110,0.04)", padding: "14px 16px", overflow: "hidden", maxHeight: "1000px", transition: "max-height 0.3s ease" }}>
                               <div style={{ fontSize: "9px", color: s.gold, fontFamily: "system-ui,sans-serif", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "10px" }}>Pile style</div>
-                              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", justifyContent: "center" }}>
+                              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", justifyContent: "center", alignItems: "flex-start" }}>
                                 {[
                                   { id: "twist",   title: "Twist pile",    desc: "Durable · Most popular",           svg: <CarpetTwistSVG/> },
                                   { id: "berber",  title: "Berber / Loop",  desc: "Indestructible · Hides footprints", svg: <CarpetBerberSVG/> },
@@ -2665,17 +2605,17 @@ export default function StrataPage() {
                           {f.name === "Vinyl" && isSelected && (
                             <div style={{ borderLeft: "1px solid rgba(201,169,110,0.3)", borderRight: "1px solid rgba(201,169,110,0.3)", borderBottom: "1px solid rgba(201,169,110,0.3)", borderRadius: "0 0 4px 4px", background: "rgba(201,169,110,0.04)", padding: "14px 16px", overflow: "hidden", maxHeight: "400px", transition: "max-height 0.3s ease" }}>
                               <div style={{ fontSize: "9px", color: s.gold, fontFamily: "system-ui,sans-serif", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "10px" }}>Style</div>
-                              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", justifyContent: "center" }}>
+                              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", justifyContent: "center", alignItems: "flex-start" }}>
                                 {[
-                                  { id: "Wood effect",   title: "Wood effect",   desc: "Warm · Natural look",   svg: <VinylWoodCard/> },
-                                  { id: "Marble effect", title: "Marble effect", desc: "Elegant · Statement",   svg: <VinylMarbleCard/> },
-                                  { id: "Stone / tile",  title: "Stone / tile",  desc: "Clean · Contemporary",  svg: <VinylStoneCard/> },
-                                  { id: "Patterned",     title: "Patterned",     desc: "Bold · Decorative",     svg: <VinylGeomCard/> },
-                                ].map(({ id, title, desc, svg }) => (
-                                  <div key={id} className={`pile-card${selectedVinylStyle === id ? " selected" : ""}`} onClick={() => setSelectedVinylStyle(id)}>
-                                    {svg}
-                                    <div style={{ fontFamily: s.serif, fontSize: "12px", fontWeight: 600, color: "#f2ede0", textAlign: "center" }}>{title}</div>
-                                    <div style={{ fontFamily: "system-ui,sans-serif", fontSize: "9px", color: "rgba(242,237,224,0.4)", textAlign: "center" }}>{desc}</div>
+                                  { id: "Wood effect",   title: "Wood effect",   desc: "Warm · Natural",      img: "/wood-effect-style-vinyl.png" },
+                                  { id: "Marble effect", title: "Marble effect", desc: "Elegant · Statement", img: "/marble-effect-style-vinyl.png" },
+                                  { id: "Stone / tile",  title: "Stone / tile",  desc: "Clean · Modern",      img: "/tile-effect-style-vinyl-png.png" },
+                                  { id: "Patterned",     title: "Patterned",     desc: "Bold · Decorative",   img: "/pattern-effect-style-vinyl.png" },
+                                ].map(({ id, title, desc, img }) => (
+                                  <div key={id} className={`vinyl-photo-card${selectedVinylStyle === id ? " selected" : ""}`} onClick={() => setSelectedVinylStyle(id)}>
+                                    <img src={img} alt={title} loading="eager" style={{ width: "100%", height: "64px", objectFit: "cover", display: "block", flexShrink: 0 }}/>
+                                    <div style={{ fontFamily: s.serif, fontSize: "12px", fontWeight: 700, color: "#f2ede0", textAlign: "center", padding: "5px 4px 2px", lineHeight: 1.2 }}>{title}</div>
+                                    <div style={{ fontFamily: "system-ui,sans-serif", fontSize: "9px", color: "rgba(242,237,224,0.4)", textAlign: "center", padding: "0 4px 6px", lineHeight: 1.2 }}>{desc}</div>
                                   </div>
                                 ))}
                               </div>
