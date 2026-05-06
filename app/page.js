@@ -156,64 +156,120 @@ const _BathroomSVG = (
 // ── Illustration SVGs — bird's-eye top-down views (120×80) ──────
 // Carpet: side cross-section pile views
 const CarpetTwistSVG = () => (
-  <svg width="100%" height="56" viewBox="0 0 100 72" fill="none" strokeLinecap="round" strokeLinejoin="round">
-    <rect width="100" height="72" fill="#111110"/>
-    <line x1="2" y1="68" x2="98" y2="68" stroke="#c9a96e" strokeWidth="1.5"/>
-    {[10,24,38,52,66,80,94].map((x,i) => (
+  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="80" height="60" fill="#111110" rx="3"/>
+    <rect x="2" y="48" width="76" height="10" rx="1" stroke="#c9a96e" strokeWidth="1.3" fill="rgba(201,169,110,0.06)"/>
+    {[10,20,30,40,50,60,70].map((x,i) => (
       <g key={i}>
-        <path d={`M${x},68 C${x-6},54 ${x+6},42 ${x},30 C${x-6},18 ${x+6},8 ${x},4`} stroke="#c9a96e" strokeWidth="1.5" fill="none"/>
-        <path d={`M${x+1.5},68 C${x-4.5},54 ${x+7.5},42 ${x+1.5},30 C${x-4.5},18 ${x+7.5},8 ${x+1.5},4`} stroke="#c9a96e" strokeWidth="1.5" fill="none" opacity="0.2"/>
+        <path d={`M${x-2},48 C${x-5},36 ${x+3},26 ${x-2},16 C${x-5},8 ${x+1},6 ${x-2},6`} stroke="#c9a96e" strokeWidth="1.3" fill="none"/>
+        <path d={`M${x+2},48 C${x+5},36 ${x-3},26 ${x+2},16 C${x+5},8 ${x-1},6 ${x+2},6`} stroke="#c9a96e" strokeWidth="1.3" fill="none"/>
       </g>
     ))}
   </svg>
 );
 const CarpetBerberSVG = () => (
-  <svg width="100%" height="56" viewBox="0 0 100 72" fill="none" strokeLinecap="round" strokeLinejoin="round">
-    <rect width="100" height="72" fill="#111110"/>
-    <line x1="2" y1="66" x2="98" y2="66" stroke="#c9a96e" strokeWidth="1.5"/>
-    {Array.from({length:8},(_,i) => {
-      const x = 4 + i*12;
-      return <path key={i} d={`M${x},66 C${x},32 ${x+12},32 ${x+12},66`} stroke="#c9a96e" strokeWidth="1.5" fill="none"/>;
+  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="80" height="60" fill="#111110" rx="3"/>
+    <rect x="2" y="48" width="76" height="10" rx="1" stroke="#c9a96e" strokeWidth="1.3" fill="rgba(201,169,110,0.06)"/>
+    {Array.from({length:7},(_,i) => {
+      const x = 5 + i*10;
+      return <path key={i} d={`M${x},48 C${x},30 ${x+10},30 ${x+10},48`} stroke="#c9a96e" strokeWidth="1.3" fill="none"/>;
+    })}
+    {Array.from({length:7},(_,i) => {
+      const x = 5 + i*10;
+      return <path key={`b${i}`} d={`M${x},32 C${x},18 ${x+10},18 ${x+10},32`} stroke="#c9a96e" strokeWidth="1.3" fill="none" opacity="0.4"/>;
     })}
   </svg>
 );
 const CarpetSaxonySVG = () => (
-  <svg width="100%" height="56" viewBox="0 0 100 72" fill="none" strokeLinecap="round" strokeLinejoin="round">
-    <rect width="100" height="72" fill="#111110"/>
-    <line x1="2" y1="68" x2="98" y2="68" stroke="#c9a96e" strokeWidth="1.5"/>
-    {[6,16,26,36,46,56,66,76,86,96].map((x,i) => {
-      const tipY = [8,6,10,7,8,6,9,7,8,6][i];
+  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="80" height="60" fill="#111110" rx="3"/>
+    <rect x="2" y="48" width="76" height="10" rx="1" stroke="#c9a96e" strokeWidth="1.3" fill="rgba(201,169,110,0.06)"/>
+    {[8,17,26,35,44,53,62,71,78].map((x,i) => {
+      const tipY = [8,6,10,7,8,6,10,7,8][i];
       return (
         <g key={i}>
-          <line x1={x} y1="68" x2={x} y2={tipY} stroke="#c9a96e" strokeWidth="1.5"/>
-          <path d={`M${x-2},${tipY+4} Q${x},${tipY} ${x+2},${tipY+4}`} stroke="#c9a96e" strokeWidth="1.5" fill="none"/>
-          <line x1={x+1} y1="68" x2={x+1} y2={tipY} stroke="#c9a96e" strokeWidth="1.5" opacity="0.25"/>
+          <line x1={x} y1="48" x2={x} y2={tipY} stroke="#c9a96e" strokeWidth="1.3"/>
+          <path d={`M${x-2},${tipY+4} Q${x},${tipY} ${x+2},${tipY+4}`} stroke="#c9a96e" strokeWidth="1.3" fill="none"/>
+          <line x1={x+1} y1="48" x2={x+1} y2={tipY} stroke="#c9a96e" strokeWidth="1.3" opacity="0.2"/>
         </g>
       );
     })}
   </svg>
 );
 const CarpetVelvetSVG = () => (
-  <svg width="100%" height="56" viewBox="0 0 100 72" fill="none" strokeLinecap="round" strokeLinejoin="round">
-    <rect width="100" height="72" fill="#111110"/>
-    <line x1="2" y1="68" x2="98" y2="68" stroke="#c9a96e" strokeWidth="1.5"/>
-    {Array.from({length:11},(_,i) => {
-      const x = 6 + i*9;
-      return <line key={i} x1={x} y1="68" x2={x+16} y2="8" stroke="#c9a96e" strokeWidth="1.5"/>;
+  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="80" height="60" fill="#111110" rx="3"/>
+    <rect x="2" y="48" width="76" height="10" rx="1" stroke="#c9a96e" strokeWidth="1.3" fill="rgba(201,169,110,0.06)"/>
+    {Array.from({length:10},(_,i) => {
+      const x = 6 + i*7;
+      return <line key={i} x1={x} y1="48" x2={x+13} y2="6" stroke="#c9a96e" strokeWidth="1.3"/>;
     })}
-    <line x1="22" y1="12" x2="82" y2="8" stroke="#c9a96e" strokeWidth="1" opacity="0.18"/>
+    <line x1="14" y1="12" x2="72" y2="6" stroke="#c9a96e" strokeWidth="1" opacity="0.15"/>
   </svg>
 );
 const CarpetCutLoopSVG = () => (
-  <svg width="100%" height="56" viewBox="0 0 100 72" fill="none" strokeLinecap="round" strokeLinejoin="round">
-    <rect width="100" height="72" fill="#111110"/>
-    <line x1="2" y1="68" x2="98" y2="68" stroke="#c9a96e" strokeWidth="1.5"/>
-    {[2,26,50,74].map((x,i) => (
+  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="80" height="60" fill="#111110" rx="3"/>
+    <rect x="2" y="48" width="76" height="10" rx="1" stroke="#c9a96e" strokeWidth="1.3" fill="rgba(201,169,110,0.06)"/>
+    {[4,22,40,58].map((x,i) => (
       <g key={i}>
-        <line x1={x}    y1="68" x2={x}    y2="10" stroke="#c9a96e" strokeWidth="1.5"/>
-        <line x1={x+7}  y1="68" x2={x+7}  y2="10" stroke="#c9a96e" strokeWidth="1.5"/>
-        <path d={`M${x+13},68 C${x+13},44 ${x+21},44 ${x+21},68`} stroke="#c9a96e" strokeWidth="1.5" fill="none"/>
+        <line x1={x}    y1="48" x2={x}    y2="8"  stroke="#c9a96e" strokeWidth="1.3"/>
+        <line x1={x+6}  y1="48" x2={x+6}  y2="8"  stroke="#c9a96e" strokeWidth="1.3"/>
+        <path d={`M${x+10},48 C${x+10},34 ${x+18},34 ${x+18},48`} stroke="#c9a96e" strokeWidth="1.3" fill="none"/>
       </g>
+    ))}
+  </svg>
+);
+const VinylWoodCard = () => (
+  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="80" height="60" fill="#111110" rx="3"/>
+    <rect x="2" y="2"  width="76" height="17" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
+    <rect x="2" y="21" width="76" height="17" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
+    <rect x="2" y="40" width="76" height="17" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
+    <line x1="4" y1="7"  x2="76" y2="7"  stroke="#c9a96e" strokeWidth="0.8" opacity="0.3"/>
+    <line x1="4" y1="11" x2="76" y2="11" stroke="#c9a96e" strokeWidth="0.8" opacity="0.3"/>
+    <line x1="4" y1="15" x2="76" y2="15" stroke="#c9a96e" strokeWidth="0.8" opacity="0.3"/>
+    <line x1="4" y1="25" x2="76" y2="25" stroke="#c9a96e" strokeWidth="0.8" opacity="0.3"/>
+    <line x1="4" y1="29" x2="76" y2="29" stroke="#c9a96e" strokeWidth="0.8" opacity="0.3"/>
+    <line x1="4" y1="33" x2="76" y2="33" stroke="#c9a96e" strokeWidth="0.8" opacity="0.3"/>
+    <line x1="4" y1="44" x2="76" y2="44" stroke="#c9a96e" strokeWidth="0.8" opacity="0.3"/>
+    <line x1="4" y1="48" x2="76" y2="48" stroke="#c9a96e" strokeWidth="0.8" opacity="0.3"/>
+    <line x1="4" y1="52" x2="76" y2="52" stroke="#c9a96e" strokeWidth="0.8" opacity="0.3"/>
+  </svg>
+);
+const VinylSlateCard = () => (
+  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="80" height="60" fill="#111110" rx="3"/>
+    {[[2,4],[42,4],[2,25],[42,25],[2,46],[42,46]].map(([tx,ty],i) => (
+      <g key={i}>
+        <rect x={tx} y={ty} width="36" height="18" rx="0.5" stroke="#c9a96e" strokeWidth="1.1"/>
+        <line x1={tx+4} y1={ty+4} x2={tx+32} y2={ty+14} stroke="#c9a96e" strokeWidth="0.7" opacity="0.2"/>
+      </g>
+    ))}
+  </svg>
+);
+const VinylPatternedCard = () => {
+  const diamonds = [
+    ...[12,28,44,60].map(cx => ({ cx, cy: 14 })),
+    ...[20,36,52,68].map(cx => ({ cx, cy: 32 })),
+    ...[12,28,44,60].map(cx => ({ cx, cy: 50 })),
+  ];
+  return (
+    <svg width="80" height="60" viewBox="0 0 80 60" fill="none" strokeLinecap="round" strokeLinejoin="round">
+      <rect width="80" height="60" fill="#111110" rx="3"/>
+      {diamonds.map(({cx,cy}) => (
+        <path key={`${cx}-${cy}`} d={`M${cx},${cy-7} L${cx+8},${cy} L${cx},${cy+7} L${cx-8},${cy} Z`} stroke="#c9a96e" strokeWidth="1.1" fill="none"/>
+      ))}
+    </svg>
+  );
+};
+const VinylPlainCard = () => (
+  <svg width="80" height="60" viewBox="0 0 80 60" fill="none" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="80" height="60" fill="#111110" rx="3"/>
+    <rect x="2" y="2" width="76" height="56" rx="1" stroke="#c9a96e" strokeWidth="1.1" opacity="0.1"/>
+    {[10,18,26,34,42,50].map(y => (
+      <line key={y} x1="4" y1={y} x2="76" y2={y} stroke="#c9a96e" strokeWidth="1" opacity="0.18"/>
     ))}
   </svg>
 );
@@ -2108,6 +2164,9 @@ export default function StrataPage() {
         .floor-card { display: flex; align-items: center; border: 1px solid #2a2a28; border-radius: 4px; overflow: hidden; cursor: pointer; transition: all 0.25s ease; margin-bottom: 6px; }
         .floor-card:hover { border-color: rgba(201,169,110,0.5); }
         .floor-card.selected { border-color: #c9a96e; background: rgba(201,169,110,0.08); }
+        .pile-card { width: 100px; flex-shrink: 0; border: 1px solid #2a2a28; border-radius: 6px; padding: 8px 6px; cursor: pointer; background: #111110; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: all 0.18s ease; }
+        .pile-card:hover { border-color: rgba(201,169,110,0.4); transform: translateY(-1px); }
+        .pile-card.selected { border-color: #c9a96e; background: rgba(201,169,110,0.1); }
         .mat-card { border-radius: 6px; overflow: hidden; position: relative; height: 140px; cursor: pointer; }
         .mat-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s; display: block; }
         .mat-card:hover img { transform: scale(1.05); }
@@ -2508,21 +2567,19 @@ export default function StrataPage() {
                           {f.name === "Carpet" && isSelected && (
                             <div style={{ borderLeft: "1px solid rgba(201,169,110,0.3)", borderRight: "1px solid rgba(201,169,110,0.3)", borderBottom: "1px solid rgba(201,169,110,0.3)", borderRadius: "0 0 4px 4px", background: "rgba(201,169,110,0.04)", padding: "14px 16px", overflow: "hidden", maxHeight: "1000px", transition: "max-height 0.3s ease" }}>
                               <div style={{ fontSize: "9px", color: s.gold, fontFamily: "system-ui,sans-serif", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "10px" }}>Pile style</div>
-                              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px" }}>
+                              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                                 {[
-                                  { id: "twist",   title: "Twist pile",   desc: "Durable · Most popular",           svg: <CarpetTwistSVG/> },
-                                  { id: "berber",  title: "Berber / Loop", desc: "Indestructible · Hides footprints", svg: <CarpetBerberSVG/> },
-                                  { id: "saxony",  title: "Saxony",        desc: "Deep · Luxurious · Bedroom",       svg: <CarpetSaxonySVG/> },
-                                  { id: "velvet",  title: "Velvet",        desc: "Directional sheen · Formal rooms", svg: <CarpetVelvetSVG/> },
-                                  { id: "cutloop", title: "Cut & loop",    desc: "Geometric · Contemporary",         svg: <CarpetCutLoopSVG/> },
+                                  { id: "twist",   title: "Twist pile",    desc: "Durable · Most popular",           svg: <CarpetTwistSVG/> },
+                                  { id: "berber",  title: "Berber / Loop",  desc: "Indestructible · Hides footprints", svg: <CarpetBerberSVG/> },
+                                  { id: "saxony",  title: "Saxony",         desc: "Deep · Luxurious · Bedroom",       svg: <CarpetSaxonySVG/> },
+                                  { id: "velvet",  title: "Velvet",         desc: "Directional sheen · Formal rooms", svg: <CarpetVelvetSVG/> },
+                                  { id: "cutloop", title: "Cut & loop",     desc: "Geometric · Contemporary",         svg: <CarpetCutLoopSVG/> },
                                 ].map(({ id, title, desc, svg }) => (
-                                  <IlCard key={id} selected={selectedPileStyle === id} onClick={() => setSelectedPileStyle(id)}>
-                                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "10px 8px 8px" }}>
-                                      {svg}
-                                      <div style={{ fontFamily: s.serif, fontSize: "12px", fontWeight: 700, color: "#f2ede0", marginTop: "5px", marginBottom: "2px", textAlign: "center" }}>{title}</div>
-                                      <div style={{ fontFamily: "system-ui,sans-serif", fontSize: "9px", color: "rgba(242,237,224,0.4)", textAlign: "center" }}>{desc}</div>
-                                    </div>
-                                  </IlCard>
+                                  <div key={id} className={`pile-card${selectedPileStyle === id ? " selected" : ""}`} onClick={() => setSelectedPileStyle(id)}>
+                                    {svg}
+                                    <div style={{ fontFamily: s.serif, fontSize: "12px", fontWeight: 600, color: "#f2ede0", textAlign: "center" }}>{title}</div>
+                                    <div style={{ fontFamily: "system-ui,sans-serif", fontSize: "9px", color: "rgba(242,237,224,0.4)", textAlign: "center" }}>{desc}</div>
+                                  </div>
                                 ))}
                               </div>
                             </div>
@@ -2531,20 +2588,18 @@ export default function StrataPage() {
                           {f.name === "Vinyl" && isSelected && (
                             <div style={{ borderLeft: "1px solid rgba(201,169,110,0.3)", borderRight: "1px solid rgba(201,169,110,0.3)", borderBottom: "1px solid rgba(201,169,110,0.3)", borderRadius: "0 0 4px 4px", background: "rgba(201,169,110,0.04)", padding: "14px 16px", overflow: "hidden", maxHeight: "400px", transition: "max-height 0.3s ease" }}>
                               <div style={{ fontSize: "9px", color: s.gold, fontFamily: "system-ui,sans-serif", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "10px" }}>Style</div>
-                              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
+                              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
                                 {[
-                                  { id: "Wood effect",   img: "/wood-effect-style-vinyl.png" },
-                                  { id: "Stone / slate", img: "/marble-effect-style-vinyl.png" },
-                                  { id: "Tiled",         img: "/tile-effect-style-vinyl-png.png" },
-                                  { id: "Patterned",     img: "/pattern-effect-style-vinyl.png" },
-                                ].map(({ id, img }) => (
-                                  <IlCard key={id} selected={selectedVinylStyle === id} onClick={() => setSelectedVinylStyle(id)}>
-                                    <div style={{ position: "relative", height: "90px", overflow: "hidden" }}>
-                                      <img src={img} alt={id} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}/>
-                                      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(17,17,16,0.9) 0%, transparent 60%)" }}/>
-                                      <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "8px 10px", fontFamily: s.serif, fontSize: "13px", fontWeight: 700, color: "#f2ede0" }}>{id}</div>
-                                    </div>
-                                  </IlCard>
+                                  { id: "Wood effect",   title: "Wood effect",   desc: "Warm · Easy to clean", svg: <VinylWoodCard/> },
+                                  { id: "Stone / slate", title: "Stone / slate", desc: "Clean · Modern",        svg: <VinylSlateCard/> },
+                                  { id: "Patterned",     title: "Patterned",     desc: "Bold · Decorative",     svg: <VinylPatternedCard/> },
+                                  { id: "Plain",         title: "Plain",         desc: "Simple · Hygienic",     svg: <VinylPlainCard/> },
+                                ].map(({ id, title, desc, svg }) => (
+                                  <div key={id} className={`pile-card${selectedVinylStyle === id ? " selected" : ""}`} onClick={() => setSelectedVinylStyle(id)}>
+                                    {svg}
+                                    <div style={{ fontFamily: s.serif, fontSize: "12px", fontWeight: 600, color: "#f2ede0", textAlign: "center" }}>{title}</div>
+                                    <div style={{ fontFamily: "system-ui,sans-serif", fontSize: "9px", color: "rgba(242,237,224,0.4)", textAlign: "center" }}>{desc}</div>
+                                  </div>
                                 ))}
                               </div>
                             </div>
