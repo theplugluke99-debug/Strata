@@ -1941,6 +1941,10 @@ export default function StrataPage() {
   // ── localStorage welcome-back
   const [showWelcomeBack, setShowWelcomeBack] = useState(false);
 
+  // ── Flo nudge + last added room (for step 0 room-specific nudges)
+  const [floNudgeMessage, setFloNudgeMessage] = useState("");
+  const [lastAddedRoom,   setLastAddedRoom]   = useState("");
+
   // ── Flo intercept state (Step 2 / know sub-step timer)
   const [showFloIntercept,  setShowFloIntercept]  = useState(false);
   const [interceptOpen,     setInterceptOpen]     = useState(false);
@@ -2070,7 +2074,24 @@ export default function StrataPage() {
   }, [isMobile]);
   const galleryImages = isMobile === false ? desktopImages : mobileImages;
 
-  const toggleRoom    = (r)  => setSelectedRooms(p => p.includes(r)  ? p.filter(x => x !== r)  : [...p, r]);
+  const ROOM_NUDGES = {
+    "Living Room": "Living rooms need a floor that works hard and looks great doing it.",
+    "Bedroom":     "Bedrooms are where comfort matters most. We'll get this right.",
+    "Hallway":     "Hallways take a beating. We'll spec something that lasts.",
+    "Kitchen":     "Kitchens need waterproof — we've got you covered.",
+    "Bathroom":    "Wet rooms need the right product. We know exactly what works here.",
+    "En-suite":    "Wet rooms need the right product. We know exactly what works here.",
+    "Stairs":      "Stairs are the trickiest area to get right. Our fitters do this every day.",
+    "Landing":     "Landings tie the whole floor together. Easy to forget — important to get right.",
+  };
+  const toggleRoom = (r) => {
+    const adding = !selectedRooms.includes(r);
+    if (adding) {
+      setLastAddedRoom(r);
+      setFloNudgeMessage(ROOM_NUDGES[r] || "Good choice. Added to your project.");
+    }
+    setSelectedRooms(p => p.includes(r) ? p.filter(x => x !== r) : [...p, r]);
+  };
   const toggleExtra   = (id) => setSelectedExtras(p => p.includes(id) ? p.filter(x => x !== id) : [...p, id]);
   const setDim        = (room, data) => setDimensions(p => ({ ...p, [room]: data }));
   const setRoomConfig = (room, key, val) => setRoomConfigs(p => ({ ...p, [room]: { ...(p[room] || {}), [key]: val } }));
@@ -2081,7 +2102,7 @@ export default function StrataPage() {
   const postcodeValid  = postcodeClean.length >= 5 && /^[A-Za-z]{1,2}\d/.test(postcodeClean);
   const canSubmit      = nameValid && phoneValid && postcodeValid;
   const roomsToUse     = propertyType === "Commercial" ? COMMERCIAL_ROOMS : RESIDENTIAL_ROOMS;
-  const allRoomsHaveFlooring = expandedRooms.length > 0 && expandedRooms.every(r => !!roomConfigs[r]?.flooring);
+  const allRoomsConfigured = expandedRooms.length > 0 && expandedRooms.every(r => !!roomConfigs[r]?.design && !!roomConfigs[r]?.grade);
   const currentEncouragement =
     step === 0 ? "Most people are done in under 2 minutes. No phone calls. No waiting. Just a real price." :
     step === 1 && measureSubStep === "educate" ? "No tape measure? Your phone has one built in. We'll walk you through it." :
@@ -2387,6 +2408,7 @@ export default function StrataPage() {
 
         {submitted ? (
           <div style={{ paddingTop: "20px" }}>
+            <FloNudge message="We'll call you within 2 hours. A real person — someone who actually knows flooring."/>
             <div style={{ textAlign: "center", marginBottom: "28px" }}>
               <AnimatedCheck />
               <div style={{ fontFamily: s.serif, fontSize: "32px", fontWeight: 700, color: s.text, lineHeight: 1.05, marginBottom: "10px" }}>
@@ -2480,11 +2502,16 @@ export default function StrataPage() {
                       </svg>
                     )},
                   ].map(({ type, icon }) => (
-                    <Chip key={type} label={type} selected={propertyType === type} icon={icon} onClick={() => { setPropertyType(type); setSelectedRooms([]); }} />
+                    <Chip key={type} label={type} selected={propertyType === type} icon={icon} onClick={() => {
+                      setPropertyType(type);
+                      setSelectedRooms([]);
+                      setFloNudgeMessage("Perfect. Let's build your project room by room.");
+                    }} />
                   ))}
                 </div>
                 {propertyType && (
                   <>
+                    <FloNudge message={floNudgeMessage}/>
                     <div style={{ fontSize: "10px", color: s.gold, letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "10px" }}>Which {propertyType === "Commercial" ? "spaces" : "rooms"} need new flooring?</div>
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "16px" }}>
                       {roomsToUse.map(r => <RoomChip key={r} label={r} selected={selectedRooms.includes(r)} onClick={() => toggleRoom(r)}/>)}
@@ -2510,6 +2537,7 @@ export default function StrataPage() {
             {step === 1 && measureSubStep === "educate" && (
               <>
                 <BackBtn onClick={() => setStep(0)}/>
+                <FloNudge message="Take your time with this — rough figures are completely fine. Our surveyor confirms everything in person."/>
                 <MeasureEducationScreen onContinue={() => setMeasureSubStep("measure")} propertyType={propertyType} />
               </>
             )}
@@ -2523,13 +2551,16 @@ export default function StrataPage() {
                   <RoomCalculator key={room} room={room} data={dimensions[room] || {}} onChange={data => setDim(room, data)} flooringType={selectedFlooring} propertyType={propertyType} />
                 ))}
                 {totalGrossM2 > 0 && (
-                  <div style={{ background: "rgba(201,169,110,0.07)", border: "1px solid rgba(201,169,110,0.2)", borderRadius: "3px", padding: "14px 16px", marginTop: "8px", marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                    <div>
-                      <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "3px" }}>Total to order</div>
-                      <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.3)" }}>Includes {selectedFlooring === "Vinyl" ? "15%" : "10%"} wastage allowance</div>
+                  <>
+                    <div style={{ background: "rgba(201,169,110,0.07)", border: "1px solid rgba(201,169,110,0.2)", borderRadius: "3px", padding: "14px 16px", marginTop: "8px", marginBottom: "12px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                      <div>
+                        <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "3px" }}>Total to order</div>
+                        <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.3)" }}>Includes {selectedFlooring === "Vinyl" ? "15%" : "10%"} wastage allowance</div>
+                      </div>
+                      <div style={{ fontFamily: s.serif, fontSize: "32px", color: s.gold, fontWeight: 300 }}>{totalGrossM2.toFixed(1)} <span style={{ fontSize: "16px" }}>m²</span></div>
                     </div>
-                    <div style={{ fontFamily: s.serif, fontSize: "32px", color: s.gold, fontWeight: 300 }}>{totalGrossM2.toFixed(1)} <span style={{ fontSize: "16px" }}>m²</span></div>
-                  </div>
+                    <FloNudge message={`${totalGrossM2.toFixed(1)}m² — that gives us everything we need for a solid estimate.`}/>
+                  </>
                 )}
                 <GoldBtn onClick={() => { setStep(2); setStep2Sub("path"); }} disabled={!allMeasurementsValid}>Continue →</GoldBtn>
               </>
@@ -2571,7 +2602,16 @@ export default function StrataPage() {
                           <div
                             className={`floor-card${isSelected ? " selected" : ""}`}
                             style={hasPanel ? { borderRadius: "4px 4px 0 0", borderBottom: "none" } : {}}
-                            onClick={() => { setSelectedFlooring(f.name); setFlooringGrade(""); }}
+                            onClick={() => {
+                              setSelectedFlooring(f.name);
+                              setFlooringGrade("");
+                              setFloNudgeMessage({
+                                "Carpet":   "Carpet is still the UK's most loved floor — warm, quiet, endlessly comfortable.",
+                                "LVT":      "LVT is the smart choice. Genuinely waterproof, incredibly durable, and it looks stunning.",
+                                "Laminate": "Modern laminate is surprisingly good. Durable, clean lines, great value.",
+                                "Vinyl":    "Practical and genuinely good-looking. Easy to maintain, built to last.",
+                              }[f.name] || "");
+                            }}
                           >
                             {f.img && <Image src={f.img} alt={f.name} width={100} height={90} priority style={{ objectFit: "cover", width: 100, height: 90, display: "block", flexShrink: 0, filter: "none" }}/>}
                             <div style={{ padding: "10px 14px", flex: 1, minWidth: 0 }}>
@@ -2702,16 +2742,26 @@ export default function StrataPage() {
                       </div>
                     )}
 
+                    {selectedFlooring && <FloNudge message={floNudgeMessage}/>}
                     <div style={{ marginTop: "16px" }}>
                       <GoldBtn onClick={() => {
                         setFlooringPath("know");
+                        const vinylStyleDesignMap = {
+                          "Wood effect":   "Planks",
+                          "Marble effect": "Plain",
+                          "Stone / tile":  "Geometric",
+                          "Patterned":     "Mosaic",
+                        };
                         const pre = {};
                         expandedRooms.forEach(r => {
                           pre[r] = {
                             ...(roomConfigs[r] || {}),
                             flooring: selectedFlooring,
                             ...(selectedPileStyle  && { pileStyle: selectedPileStyle }),
-                            ...(selectedVinylStyle && { style: selectedVinylStyle }),
+                            ...(selectedVinylStyle && {
+                              style: selectedVinylStyle,
+                              ...(vinylStyleDesignMap[selectedVinylStyle] && { design: vinylStyleDesignMap[selectedVinylStyle] }),
+                            }),
                           };
                         });
                         setRoomConfigs(p => ({ ...p, ...pre }));
@@ -2826,312 +2876,172 @@ export default function StrataPage() {
                   </>
                 )}
 
-                {/* ROOM CONFIG — per-room configuration */}
+                {/* ROOM CONFIG — progressive reveal per room */}
                 {step2Sub === "room-config" && (
                   <>
                     <BackBtn onClick={() => setStep2Sub(flooringPath)}/>
-                    <Sub>Select a flooring type for each room, then configure the details.</Sub>
+                    <Sub>Tell us a little more about each room — we'll handle the rest at survey.</Sub>
 
-                    {/* Flooring selection summary — one tile per room */}
-                    <div style={{ fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "10px" }}>Flooring per room</div>
                     {expandedRooms.map(room => {
-                      const roomFlooring = roomConfigs[room]?.flooring || selectedFlooring || "";
-                      const hasFlooring  = !!roomFlooring;
+                      const config      = roomConfigs[room] || {};
+                      const roomFlooring = config.flooring || selectedFlooring || "";
+
+                      const designOptions = {
+                        "Carpet":   ["Plain", "Striped", "Geometric", "Floral", "Abstract"],
+                        "LVT":      ["Wood effect", "Herringbone", "Stone effect", "Oak effect", "Marble effect", "Planks", "Aged & vintage"],
+                        "Laminate": ["Laminate wood", "Oak effect", "Rustic effect", "Grey & smoked", "Herringbone"],
+                        "Vinyl":    ["Geometric", "Herringbone", "Planks", "Mosaic", "Plain"],
+                      }[roomFlooring] || ["Standard", "Patterned", "Other"];
+
+                      const q1Nudge = {
+                        "Carpet":   "Our surveyor brings physical samples — you choose in your own light, against your own walls.",
+                        "LVT":      "LVT comes in wood, stone, and pattern effects. Our surveyor brings samples of whatever catches your eye.",
+                        "Laminate": "Modern laminate is surprisingly convincing. Samples make all the difference — we bring them to you.",
+                        "Vinyl":    "You've already picked your style — now just tell us the direction you're leaning.",
+                      }[roomFlooring] || "Our surveyor brings samples — you choose in your own home.";
+
+                      const moodColours = {
+                        "Light & airy":    ["Cream", "Soft white", "Pale grey", "Natural beige"],
+                        "Warm & cosy":     ["Honey", "Warm brown", "Terracotta", "Soft gold"],
+                        "Dark & dramatic": ["Charcoal", "Deep navy", "Forest green", "Rich plum"],
+                      };
+
+                      const q1Done = !!config.design;
+                      const q2Done = config.mood === "No preference" || !!config.colour;
+                      const q3Done = !!config.grade;
+                      const q4Done = !!config.currentFloor;
+                      const q5Done = config.currentFloor === "Nothing / bare" || !!config.subfloor;
+                      const q6Done = !!config.uplift;
+                      const roomComplete = q1Done && q2Done && q3Done && q4Done && (config.currentFloor === "Nothing / bare" ? true : q5Done && q6Done);
+
                       return (
-                        <div key={room} style={{ background: hasFlooring ? s.card : "rgba(201,169,110,0.06)", border: `1px solid ${hasFlooring ? s.border : s.gold}`, borderRadius: "4px", padding: "12px 16px", marginBottom: "8px" }}>
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+                        <div key={room} style={{ background: s.card, border: `1px solid ${roomComplete ? s.gold : s.border}`, borderRadius: "4px", padding: "16px", marginBottom: "12px", transition: "border-color 0.3s ease" }}>
+                          {/* Header */}
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
                             <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase" }}>{room}</div>
-                            {hasFlooring
-                              ? <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.gold, fontWeight: 600 }}>✓ {roomFlooring}</div>
-                              : <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.gold, letterSpacing: "0.06em" }}>Select flooring ↓</div>
-                            }
+                            <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.5)", fontWeight: 600 }}>{roomFlooring}</div>
                           </div>
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                            {flooringTypes.map(f => (
-                              <Chip key={f.name} label={f.name} selected={roomFlooring === f.name} onClick={() => setRoomConfig(room, "flooring", f.name)}/>
+
+                          {/* Q1: Design */}
+                          <FloNudge message={q1Nudge}/>
+                          <div style={{ fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>What design are you thinking?</div>
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "14px" }}>
+                            {designOptions.map(d => (
+                              <Chip key={d} label={d} selected={config.design === d} onClick={() => setRoomConfig(room, "design", d)}/>
                             ))}
                           </div>
+
+                          {/* Q2: Colour direction */}
+                          {q1Done && (
+                            <div style={{ animation: "fadeIn 0.3s ease" }}>
+                              <FloNudge message="Not sure? That's completely fine — our surveyor brings a curated range based on your answers."/>
+                              <div style={{ fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Any colour direction in mind?</div>
+                              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "8px" }}>
+                                {["Light & airy", "Warm & cosy", "Dark & dramatic", "No preference"].map(m => (
+                                  <Chip key={m} label={m} selected={config.mood === m} onClick={() => setRoomConfig(room, "mood", m)}/>
+                                ))}
+                              </div>
+                              {config.mood && config.mood !== "No preference" && (
+                                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "8px", animation: "fadeIn 0.3s ease" }}>
+                                  {(moodColours[config.mood] || []).map(c => (
+                                    <Chip key={c} label={c} selected={config.colour === c} onClick={() => setRoomConfig(room, "colour", c)}/>
+                                  ))}
+                                </div>
+                              )}
+                              {q2Done && (
+                                <div style={{ fontFamily: s.sans, fontSize: "11px", fontStyle: "italic", color: "rgba(242,237,224,0.4)", marginBottom: "14px", lineHeight: 1.5, animation: "fadeIn 0.3s ease" }}>
+                                  None of this is final. Our surveyor brings physical samples — you choose in your home, in your light.
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Q3: Grade */}
+                          {q1Done && q2Done && (
+                            <div style={{ animation: "fadeIn 0.3s ease" }}>
+                              <FloNudge message="Mid range is where most of our customers land — and it's genuinely excellent quality."/>
+                              <div style={{ fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>What quality level are you thinking?</div>
+                              <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "14px" }}>
+                                {[
+                                  { val: "Budget",    title: "Budget",    desc: "Does the job well. Right for rentals, kids' rooms, and high-traffic areas where replacement is likely. We'll never fit anything we wouldn't fit in our own homes." },
+                                  { val: "Mid range", title: "Mid range", desc: "The sweet spot — and where most of our customers end up. Great quality, wide choice, genuinely comfortable underfoot. Our surveyors carry the widest range of mid samples." },
+                                  { val: "Premium",   title: "Premium",   desc: "The best we fit. You'll feel the difference every single day. If this is a forever home or a room you spend real time in — it's worth it." },
+                                ].map(({ val, title, desc }) => (
+                                  <SelectCard key={val} selected={config.grade === val} onClick={() => {
+                                    setRoomConfig(room, "grade", val);
+                                    setFloNudgeMessage(
+                                      val === "Budget"    ? "Solid choice — we only fit products we'd fit in our own homes." :
+                                      val === "Mid range" ? "Mid range is where most people land — and it's genuinely excellent quality." :
+                                                            "Premium is worth every penny in rooms you spend real time in."
+                                    );
+                                  }} padding="12px 14px">
+                                    <div style={{ fontFamily: s.serif, fontSize: "15px", fontWeight: 700, color: config.grade === val ? s.gold : s.text, marginBottom: "4px" }}>{title}</div>
+                                    <div style={{ fontFamily: s.sans, fontSize: "12px", color: s.dim, fontWeight: 300, lineHeight: 1.5 }}>{desc}</div>
+                                  </SelectCard>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Q4: Current floor */}
+                          {q1Done && q2Done && q3Done && (
+                            <div style={{ animation: "fadeIn 0.3s ease" }}>
+                              <div style={{ fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>What's currently in this room?</div>
+                              <GoldNote>The more you can tell us here, the more accurate your estimate. Rough guesses are completely fine — our surveyor confirms everything in person.</GoldNote>
+                              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "14px" }}>
+                                {["Carpet", "Hard floor", "Tiles", "Vinyl", "Nothing / bare"].map(o => (
+                                  <Chip key={o} label={o} selected={config.currentFloor === o} onClick={() => setRoomConfig(room, "currentFloor", o)}/>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Q5: Subfloor — only if not "Nothing / bare" */}
+                          {q1Done && q2Done && q3Done && q4Done && config.currentFloor !== "Nothing / bare" && (
+                            <div style={{ animation: "fadeIn 0.3s ease" }}>
+                              <div style={{ fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>What's underneath?</div>
+                              <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.4)", fontStyle: "italic", marginBottom: "10px", lineHeight: 1.6 }}>
+                                Not sure? Try this: tap the floor firmly with your knuckle. A hollow sound means timber boards underneath. A solid thud means concrete. Still not sure — just pick &apos;Not sure&apos; and our surveyor will check.
+                              </div>
+                              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "14px" }}>
+                                {["Concrete", "Timber / boards", "Not sure"].map(o => (
+                                  <Chip key={o} label={o} selected={config.subfloor === o} onClick={() => setRoomConfig(room, "subfloor", o)}/>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Q6: Uplift — only if Q5 done (and not "Nothing / bare") */}
+                          {q1Done && q2Done && q3Done && q4Done && config.currentFloor !== "Nothing / bare" && q5Done && (
+                            <div style={{ animation: "fadeIn 0.3s ease" }}>
+                              <div style={{ fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Would you like us to remove and dispose of what&apos;s there?</div>
+                              <GoldNote>Uplift means we remove your existing floor covering and dispose of it responsibly — no skip hire, no heavy lifting for you, no trips to the tip. Most customers include this. We&apos;ll confirm the exact cost at survey.</GoldNote>
+                              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "14px" }}>
+                                {["Yes please", "No thanks", "Include in my quote"].map(o => (
+                                  <Chip key={o} label={o} selected={config.uplift === o} onClick={() => setRoomConfig(room, "uplift", o)}/>
+                                ))}
+                              </div>
+                              {q6Done && (
+                                <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.gold, animation: "fadeIn 0.4s ease" }}>✓ {room} all done.</div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Completion line for "Nothing / bare" (no Q5/Q6 needed) */}
+                          {q1Done && q2Done && q3Done && q4Done && config.currentFloor === "Nothing / bare" && (
+                            <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.gold, animation: "fadeIn 0.4s ease" }}>✓ {room} all done.</div>
+                          )}
                         </div>
                       );
                     })}
 
-                    {!allRoomsHaveFlooring && (
-                      <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.3)", textAlign: "center", padding: "10px 0 4px", fontStyle: "italic" }}>
-                        Select a flooring type for each room above to continue
-                      </div>
+                    {allRoomsConfigured && (
+                      <GoldBtn onClick={() => setStep(3)}>All rooms configured — continue →</GoldBtn>
                     )}
-
-                    {/* Detailed config cards — only shown once all rooms have flooring */}
-                    {allRoomsHaveFlooring && (
-                      <>
-                        <div style={{ fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "10px", marginTop: "20px" }}>Room details</div>
-                        {expandedRooms.map(room => {
-                          const config       = roomConfigs[room] || {};
-                          const roomFlooring = config.flooring || selectedFlooring || "";
-                          const roomGrade    = config.grade    || flooringGrade    || "";
-                          return (
-                            <div key={room} style={{ background: s.card, border: `1px solid ${s.border}`, borderRadius: "4px", padding: "16px", marginBottom: "12px" }}>
-                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}>
-                                <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase" }}>{room}</div>
-                                <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.gold, fontWeight: 600 }}>{roomFlooring}</div>
-                              </div>
-
-                              {/* ── CARPET CONFIG ─────────────────────── */}
-                              {roomFlooring === "Carpet" && (
-                                <>
-                                  <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Pile style</div>
-                                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "14px" }}>
-                                    {[
-                                      {id:"twist",   label:"Twist pile",    desc:"Durable · Practical · Most popular",       svg:<CarpetTwistSVG/>},
-                                      {id:"berber",  label:"Berber / Loop", desc:"Indestructible · Hides footprints",        svg:<CarpetBerberSVG/>},
-                                      {id:"saxony",  label:"Saxony",        desc:"Deep · Luxurious · Bedroom perfect",       svg:<CarpetSaxonySVG/>},
-                                      {id:"velvet",  label:"Velvet",        desc:"Directional sheen · Formal rooms",         svg:<CarpetVelvetSVG/>},
-                                      {id:"cutloop", label:"Cut & loop",    desc:"Geometric texture · Contemporary",         svg:<CarpetCutLoopSVG/>},
-                                    ].map(({ id, label, desc, svg }) => (
-                                      <IlCard key={id} selected={config.pileStyle === id} onClick={() => setRoomConfig(room, "pileStyle", id)}>
-                                        <div style={{ padding: "10px 10px 2px", borderBottom: "1px solid rgba(201,169,110,0.08)" }}>{svg}</div>
-                                        <div style={{ padding: "8px 10px 10px" }}>
-                                          <div style={{ fontFamily: s.serif, fontSize: "14px", fontWeight: 700, color: config.pileStyle === id ? s.gold : s.text, marginBottom: "3px" }}>{label}</div>
-                                          <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim }}>{desc}</div>
-                                        </div>
-                                      </IlCard>
-                                    ))}
-                                  </div>
-
-                                  <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Grade</div>
-                                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px", marginBottom: "14px" }}>
-                                    {["Budget", "Mid", "Premium"].map(g => (
-                                      <Chip key={g} label={g} selected={roomGrade === g} onClick={() => setRoomConfig(room, "grade", g)}/>
-                                    ))}
-                                  </div>
-
-                                  <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Underlay</div>
-                                  <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "14px" }}>
-                                    {[
-                                      {id:"keep",     label:"Keep existing",  desc:"Only available if current floor is carpet"},
-                                      {id:"budget",   label:"Budget",         desc:"7mm PU foam"},
-                                      {id:"mid",      label:"Mid",            desc:"10mm PU foam"},
-                                      {id:"premium",  label:"Premium",        desc:"12mm memory foam"},
-                                      {id:"acoustic", label:"Acoustic",       desc:"Required in flats and apartments"},
-                                    ].filter(u => u.id !== "keep" || config.currentFloor === "Carpet").map(({ id, label, desc }) => (
-                                      <SelectCard key={id} selected={config.underlay === id} onClick={() => setRoomConfig(room, "underlay", id)} padding="10px 12px">
-                                        <div style={{ fontFamily: s.sans, fontSize: "12px", fontWeight: 600, color: config.underlay === id ? s.gold : s.text, marginBottom: "2px" }}>{label}</div>
-                                        <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim }}>{desc}</div>
-                                      </SelectCard>
-                                    ))}
-                                  </div>
-                                  {config.underlay === "acoustic" && (
-                                    <GoldNote>Building regulations in most leases require acoustic underlay above ground floor. Check your lease before proceeding.</GoldNote>
-                                  )}
-
-                                  <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Gripper rods</div>
-                                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px", marginBottom: "14px" }}>
-                                    {["Replace all (recommended)", "Top up only", "Not needed"].map(o => (
-                                      <Chip key={o} label={o} selected={config.gripper === o} onClick={() => setRoomConfig(room, "gripper", o)}/>
-                                    ))}
-                                  </div>
-
-                                  {room === "Stairs" && (
-                                    <>
-                                      <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Edge finishing</div>
-                                      <GoldNote>Whipping and binding finish the cut edges of stair carpet for a clean, professional look and prevent fraying over time.</GoldNote>
-                                      <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "14px" }}>
-                                        {[
-                                          {id:"none",     label:"None needed", desc:"Standard finished edges — suitable for most stair carpets."},
-                                          {id:"whipping", label:"Whipping",    desc:"Edges stitched with thread for a clean, durable, tailored finish."},
-                                          {id:"binding",  label:"Binding",     desc:"Fabric tape bound around edges — more decorative than whipping."},
-                                        ].map(({ id, label, desc }) => (
-                                          <SelectCard key={id} selected={config.edgeFinish === id} onClick={() => setRoomConfig(room, "edgeFinish", id)} padding="10px 14px">
-                                            <div style={{ fontFamily: s.sans, fontSize: "12px", fontWeight: 600, color: config.edgeFinish === id ? s.gold : s.text }}>{label}</div>
-                                            <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, fontWeight: 300, marginTop: "2px" }}>{desc}</div>
-                                          </SelectCard>
-                                        ))}
-                                      </div>
-                                    </>
-                                  )}
-
-                                  <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Current floor covering</div>
-                                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
-                                    {["Carpet", "Hard floor", "Tiles", "Vinyl", "Bare / nothing"].map(o => (
-                                      <Chip key={o} label={o} selected={config.currentFloor === o} onClick={() => setRoomConfig(room, "currentFloor", o)}/>
-                                    ))}
-                                  </div>
-                                </>
-                              )}
-
-                              {/* ── LVT CONFIG ────────────────────────── */}
-                              {roomFlooring === "LVT" && (
-                                <>
-                                  <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Format</div>
-                                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px", marginBottom: "14px" }}>
-                                    {[
-                                      {id:"plank",       label:"Plank",       desc:"Wood effect · Most popular",    svg:<LVTPlankSVG/>},
-                                      {id:"tile",        label:"Large tile",  desc:"Stone / concrete effect",       svg:<LVTTileSVG/>},
-                                      {id:"herringbone", label:"Herringbone", desc:"Pattern statement · Premium",   svg:<LVTHerringboneSVG/>},
-                                    ].map(({ id, label, desc, svg }) => (
-                                      <IlCard key={id} selected={config.lvtFormat === id} onClick={() => setRoomConfig(room, "lvtFormat", id)}>
-                                        <div style={{ padding: "10px 10px 2px", borderBottom: "1px solid rgba(201,169,110,0.08)" }}>{svg}</div>
-                                        <div style={{ padding: "8px 8px 10px" }}>
-                                          <div style={{ fontFamily: s.serif, fontSize: "14px", fontWeight: 700, color: config.lvtFormat === id ? s.gold : s.text, marginBottom: "3px" }}>{label}</div>
-                                          <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim }}>{desc}</div>
-                                        </div>
-                                      </IlCard>
-                                    ))}
-                                  </div>
-
-                                  {config.lvtFormat && (
-                                    <>
-                                      <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Effect</div>
-                                      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "14px" }}>
-                                        {["Light oak", "Mid oak", "Dark walnut", "Grey wood", "Stone / slate", "Concrete"].map(o => (
-                                          <Chip key={o} label={o} selected={config.lvtEffect === o} onClick={() => setRoomConfig(room, "lvtEffect", o)}/>
-                                        ))}
-                                      </div>
-                                    </>
-                                  )}
-
-                                  <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Core type</div>
-                                  <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "14px" }}>
-                                    {[
-                                      {id:"click", label:"Click floating",  desc:"Easiest install — most popular for residential"},
-                                      {id:"rigid", label:"Rigid core SPC",  desc:"Best for underfloor heating, most dimensionally stable"},
-                                      {id:"glue",  label:"Glue down",       desc:"Flattest finish — true commercial grade"},
-                                    ].map(({ id, label, desc }) => (
-                                      <SelectCard key={id} selected={config.lvtCore === id} onClick={() => setRoomConfig(room, "lvtCore", id)} padding="10px 12px">
-                                        <div style={{ fontFamily: s.sans, fontSize: "12px", fontWeight: 600, color: config.lvtCore === id ? s.gold : s.text, marginBottom: "2px" }}>{label}</div>
-                                        <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim }}>{desc}</div>
-                                      </SelectCard>
-                                    ))}
-                                  </div>
-
-                                  <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Wear layer grade</div>
-                                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px", marginBottom: "14px" }}>
-                                    {["Budget 0.3mm", "Mid 0.55mm", "Premium 0.7mm+"].map(g => (
-                                      <Chip key={g} label={g} selected={roomGrade === g} onClick={() => setRoomConfig(room, "grade", g)}/>
-                                    ))}
-                                  </div>
-
-                                  {subfloor === "Concrete" && <GoldNote>Concrete subfloors often need latex levelling before LVT can be laid. We'll assess at survey.</GoldNote>}
-                                  {subfloor === "Timber / boards" && <GoldNote>Timber subfloors usually need ply boarding before LVT is laid. We'll assess at survey.</GoldNote>}
-
-                                  <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Current floor covering</div>
-                                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
-                                    {["Carpet", "Hard floor", "Tiles", "Vinyl", "Bare / nothing"].map(o => (
-                                      <Chip key={o} label={o} selected={config.currentFloor === o} onClick={() => setRoomConfig(room, "currentFloor", o)}/>
-                                    ))}
-                                  </div>
-                                </>
-                              )}
-
-                              {/* ── LAMINATE CONFIG ───────────────────── */}
-                              {roomFlooring === "Laminate" && (
-                                <>
-                                  <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Effect</div>
-                                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "14px" }}>
-                                    {[
-                                      {id:"natural",     label:"Natural oak",    desc:"Classic · Warm · Timeless",         svg:<LaminateNaturalSVG/>},
-                                      {id:"grey",        label:"Grey / smoked",  desc:"Contemporary · Sophisticated",      svg:<LaminateGreySVG/>},
-                                      {id:"herringbone", label:"Herringbone",    desc:"Bold pattern · Statement floors",   svg:<LaminateHerringboneSVG/>},
-                                    ].map(({ id, label, desc, svg }) => (
-                                      <IlCard key={id} selected={config.laminateEffect === id} onClick={() => setRoomConfig(room, "laminateEffect", id)}>
-                                        <div style={{ padding: "10px 10px 2px", borderBottom: "1px solid rgba(201,169,110,0.08)" }}>{svg}</div>
-                                        <div style={{ padding: "8px 10px 10px" }}>
-                                          <div style={{ fontFamily: s.serif, fontSize: "14px", fontWeight: 700, color: config.laminateEffect === id ? s.gold : s.text, marginBottom: "3px" }}>{label}</div>
-                                          <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim }}>{desc}</div>
-                                        </div>
-                                      </IlCard>
-                                    ))}
-                                  </div>
-
-                                  <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Grade</div>
-                                  <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "14px" }}>
-                                    {[
-                                      {label:"8mm Budget",     desc:"Standard entry-level laminate"},
-                                      {label:"10–12mm Mid",    desc:"Acoustic underlay — quieter and more solid underfoot"},
-                                      {label:"12mm+ Premium",  desc:"The closest to real wood without the price tag"},
-                                    ].map(({ label, desc }) => (
-                                      <SelectCard key={label} selected={roomGrade === label} onClick={() => setRoomConfig(room, "grade", label)} padding="10px 12px">
-                                        <div style={{ fontFamily: s.sans, fontSize: "12px", fontWeight: 600, color: roomGrade === label ? s.gold : s.text, marginBottom: "2px" }}>{label}</div>
-                                        <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim }}>{desc}</div>
-                                      </SelectCard>
-                                    ))}
-                                  </div>
-
-                                  <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Current floor covering</div>
-                                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
-                                    {["Carpet", "Hard floor", "Tiles", "Vinyl", "Bare / nothing"].map(o => (
-                                      <Chip key={o} label={o} selected={config.currentFloor === o} onClick={() => setRoomConfig(room, "currentFloor", o)}/>
-                                    ))}
-                                  </div>
-                                </>
-                              )}
-
-                              {/* ── VINYL SHEET CONFIG ────────────────── */}
-                              {roomFlooring === "Vinyl" && (
-                                <>
-                                  <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Style</div>
-                                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "14px" }}>
-                                    {[
-                                      {id:"wood",  label:"Wood effect",      desc:"Warm · Easy to maintain",       svg:<VinylWoodSVG/>},
-                                      {id:"stone", label:"Stone / geometric", desc:"Clean · Modern · Durable",     svg:<VinylStoneSVG/>},
-                                      {id:"plain", label:"Plain / solid",     desc:"Practical · Hygienic · Simple", svg:<VinylPlainSVG/>},
-                                    ].map(({ id, label, desc, svg }) => (
-                                      <IlCard key={id} selected={config.vinylStyle === id} onClick={() => setRoomConfig(room, "vinylStyle", id)}>
-                                        <div style={{ padding: "10px 10px 2px", borderBottom: "1px solid rgba(201,169,110,0.08)" }}>{svg}</div>
-                                        <div style={{ padding: "8px 10px 10px" }}>
-                                          <div style={{ fontFamily: s.serif, fontSize: "14px", fontWeight: 700, color: config.vinylStyle === id ? s.gold : s.text, marginBottom: "3px" }}>{label}</div>
-                                          <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim }}>{desc}</div>
-                                        </div>
-                                      </IlCard>
-                                    ))}
-                                  </div>
-
-                                  <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "14px" }}>
-                                    {[
-                                      {label:"Domestic cushioned", desc:"Soft underfoot — residential and light commercial"},
-                                      {label:"Heavy duty",         desc:"Reinforced backing — high traffic and commercial"},
-                                    ].map(({ label, desc }) => (
-                                      <SelectCard key={label} selected={roomGrade === label} onClick={() => setRoomConfig(room, "grade", label)} padding="10px 12px">
-                                        <div style={{ fontFamily: s.sans, fontSize: "12px", fontWeight: 600, color: roomGrade === label ? s.gold : s.text, marginBottom: "2px" }}>{label}</div>
-                                        <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim }}>{desc}</div>
-                                      </SelectCard>
-                                    ))}
-                                  </div>
-
-                                  {subfloor === "Concrete" && <GoldNote>Concrete subfloors often need latex levelling before vinyl can be laid. We'll assess at survey.</GoldNote>}
-                                  {subfloor === "Timber / boards" && <GoldNote>Timber subfloors usually need ply boarding before vinyl is laid. We'll assess at survey.</GoldNote>}
-
-                                  <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Current floor covering</div>
-                                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
-                                    {["Carpet", "Hard floor", "Tiles", "Vinyl", "Bare / nothing"].map(o => (
-                                      <Chip key={o} label={o} selected={config.currentFloor === o} onClick={() => setRoomConfig(room, "currentFloor", o)}/>
-                                    ))}
-                                  </div>
-                                </>
-                              )}
-
-                              {/* ── OTHER / FALLBACK ──────────────────── */}
-                              {roomFlooring !== "Carpet" && roomFlooring !== "LVT" && roomFlooring !== "Laminate" && roomFlooring !== "Vinyl" && (
-                                <>
-                                  <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Grade</div>
-                                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "6px", marginBottom: "14px" }}>
-                                    {["Budget", "Mid", "Premium"].map(g => (
-                                      <Chip key={g} label={g} selected={roomGrade === g} onClick={() => setRoomConfig(room, "grade", g)}/>
-                                    ))}
-                                  </div>
-                                  <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Current floor covering</div>
-                                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px" }}>
-                                    {["Carpet", "Hard floor", "Tiles", "Vinyl", "Bare / nothing"].map(o => (
-                                      <Chip key={o} label={o} selected={config.currentFloor === o} onClick={() => setRoomConfig(room, "currentFloor", o)}/>
-                                    ))}
-                                  </div>
-                                </>
-                              )}
-                            </div>
-                          );
-                        })}
-                        <GoldBtn onClick={() => setStep(3)}>All rooms configured — continue →</GoldBtn>
-                      </>
+                    {!allRoomsConfigured && (
+                      <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.3)", textAlign: "center", padding: "8px 0 4px", fontStyle: "italic" }}>
+                        Answer the design and grade questions for each room to continue
+                      </div>
                     )}
                   </>
                 )}
@@ -3142,6 +3052,7 @@ export default function StrataPage() {
             {step === 3 && (
               <>
                 <BackBtn onClick={() => { setStep(2); setStep2Sub("room-config"); }}/>
+                <FloNudge message="This helps us bring exactly the right crew and materials on the day. No surprises, nothing forgotten."/>
                 <Sub>This helps us quote accurately for any prep work before your new floor goes down.</Sub>
                 <div style={{ fontSize: "10px", color: s.gold, letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>What's there now?</div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "18px" }}>
@@ -3178,13 +3089,30 @@ export default function StrataPage() {
                 <BackBtn onClick={() => setStep(3)}/>
                 <Sub>This helps us bring the right samples and materials to your survey.</Sub>
                 <div style={{ fontSize: "10px", color: s.gold, letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Rough budget</div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "18px" }}>
-                  {["Under £500","£500–£1,500","£1,500–£3,000","£3,000+"].map(o => <Chip key={o} label={o} selected={budget === o} onClick={() => setBudget(o)}/>)}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "8px" }}>
+                  {[
+                    { o: "Under £500",    msg: "We'll work within this — honest pricing, nothing hidden." },
+                    { o: "£500–£1,500",   msg: "Good budget to work with. Plenty of options across all flooring types." },
+                    { o: "£1,500–£3,000", msg: "This gives us real flexibility to get the finish right." },
+                    { o: "£3,000+",       msg: "With this budget we can really do this properly. Exciting project." },
+                  ].map(({ o, msg }) => (
+                    <Chip key={o} label={o} selected={budget === o} onClick={() => { setBudget(o); setFloNudgeMessage(msg); }}/>
+                  ))}
                 </div>
-                <div style={{ fontSize: "10px", color: s.gold, letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>When do you need it?</div>
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "18px" }}>
-                  {["ASAP","Within a month","1–3 months","Just exploring"].map(o => <Chip key={o} label={o} selected={timing === o} onClick={() => setTiming(o)}/>)}
+                <FloNudge message={budget ? floNudgeMessage : ""}/>
+                <div style={{ fontSize: "10px", color: s.gold, letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px", marginTop: "10px" }}>When do you need it?</div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "8px" }}>
+                  {[
+                    { o: "ASAP",           msg: "Understood. We'll move quickly — our surveyor can usually visit within days." },
+                    { o: "Within a month", msg: "Good timing. Plenty of time to get everything right." },
+                    { o: "1–3 months",     msg: "No rush. We'll plan this properly and get it perfect." },
+                    { o: "Just exploring", msg: "No problem at all. The estimate is yours to keep — no pressure, ever." },
+                  ].map(({ o, msg }) => (
+                    <Chip key={o} label={o} selected={timing === o} onClick={() => { setTiming(o); setFloNudgeMessage(msg); }}/>
+                  ))}
                 </div>
+                <FloNudge message={timing ? floNudgeMessage : ""}/>
+                <div style={{ marginBottom: "10px" }}/>
                 <div style={{ fontSize: "10px", color: s.gold, letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "6px" }}>Supply & fit or fit only?</div>
                 <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, marginBottom: "10px", fontWeight: 300, lineHeight: 1.6 }}>Supply & fit — we provide everything. Fit only — you've sourced your own materials and just need our fitters.</div>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "22px" }}>
@@ -3198,6 +3126,7 @@ export default function StrataPage() {
             {step === 5 && (
               <>
                 <BackBtn onClick={() => setStep(4)}/>
+                <FloNudge message="Last step. Your estimate is waiting on the other side of this."/>
                 <div style={{ fontFamily: s.serif, fontSize: "20px", fontStyle: "italic", color: s.gold, lineHeight: 1.45, marginBottom: "24px" }}>
                   Your indicative estimate is ready — enter your details to reveal it.
                 </div>
@@ -3220,8 +3149,8 @@ export default function StrataPage() {
                 </div>
 
                 {/* Zero commitment statement */}
-                <div style={{ fontFamily: s.sans, fontSize: "11px", fontStyle: "italic", color: s.gold, textAlign: "center", marginBottom: "12px", opacity: 0.8 }}>
-                  The survey is completely free. No obligation to go ahead. We&apos;ll call to arrange a time that suits you.
+                <div style={{ fontFamily: s.sans, fontSize: "11px", fontStyle: "italic", color: "rgba(242,237,224,0.4)", textAlign: "center", marginBottom: "12px" }}>
+                  The survey is completely free. No obligation whatsoever. We&apos;ll call you — no automated messages, ever.
                 </div>
 
                 <GoldBtn onClick={() => {
