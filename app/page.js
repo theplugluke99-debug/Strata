@@ -2165,7 +2165,7 @@ export default function StrataPage() {
         .pile-card { width: 100px; flex-shrink: 0; border: 1px solid #2a2a28; border-radius: 6px; padding: 8px 6px; cursor: pointer; background: #111110; display: flex; flex-direction: column; align-items: center; gap: 4px; transition: all 0.18s ease; overflow: hidden; }
         .pile-card:hover { border-color: rgba(201,169,110,0.4); transform: translateY(-2px); }
         .pile-card.selected { border-color: #c9a96e; background: rgba(201,169,110,0.1); box-shadow: 0 0 0 1px rgba(201,169,110,0.3); }
-        .vinyl-photo-card { width: 100px; flex-shrink: 0; border: 1px solid #2a2a28; border-radius: 6px; overflow: hidden; cursor: pointer; background: #111110; display: flex; flex-direction: column; align-items: center; transition: all 0.18s ease; padding: 0; }
+        .vinyl-photo-card { width: 140px; flex-shrink: 0; border: 1px solid #2a2a28; border-radius: 6px; overflow: hidden; cursor: pointer; background: #111110; display: flex; flex-direction: column; align-items: center; transition: all 0.18s ease; padding: 0; }
         .vinyl-photo-card:hover { border-color: rgba(201,169,110,0.4); transform: translateY(-2px); }
         .vinyl-photo-card.selected { border-color: #c9a96e; box-shadow: 0 0 0 1px rgba(201,169,110,0.3); }
         .style-cards-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: flex-start; }
@@ -2615,7 +2615,7 @@ export default function StrataPage() {
                                   { id: "Patterned",     title: "Patterned",     desc: "Bold · Decorative",   img: "/pattern-effect-style-vinyl.webp" },
                                 ].map(({ id, title, desc, img }) => (
                                   <div key={id} className={`vinyl-photo-card${selectedVinylStyle === id ? " selected" : ""}`} onClick={() => setSelectedVinylStyle(id)}>
-                                    <Image src={img} alt={title} width={100} height={64} priority style={{ objectFit: "cover", width: "100%", height: "64px", display: "block", filter: "none" }}/>
+                                    <Image src={img} alt={title} width={140} height={100} priority style={{ objectFit: "cover", width: "100%", height: "100px", display: "block", filter: "none" }}/>
                                     <div style={{ fontFamily: s.serif, fontSize: "12px", fontWeight: 700, color: "#f2ede0", textAlign: "center", padding: "5px 4px 2px", lineHeight: 1.2 }}>{title}</div>
                                     <div style={{ fontFamily: "system-ui,sans-serif", fontSize: "9px", color: "rgba(242,237,224,0.4)", textAlign: "center", padding: "0 4px 6px", lineHeight: 1.2 }}>{desc}</div>
                                   </div>
