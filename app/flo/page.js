@@ -17,9 +17,10 @@ const INITIAL_MESSAGE =
 
 const SUGGESTION_CHIPS = [
   "Help me choose a floor",
-  "How does the survey work?",
-  "What's LVT?",
+  "What's the difference between LVT and laminate?",
   "How long does fitting take?",
+  "What does a free survey involve?",
+  "Get me a quick price estimate →",
 ];
 
 const stripMarkdown = (text) => {
@@ -305,53 +306,96 @@ export default function FloPage() {
           flex: 1,
           overflowY: "auto",
           padding: "16px",
-          paddingBottom: "84px",
+          paddingBottom: "136px",
           display: "flex",
           flexDirection: "column",
           gap: "10px",
         }}
       >
-        {messages.map((msg, i) => (
-          <div key={i} style={{ display: "flex", justifyContent: msg.role === "user" ? "flex-end" : "flex-start" }}>
-            {msg.role === "assistant" && (
-              <div
-                style={{
-                  width: 20, height: 20, borderRadius: "50%", background: GOLD,
-                  display: "flex", alignItems: "center", justifyContent: "center",
-                  flexShrink: 0, marginRight: 8, marginTop: 2, alignSelf: "flex-start",
-                }}
-              >
-                <span style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: 9, fontWeight: 700, color: "#111" }}>F</span>
+        {messages.map((msg, i) => {
+          const flooringMentioned = msg.role === "assistant" && msg.content
+            ? ["Carpet", "LVT", "Laminate", "Vinyl", "Herringbone"].find(f => msg.content.includes(f))
+            : null;
+          return (
+            <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: msg.role === "user" ? "flex-end" : "flex-start" }}>
+              <div style={{ display: "flex", justifyContent: msg.role === "user" ? "flex-end" : "flex-start", alignSelf: "stretch" }}>
+                {msg.role === "assistant" && (
+                  <div
+                    style={{
+                      width: 20, height: 20, borderRadius: "50%", background: GOLD,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      flexShrink: 0, marginRight: 8, marginTop: 2, alignSelf: "flex-start",
+                    }}
+                  >
+                    <span style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: 9, fontWeight: 700, color: "#111" }}>F</span>
+                  </div>
+                )}
+                <div
+                  style={{
+                    maxWidth: "85%",
+                    background: msg.role === "user" ? "rgba(201,169,110,0.15)" : SURFACE,
+                    border: `1px solid ${msg.role === "user" ? "rgba(201,169,110,0.3)" : BORDER}`,
+                    borderRadius: 4,
+                    padding: "12px 14px",
+                    fontSize: 13,
+                    lineHeight: 1.7,
+                    color: TEXT,
+                    fontFamily: SANS,
+                    whiteSpace: "pre-wrap",
+                    wordBreak: "break-word",
+                  }}
+                >
+                  {msg.role === "assistant" && msg.content === "" ? (
+                    <TypingDots />
+                  ) : (
+                    msg.content
+                  )}
+                </div>
               </div>
-            )}
-            <div
-              style={{
-                maxWidth: "85%",
-                background: msg.role === "user" ? "rgba(201,169,110,0.15)" : SURFACE,
-                border: `1px solid ${msg.role === "user" ? "rgba(201,169,110,0.3)" : BORDER}`,
-                borderRadius: 4,
-                padding: "12px 14px",
-                fontSize: 13,
-                lineHeight: 1.7,
-                color: TEXT,
-                fontFamily: SANS,
-                whiteSpace: "pre-wrap",
-                wordBreak: "break-word",
-              }}
-            >
-              {msg.role === "assistant" && msg.content === "" ? (
-                <TypingDots />
-              ) : (
-                msg.content
+              {flooringMentioned && (
+                <a
+                  href="/"
+                  onClick={e => {
+                    e.preventDefault();
+                    sessionStorage.setItem("floRecommendation", flooringMentioned);
+                    window.location.href = "/#quote";
+                  }}
+                  style={{
+                    display: "inline-block",
+                    marginTop: "8px",
+                    marginLeft: "28px",
+                    background: "rgba(201,169,110,0.1)",
+                    border: "1px solid rgba(201,169,110,0.3)",
+                    borderRadius: "3px",
+                    color: GOLD,
+                    fontFamily: SANS,
+                    fontSize: "11px",
+                    padding: "8px 14px",
+                    textDecoration: "none",
+                    letterSpacing: "0.06em",
+                  }}
+                >
+                  Get a quote for {flooringMentioned} →
+                </a>
               )}
             </div>
-          </div>
-        ))}
+          );
+        })}
 
         {showChips && messages.length === 1 && (
           <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: 4, paddingLeft: 28 }}>
             {SUGGESTION_CHIPS.map((chip) => (
-              <button key={chip} className="flo-page-chip" onClick={() => sendMessage(chip)}>
+              <button
+                key={chip}
+                className="flo-page-chip"
+                onClick={() => {
+                  if (chip === "Get me a quick price estimate →") {
+                    window.location.href = "/#quote";
+                    return;
+                  }
+                  sendMessage(chip);
+                }}
+              >
                 {chip}
               </button>
             ))}
@@ -359,18 +403,47 @@ export default function FloPage() {
         )}
       </div>
 
-      {/* INPUT BAR — fixed at bottom, never hidden by keyboard */}
-      <div
-        style={{
-          position: "fixed",
-          bottom: 0,
-          left: 0,
-          right: 0,
-          padding: "12px 16px",
-          borderTop: `1px solid ${BORDER}`,
-          background: BG,
-        }}
-      >
+      {/* BOTTOM FIXED AREA — CTA bar + input, never hidden by keyboard */}
+      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0 }}>
+        {/* CTA bar */}
+        <div
+          style={{
+            padding: "10px 16px",
+            borderTop: `1px solid ${BORDER}`,
+            borderBottom: `1px solid ${BORDER}`,
+            background: "rgba(201,169,110,0.04)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: "12px",
+          }}
+        >
+          <div style={{ fontFamily: SANS, fontSize: "11px", color: "rgba(242,237,224,0.35)", fontWeight: 300 }}>
+            Ready to get a price?
+          </div>
+          <a
+            href="/"
+            onClick={e => { e.preventDefault(); window.location.href = "/#quote"; }}
+            style={{
+              background: GOLD,
+              color: "#111110",
+              fontFamily: SANS,
+              fontSize: "11px",
+              fontWeight: 600,
+              letterSpacing: "0.1em",
+              textTransform: "uppercase",
+              padding: "8px 16px",
+              borderRadius: "2px",
+              textDecoration: "none",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+            }}
+          >
+            Get my quote →
+          </a>
+        </div>
+        {/* Input bar */}
+        <div style={{ padding: "12px 16px", borderTop: `1px solid ${BORDER}`, background: BG }}>
         <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
           <input
             ref={inputRef}
@@ -417,6 +490,7 @@ export default function FloPage() {
           >
             <SendIcon color={!input.trim() || loading ? "rgba(201,169,110,0.4)" : "#111"} />
           </button>
+        </div>
         </div>
       </div>
     </div>

@@ -17,9 +17,10 @@ const INITIAL_MESSAGE =
 
 const SUGGESTION_CHIPS = [
   "Help me choose a floor",
-  "How does the survey work?",
-  "What's LVT?",
+  "What's the difference between LVT and laminate?",
   "How long does fitting take?",
+  "What does a free survey involve?",
+  "Get me a quick price estimate →",
 ];
 
 const stripMarkdown = (text) => {
@@ -325,33 +326,66 @@ export default function FloSection() {
                 scrollbarWidth: "none",
               }}
             >
-              {messages.map((msg, i) => (
-                <div key={i} style={{ display: "flex", justifyContent: msg.role === "user" ? "flex-end" : "flex-start" }}>
-                  {msg.role === "assistant" && (
-                    <div
-                      style={{
-                        width: 20, height: 20, borderRadius: "50%", background: GOLD,
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                        flexShrink: 0, marginRight: 8, marginTop: 2, alignSelf: "flex-start",
-                      }}
-                    >
-                      <span style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: 9, fontWeight: 700, color: "#111" }}>F</span>
+              {messages.map((msg, i) => {
+                const flooringMentioned = msg.role === "assistant" && msg.content
+                  ? ["Carpet", "LVT", "Laminate", "Vinyl", "Herringbone"].find(f => msg.content.includes(f))
+                  : null;
+                return (
+                  <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: msg.role === "user" ? "flex-end" : "flex-start" }}>
+                    <div style={{ display: "flex", justifyContent: msg.role === "user" ? "flex-end" : "flex-start", alignSelf: "stretch" }}>
+                      {msg.role === "assistant" && (
+                        <div
+                          style={{
+                            width: 20, height: 20, borderRadius: "50%", background: GOLD,
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            flexShrink: 0, marginRight: 8, marginTop: 2, alignSelf: "flex-start",
+                          }}
+                        >
+                          <span style={{ fontFamily: SERIF, fontStyle: "italic", fontSize: 9, fontWeight: 700, color: "#111" }}>F</span>
+                        </div>
+                      )}
+                      <div
+                        style={{
+                          maxWidth: "85%",
+                          background: msg.role === "user" ? "rgba(201,169,110,0.15)" : SURFACE,
+                          border: `1px solid ${msg.role === "user" ? "rgba(201,169,110,0.3)" : BORDER}`,
+                          borderRadius: 4, padding: "12px 14px",
+                          fontSize: 13, lineHeight: 1.7, color: TEXT,
+                          fontFamily: SANS, whiteSpace: "pre-wrap", wordBreak: "break-word",
+                        }}
+                      >
+                        {msg.role === "assistant" && msg.content === "" ? <TypingDots /> : msg.content}
+                      </div>
                     </div>
-                  )}
-                  <div
-                    style={{
-                      maxWidth: "85%",
-                      background: msg.role === "user" ? "rgba(201,169,110,0.15)" : SURFACE,
-                      border: `1px solid ${msg.role === "user" ? "rgba(201,169,110,0.3)" : BORDER}`,
-                      borderRadius: 4, padding: "12px 14px",
-                      fontSize: 13, lineHeight: 1.7, color: TEXT,
-                      fontFamily: SANS, whiteSpace: "pre-wrap", wordBreak: "break-word",
-                    }}
-                  >
-                    {msg.role === "assistant" && msg.content === "" ? <TypingDots /> : msg.content}
+                    {flooringMentioned && (
+                      <button
+                        onClick={() => {
+                          window.dispatchEvent(new CustomEvent("flo-recommend", { detail: { flooring: flooringMentioned } }));
+                          setIsOpen(false);
+                          document.getElementById("quote")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                        }}
+                        style={{
+                          display: "inline-block",
+                          marginTop: "8px",
+                          marginLeft: "28px",
+                          background: "rgba(201,169,110,0.1)",
+                          border: "1px solid rgba(201,169,110,0.3)",
+                          borderRadius: "3px",
+                          color: GOLD,
+                          fontFamily: SANS,
+                          fontSize: "11px",
+                          padding: "8px 14px",
+                          cursor: "pointer",
+                          letterSpacing: "0.06em",
+                          textAlign: "left",
+                        }}
+                      >
+                        Start your quote with {flooringMentioned} →
+                      </button>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
 
             {/* Suggestion chips */}
@@ -363,7 +397,19 @@ export default function FloSection() {
                 }}
               >
                 {SUGGESTION_CHIPS.map((chip) => (
-                  <button key={chip} onClick={() => sendMessage(chip)} disabled={loading} className="flo-chip-suggest">
+                  <button
+                    key={chip}
+                    disabled={loading}
+                    className="flo-chip-suggest"
+                    onClick={() => {
+                      if (chip === "Get me a quick price estimate →") {
+                        setIsOpen(false);
+                        document.getElementById("quote")?.scrollIntoView({ behavior: "smooth", block: "start" });
+                        return;
+                      }
+                      sendMessage(chip);
+                    }}
+                  >
                     {chip}
                   </button>
                 ))}

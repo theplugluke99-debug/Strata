@@ -2056,6 +2056,28 @@ export default function StrataPage() {
     } catch(e) {}
   }, []);
 
+  // ── Flo recommendation from /flo page (sessionStorage) or FloSection widget (custom event)
+  useEffect(() => {
+    const rec = sessionStorage.getItem("floRecommendation");
+    if (rec) {
+      sessionStorage.removeItem("floRecommendation");
+      setSelectedFlooring(rec);
+      setTimeout(() => {
+        document.getElementById("quote")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 500);
+    }
+  }, []);
+
+  useEffect(() => {
+    const handler = (e) => {
+      setSelectedFlooring(e.detail.flooring);
+      setStep(1);
+      setMeasureSubStep("educate");
+    };
+    window.addEventListener("flo-recommend", handler);
+    return () => window.removeEventListener("flo-recommend", handler);
+  }, []);
+
   // ── localStorage auto-save
   useEffect(() => {
     if (step === 0) return;
@@ -2756,37 +2778,39 @@ export default function StrataPage() {
                             </div>
                           )}
 
-                          {interceptResponse && (
-                            <div style={{ marginLeft: "48px", marginTop: "16px" }}>
-                              <div style={{ fontFamily: "system-ui", fontSize: "13px", color: "rgba(242,237,224,0.75)", lineHeight: 1.8, fontWeight: 300, marginBottom: "16px", fontStyle: "italic" }}>
-                                {interceptResponse}
+                          {interceptResponse && (() => {
+                            const interceptTypes = ["Carpet", "LVT", "Herringbone", "Laminate", "Vinyl"];
+                            const detectedType = interceptTypes.find(t => interceptResponse.includes(t));
+                            return (
+                              <div style={{ marginLeft: "48px", marginTop: "16px" }}>
+                                <div style={{ fontFamily: "system-ui", fontSize: "13px", color: "rgba(242,237,224,0.75)", lineHeight: 1.8, fontWeight: 300, marginBottom: "16px", fontStyle: "italic" }}>
+                                  {interceptResponse}
+                                </div>
+                                <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                                  <button
+                                    onClick={() => {
+                                      if (detectedType) { setSelectedFlooring(detectedType); setFlooringGrade(""); }
+                                      setShowFloIntercept(false);
+                                      setInterceptResponse(null);
+                                      setInterceptInput("");
+                                      setInterceptPhoto(null);
+                                      setInterceptPhotoPreview(null);
+                                      setInterceptChipSelected(null);
+                                    }}
+                                    style={{ background: "rgba(201,169,110,0.1)", border: "1px solid rgba(201,169,110,0.3)", borderRadius: "3px", color: "#c9a96e", fontFamily: "system-ui", fontSize: "12px", padding: "12px 16px", cursor: "pointer", textAlign: "left", letterSpacing: "0.06em" }}
+                                  >
+                                    Perfect — use {detectedType || "this flooring"} for my rooms →
+                                  </button>
+                                  <button
+                                    onClick={() => { setShowFloIntercept(false); setInterceptResponse(null); setInterceptInput(""); setInterceptPhoto(null); setInterceptPhotoPreview(null); setInterceptChipSelected(null); }}
+                                    style={{ background: "none", border: "none", color: "rgba(242,237,224,0.25)", fontFamily: "system-ui", fontSize: "11px", padding: "0", cursor: "pointer", textAlign: "left", letterSpacing: "0.08em" }}
+                                  >
+                                    I&apos;d rather choose myself
+                                  </button>
+                                </div>
                               </div>
-                              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-                                <button
-                                  onClick={() => {
-                                    const types = ["Carpet", "LVT", "Herringbone", "Laminate", "Vinyl"];
-                                    const match = types.find(t => interceptResponse.includes(t));
-                                    if (match) { setSelectedFlooring(match); setFlooringGrade(""); }
-                                    setShowFloIntercept(false);
-                                    setInterceptResponse(null);
-                                    setInterceptInput("");
-                                    setInterceptPhoto(null);
-                                    setInterceptPhotoPreview(null);
-                                    setInterceptChipSelected(null);
-                                  }}
-                                  style={{ background: "rgba(201,169,110,0.1)", border: "1px solid rgba(201,169,110,0.3)", borderRadius: "3px", color: "#c9a96e", fontFamily: "system-ui", fontSize: "12px", padding: "12px 16px", cursor: "pointer", textAlign: "left", letterSpacing: "0.06em" }}
-                                >
-                                  Yes, use this recommendation →
-                                </button>
-                                <button
-                                  onClick={() => { setShowFloIntercept(false); setInterceptResponse(null); setInterceptInput(""); setInterceptPhoto(null); setInterceptPhotoPreview(null); setInterceptChipSelected(null); }}
-                                  style={{ background: "none", border: "none", color: "rgba(242,237,224,0.25)", fontFamily: "system-ui", fontSize: "11px", padding: "0", cursor: "pointer", textAlign: "left", letterSpacing: "0.08em" }}
-                                >
-                                  I&apos;d rather choose myself
-                                </button>
-                              </div>
-                            </div>
-                          )}
+                            );
+                          })()}
                         </div>
                       );
                     })()}
