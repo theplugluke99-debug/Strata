@@ -45,7 +45,7 @@ const flooringTypes = [
   {
     name: "Vinyl", tag: "Practical & affordable", grade: false,
     desc: "Sheet vinyl or vinyl planks. Fully waterproof, soft underfoot, very easy to maintain.",
-    img: "/quote-vinyl.png",
+    img: "/quote-vinyl.webp",
     subfloorNote: "Vinyl is thin, which means any bumps or old adhesive residue underneath will show through over time. The subfloor needs to be smooth and clean before we lay it.",
     grades: [],
   },
@@ -2168,6 +2168,8 @@ export default function StrataPage() {
         .vinyl-photo-card { width: 100px; flex-shrink: 0; border: 1px solid #2a2a28; border-radius: 6px; overflow: hidden; cursor: pointer; background: #111110; display: flex; flex-direction: column; align-items: center; transition: all 0.18s ease; padding: 0; }
         .vinyl-photo-card:hover { border-color: rgba(201,169,110,0.4); transform: translateY(-2px); }
         .vinyl-photo-card.selected { border-color: #c9a96e; box-shadow: 0 0 0 1px rgba(201,169,110,0.3); }
+        .style-cards-grid { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; align-items: flex-start; }
+        @media (min-width: 480px) { .style-cards-grid { justify-content: flex-start; } }
         .mat-card { border-radius: 6px; overflow: hidden; position: relative; height: 140px; cursor: pointer; }
         .mat-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s; display: block; }
         .mat-card:hover img { transform: scale(1.05); }
@@ -2571,7 +2573,7 @@ export default function StrataPage() {
                             style={hasPanel ? { borderRadius: "4px 4px 0 0", borderBottom: "none" } : {}}
                             onClick={() => { setSelectedFlooring(f.name); setFlooringGrade(""); }}
                           >
-                            {f.img && <img src={f.img} alt={f.name} loading="eager" fetchPriority="high" style={{ width: 100, height: 90, objectFit: "cover", flexShrink: 0, display: "block" }}/>}
+                            {f.img && <Image src={f.img} alt={f.name} width={100} height={90} priority style={{ objectFit: "cover", width: 100, height: 90, display: "block", flexShrink: 0, filter: "none" }}/>}
                             <div style={{ padding: "10px 14px", flex: 1, minWidth: 0 }}>
                               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "3px" }}>
                                 <div style={{ fontFamily: s.serif, fontSize: "15px", fontWeight: 700, color: s.text }}>{f.name}</div>
@@ -2584,7 +2586,7 @@ export default function StrataPage() {
                           {f.name === "Carpet" && isSelected && (
                             <div style={{ borderLeft: "1px solid rgba(201,169,110,0.3)", borderRight: "1px solid rgba(201,169,110,0.3)", borderBottom: "1px solid rgba(201,169,110,0.3)", borderRadius: "0 0 4px 4px", background: "rgba(201,169,110,0.04)", padding: "14px 16px", overflow: "hidden", maxHeight: "1000px", transition: "max-height 0.3s ease" }}>
                               <div style={{ fontSize: "9px", color: s.gold, fontFamily: "system-ui,sans-serif", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "10px" }}>Pile style</div>
-                              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", justifyContent: "center", alignItems: "flex-start" }}>
+                              <div className="style-cards-grid">
                                 {[
                                   { id: "twist",   title: "Twist pile",    desc: "Durable · Most popular",           svg: <CarpetTwistSVG/> },
                                   { id: "berber",  title: "Berber / Loop",  desc: "Indestructible · Hides footprints", svg: <CarpetBerberSVG/> },
@@ -2605,15 +2607,15 @@ export default function StrataPage() {
                           {f.name === "Vinyl" && isSelected && (
                             <div style={{ borderLeft: "1px solid rgba(201,169,110,0.3)", borderRight: "1px solid rgba(201,169,110,0.3)", borderBottom: "1px solid rgba(201,169,110,0.3)", borderRadius: "0 0 4px 4px", background: "rgba(201,169,110,0.04)", padding: "14px 16px", overflow: "hidden", maxHeight: "400px", transition: "max-height 0.3s ease" }}>
                               <div style={{ fontSize: "9px", color: s.gold, fontFamily: "system-ui,sans-serif", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "10px" }}>Style</div>
-                              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", justifyContent: "center", alignItems: "flex-start" }}>
+                              <div className="style-cards-grid">
                                 {[
-                                  { id: "Wood effect",   title: "Wood effect",   desc: "Warm · Natural",      img: "/wood-effect-style-vinyl.png" },
-                                  { id: "Marble effect", title: "Marble effect", desc: "Elegant · Statement", img: "/marble-effect-style-vinyl.png" },
-                                  { id: "Stone / tile",  title: "Stone / tile",  desc: "Clean · Modern",      img: "/tile-effect-style-vinyl-png.png" },
-                                  { id: "Patterned",     title: "Patterned",     desc: "Bold · Decorative",   img: "/pattern-effect-style-vinyl.png" },
+                                  { id: "Wood effect",   title: "Wood effect",   desc: "Warm · Natural",     img: "/wood-effect-style-vinyl.webp" },
+                                  { id: "Marble effect", title: "Marble effect", desc: "Elegant · Statement", img: "/marble-effect-style-vinyl.webp" },
+                                  { id: "Stone / tile",  title: "Stone / tile",  desc: "Clean · Modern",      img: "/tile-effect-style-vinyl-png.webp" },
+                                  { id: "Patterned",     title: "Patterned",     desc: "Bold · Decorative",   img: "/pattern-effect-style-vinyl.webp" },
                                 ].map(({ id, title, desc, img }) => (
                                   <div key={id} className={`vinyl-photo-card${selectedVinylStyle === id ? " selected" : ""}`} onClick={() => setSelectedVinylStyle(id)}>
-                                    <img src={img} alt={title} loading="eager" style={{ width: "100%", height: "64px", objectFit: "cover", display: "block", flexShrink: 0 }}/>
+                                    <Image src={img} alt={title} width={100} height={64} priority style={{ objectFit: "cover", width: "100%", height: "64px", display: "block", filter: "none" }}/>
                                     <div style={{ fontFamily: s.serif, fontSize: "12px", fontWeight: 700, color: "#f2ede0", textAlign: "center", padding: "5px 4px 2px", lineHeight: 1.2 }}>{title}</div>
                                     <div style={{ fontFamily: "system-ui,sans-serif", fontSize: "9px", color: "rgba(242,237,224,0.4)", textAlign: "center", padding: "0 4px 6px", lineHeight: 1.2 }}>{desc}</div>
                                   </div>
