@@ -2995,30 +2995,62 @@ export default function StrataPage() {
                 {step2Sub === "room-config" && (
                   <>
                     <BackBtn onClick={() => setStep2Sub(flooringPath)}/>
-                    <Sub>Tell us a little more about each room — we'll handle the rest at survey.</Sub>
+                    <Sub>Tell us a little more about each room — we&apos;ll handle the rest at survey.</Sub>
 
                     {expandedRooms.map(room => {
-                      const config      = roomConfigs[room] || {};
+                      const config       = roomConfigs[room] || {};
                       const roomFlooring = config.flooring || selectedFlooring || "";
 
-                      const designOptions = {
-                        "Carpet":   ["Plain", "Striped", "Geometric", "Floral", "Abstract"],
-                        "LVT":      ["Wood effect", "Herringbone", "Stone effect", "Oak effect", "Marble effect", "Planks", "Aged & vintage"],
-                        "Laminate": ["Laminate wood", "Oak effect", "Rustic effect", "Grey & smoked", "Herringbone"],
-                        "Vinyl":    ["Geometric", "Herringbone", "Planks", "Mosaic", "Plain"],
-                      }[roomFlooring] || ["Standard", "Patterned", "Other"];
+                      const designCards = ({
+                        "Carpet": [
+                          { src: "/sage-design-png.png",           label: "Plain",       value: "Plain" },
+                          { src: "/striped-pattern-design.png",    label: "Striped",     value: "Striped" },
+                          { src: "/carpet-pattern-design.png",     label: "Pattern",     value: "Pattern" },
+                          { src: "/tartan-design.png",             label: "Tartan",      value: "Tartan" },
+                          { src: "/herringbone-design.png",        label: "Herringbone", value: "Herringbone" },
+                        ],
+                        "LVT": [
+                          { src: "/woodeffect-lvt-design.png",     label: "Wood effect",    value: "Wood effect" },
+                          { src: "/herringbone-lvt-design.png",    label: "Herringbone",    value: "Herringbone" },
+                          { src: "/marbleeffect-lvt-design.png",   label: "Marble effect",  value: "Marble effect" },
+                          { src: "/stone-lvt-design.png",          label: "Stone / slate",  value: "Stone / slate" },
+                          { src: "/concrete-lvt-design.png",       label: "Concrete",       value: "Concrete" },
+                          { src: "/geometric-lvt-design.png",      label: "Geometric tile", value: "Geometric tile" },
+                        ],
+                        "Laminate": [
+                          { src: "/oakeffect-laminate-design.png",    label: "Oak effect",    value: "Oak effect" },
+                          { src: "/grey-smoked-laminate-design.png",  label: "Grey / smoked", value: "Grey / smoked" },
+                          { src: "/dark-walnut-laminate-design.png",  label: "Dark walnut",   value: "Dark walnut" },
+                          { src: "/white-washed-laminate-design.png", label: "White washed",  value: "White washed" },
+                        ],
+                        "Vinyl": [
+                          { src: "/plank-vinyl-design.png",        label: "Wood plank",  value: "Wood plank" },
+                          { src: "/stone-vinyl-design.png",        label: "Stone / tile",value: "Stone / tile" },
+                          { src: "/geometric-vinyl-design.png",    label: "Geometric",   value: "Geometric" },
+                          { src: "/herringbone-vinyl-design.png",  label: "Herringbone", value: "Herringbone" },
+                          { src: "/plain-vinyl-design.png",        label: "Plain",       value: "Plain" },
+                        ],
+                      })[roomFlooring] || [];
 
-                      const q1Nudge = {
-                        "Carpet":   "Our surveyor brings physical samples — you choose in your own light, against your own walls.",
-                        "LVT":      "LVT comes in wood, stone, and pattern effects. Our surveyor brings samples of whatever catches your eye.",
-                        "Laminate": "Modern laminate is surprisingly convincing. Samples make all the difference — we bring them to you.",
-                        "Vinyl":    "You've already picked your style — now just tell us the direction you're leaning.",
-                      }[roomFlooring] || "Our surveyor brings samples — you choose in your own home.";
-
-                      const moodColours = {
-                        "Light & airy":    ["Cream", "Soft white", "Pale grey", "Natural beige"],
-                        "Warm & cosy":     ["Honey", "Warm brown", "Terracotta", "Soft gold"],
-                        "Dark & dramatic": ["Charcoal", "Deep navy", "Forest green", "Rich plum"],
+                      const moodSwatches = {
+                        "Light & airy":    [
+                          { label: "Cream",      hex: "#F5F0E8" },
+                          { label: "Soft white", hex: "#FAF8F5" },
+                          { label: "Pale grey",  hex: "#D8D5D0" },
+                          { label: "Natural",    hex: "#E8DDD0" },
+                        ],
+                        "Warm & cosy":     [
+                          { label: "Honey",      hex: "#C4956A" },
+                          { label: "Warm brown", hex: "#8B6347" },
+                          { label: "Terracotta", hex: "#C4704F" },
+                          { label: "Soft gold",  hex: "#D4A853" },
+                        ],
+                        "Dark & dramatic": [
+                          { label: "Charcoal",   hex: "#3A3A3A" },
+                          { label: "Navy",       hex: "#1C2B4A" },
+                          { label: "Forest",     hex: "#2C4A35" },
+                          { label: "Deep plum",  hex: "#4A2040" },
+                        ],
                       };
 
                       const q1Done = !!config.design;
@@ -3027,133 +3059,204 @@ export default function StrataPage() {
                       const q4Done = !!config.currentFloor;
                       const q5Done = config.currentFloor === "Nothing / bare" || !!config.subfloor;
                       const q6Done = !!config.uplift;
-                      const roomComplete = q1Done && q2Done && q3Done && q4Done && (config.currentFloor === "Nothing / bare" ? true : q5Done && q6Done);
+                      const roomComplete = q1Done && q2Done && q3Done;
 
                       return (
-                        <div key={room} style={{ background: s.card, border: `1px solid ${roomComplete ? s.gold : s.border}`, borderRadius: "4px", padding: "16px", marginBottom: "12px", transition: "border-color 0.3s ease" }}>
-                          {/* Header */}
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                        <div key={room} style={{ background: "#1a1a18", border: `1px solid ${roomComplete ? "#c9a96e" : "#2a2a28"}`, borderRadius: "6px", marginBottom: "16px", overflow: "hidden", transition: "border-color 0.3s ease" }}>
+
+                          {/* Card header */}
+                          <div style={{ padding: "14px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                             <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase" }}>{room}</div>
-                            <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.5)", fontWeight: 600 }}>{roomFlooring}</div>
+                            <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.gold, fontStyle: "italic" }}>{roomFlooring}</div>
                           </div>
 
-                          {/* Q1: Design */}
-                          <FloNudge message={q1Nudge}/>
-                          <div style={{ fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>What design are you thinking?</div>
-                          <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "14px" }}>
-                            {designOptions.map(d => (
-                              <Chip key={d} label={d} selected={config.design === d} onClick={() => setRoomConfig(room, "design", d)}/>
-                            ))}
-                          </div>
+                          {/* Questions */}
+                          <div style={{ padding: "0 16px 16px" }}>
 
-                          {/* Q2: Colour direction */}
-                          {q1Done && (
-                            <div style={{ animation: "fadeIn 0.3s ease" }}>
-                              <FloNudge message="Not sure? That's completely fine — our surveyor brings a curated range based on your answers."/>
-                              <div style={{ fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Any colour direction in mind?</div>
-                              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "8px" }}>
-                                {["Light & airy", "Warm & cosy", "Dark & dramatic", "No preference"].map(m => (
-                                  <Chip key={m} label={m} selected={config.mood === m} onClick={() => setRoomConfig(room, "mood", m)}/>
+                            {/* Flooring type chips — per-room override */}
+                            <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "12px" }}>
+                              {["Carpet", "LVT", "Laminate", "Vinyl"].map(f => (
+                                <Chip key={f} label={f} selected={roomFlooring === f} onClick={() => {
+                                  if (roomFlooring !== f) {
+                                    setRoomConfigs(p => ({ ...p, [room]: { ...(p[room] || {}), flooring: f, design: "" } }));
+                                  }
+                                }}/>
+                              ))}
+                            </div>
+
+                            {/* Reassurance */}
+                            <div style={{ fontFamily: s.sans, fontSize: "11px", fontStyle: "italic", color: "rgba(242,237,224,0.35)", marginBottom: "12px", lineHeight: 1.6 }}>
+                              None of this is final — our surveyor brings physical samples to your home. You choose in your own light.
+                            </div>
+
+                            {/* Q1: Design */}
+                            <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>What design are you thinking?</div>
+                            {designCards.length > 0 ? (
+                              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "14px" }}>
+                                {designCards.map(card => (
+                                  <div
+                                    key={card.value}
+                                    onClick={() => setRoomConfig(room, "design", card.value)}
+                                    style={{
+                                      border: `1px solid ${config.design === card.value ? "#c9a96e" : "#2a2a28"}`,
+                                      borderRadius: "5px",
+                                      overflow: "hidden",
+                                      cursor: "pointer",
+                                      position: "relative",
+                                      boxShadow: config.design === card.value ? "0 0 0 1px rgba(201,169,110,0.3)" : "none",
+                                      transition: "all 0.2s",
+                                    }}
+                                    onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(201,169,110,0.5)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                                    onMouseLeave={e => { e.currentTarget.style.borderColor = config.design === card.value ? "#c9a96e" : "#2a2a28"; e.currentTarget.style.transform = "translateY(0)"; }}
+                                  >
+                                    <div style={{ position: "relative", height: "80px" }}>
+                                      <Image
+                                        src={card.src}
+                                        alt={card.label}
+                                        fill
+                                        priority
+                                        loading="eager"
+                                        style={{ objectFit: "cover", filter: "none" }}
+                                      />
+                                    </div>
+                                    <div style={{ fontFamily: s.sans, fontSize: "11px", color: "#f2ede0", fontWeight: 500, padding: "6px 8px", textAlign: "center", background: "#111110" }}>
+                                      {card.label}
+                                    </div>
+                                  </div>
                                 ))}
                               </div>
-                              {config.mood && config.mood !== "No preference" && (
-                                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "8px", animation: "fadeIn 0.3s ease" }}>
-                                  {(moodColours[config.mood] || []).map(c => (
-                                    <Chip key={c} label={c} selected={config.colour === c} onClick={() => setRoomConfig(room, "colour", c)}/>
+                            ) : (
+                              <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.35)", marginBottom: "14px", fontStyle: "italic" }}>
+                                Select a flooring type above to see design options.
+                              </div>
+                            )}
+
+                            {/* Q2: Colour direction */}
+                            {q1Done && (
+                              <div style={{ animation: "fadeIn 0.3s ease" }}>
+                                <FloNudge message="Not sure? Our surveyor brings a curated range based on your answers — you choose in person."/>
+                                <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px", marginTop: "14px" }}>Any colour direction in mind?</div>
+                                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "8px" }}>
+                                  {["Light & airy", "Warm & cosy", "Dark & dramatic", "No preference"].map(m => (
+                                    <Chip key={m} label={m} selected={config.mood === m} onClick={() => setRoomConfig(room, "mood", m)}/>
                                   ))}
                                 </div>
-                              )}
-                              {q2Done && (
-                                <div style={{ fontFamily: s.sans, fontSize: "11px", fontStyle: "italic", color: "rgba(242,237,224,0.4)", marginBottom: "14px", lineHeight: 1.5, animation: "fadeIn 0.3s ease" }}>
-                                  None of this is final. Our surveyor brings physical samples — you choose in your home, in your light.
+                                {config.mood && config.mood !== "No preference" && (
+                                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "10px", animation: "fadeIn 0.3s ease" }}>
+                                    {(moodSwatches[config.mood] || []).map(sw => (
+                                      <div key={sw.label} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                        <div
+                                          onClick={() => setRoomConfig(room, "colour", sw.label)}
+                                          style={{
+                                            width: "36px", height: "36px", borderRadius: "50%",
+                                            background: sw.hex, cursor: "pointer",
+                                            border: config.colour === sw.label ? "2px solid #c9a96e" : "2px solid transparent",
+                                            transform: config.colour === sw.label ? "scale(1.1)" : "scale(1)",
+                                            boxShadow: config.colour === sw.label ? "0 0 0 2px rgba(201,169,110,0.4)" : "none",
+                                            transition: "all 0.2s",
+                                          }}
+                                        />
+                                        <div style={{ fontFamily: s.sans, fontSize: "8px", textAlign: "center", color: "rgba(242,237,224,0.4)", marginTop: "3px" }}>{sw.label}</div>
+                                      </div>
+                                    ))}
+                                  </div>
+                                )}
+                                {q2Done && (
+                                  <div style={{ fontFamily: s.sans, fontSize: "11px", fontStyle: "italic", color: "rgba(242,237,224,0.3)", marginTop: "8px", lineHeight: 1.6, animation: "fadeIn 0.3s ease" }}>
+                                    Perfect. Our surveyor will bring samples in this direction.
+                                  </div>
+                                )}
+                              </div>
+                            )}
+
+                            {/* Q3: Grade */}
+                            {q1Done && q2Done && (
+                              <div style={{ animation: "fadeIn 0.3s ease" }}>
+                                <FloNudge message="Mid range is where most of our customers land — and it&apos;s genuinely excellent quality."/>
+                                <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px", marginTop: "14px" }}>What quality level are you thinking?</div>
+                                <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "14px" }}>
+                                  {[
+                                    { val: "Budget",    title: "Budget",                desc: "Does the job well. Right for rentals, kids’ rooms, and high-traffic areas. We only fit products we’d fit in our own homes." },
+                                    { val: "Mid range", title: "Mid range — most popular", desc: "The sweet spot. Great quality, wide choice, genuinely comfortable. Our surveyors carry the widest range of mid samples — this is where most people end up." },
+                                    { val: "Premium",   title: "Premium",               desc: "The best we fit. You’ll feel the difference every day. If this is a forever home or a room you spend real time in, it’s worth every penny." },
+                                  ].map(({ val, title, desc }) => (
+                                    <SelectCard key={val} selected={config.grade === val} onClick={() => {
+                                      setRoomConfig(room, "grade", val);
+                                      setFloNudgeMessage(
+                                        val === "Budget"    ? "Solid choice — we only fit products we’d fit in our own homes." :
+                                        val === "Mid range" ? "Mid range is where most people land — and it’s genuinely excellent quality." :
+                                                              "Premium is worth every penny in rooms you spend real time in."
+                                      );
+                                    }} padding="12px 14px">
+                                      <div style={{ fontFamily: s.sans, fontSize: "13px", fontWeight: 600, color: config.grade === val ? s.gold : s.text, marginBottom: "4px" }}>{title}</div>
+                                      <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, fontWeight: 300, lineHeight: 1.5 }}>{desc}</div>
+                                    </SelectCard>
+                                  ))}
                                 </div>
-                              )}
-                            </div>
-                          )}
-
-                          {/* Q3: Grade */}
-                          {q1Done && q2Done && (
-                            <div style={{ animation: "fadeIn 0.3s ease" }}>
-                              <FloNudge message="Mid range is where most of our customers land — and it's genuinely excellent quality."/>
-                              <div style={{ fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>What quality level are you thinking?</div>
-                              <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "14px" }}>
-                                {[
-                                  { val: "Budget",    title: "Budget",    desc: "Does the job well. Right for rentals, kids' rooms, and high-traffic areas where replacement is likely. We'll never fit anything we wouldn't fit in our own homes." },
-                                  { val: "Mid range", title: "Mid range", desc: "The sweet spot — and where most of our customers end up. Great quality, wide choice, genuinely comfortable underfoot. Our surveyors carry the widest range of mid samples." },
-                                  { val: "Premium",   title: "Premium",   desc: "The best we fit. You'll feel the difference every single day. If this is a forever home or a room you spend real time in — it's worth it." },
-                                ].map(({ val, title, desc }) => (
-                                  <SelectCard key={val} selected={config.grade === val} onClick={() => {
-                                    setRoomConfig(room, "grade", val);
-                                    setFloNudgeMessage(
-                                      val === "Budget"    ? "Solid choice — we only fit products we'd fit in our own homes." :
-                                      val === "Mid range" ? "Mid range is where most people land — and it's genuinely excellent quality." :
-                                                            "Premium is worth every penny in rooms you spend real time in."
-                                    );
-                                  }} padding="12px 14px">
-                                    <div style={{ fontFamily: s.serif, fontSize: "15px", fontWeight: 700, color: config.grade === val ? s.gold : s.text, marginBottom: "4px" }}>{title}</div>
-                                    <div style={{ fontFamily: s.sans, fontSize: "12px", color: s.dim, fontWeight: 300, lineHeight: 1.5 }}>{desc}</div>
-                                  </SelectCard>
-                                ))}
                               </div>
-                            </div>
-                          )}
+                            )}
 
-                          {/* Q4: Current floor */}
-                          {q1Done && q2Done && q3Done && (
-                            <div style={{ animation: "fadeIn 0.3s ease" }}>
-                              <div style={{ fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>What's currently in this room?</div>
-                              <GoldNote>The more you can tell us here, the more accurate your estimate. Rough guesses are completely fine — our surveyor confirms everything in person.</GoldNote>
-                              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "14px" }}>
-                                {["Carpet", "Hard floor", "Tiles", "Vinyl", "Nothing / bare"].map(o => (
-                                  <Chip key={o} label={o} selected={config.currentFloor === o} onClick={() => setRoomConfig(room, "currentFloor", o)}/>
-                                ))}
+                            {/* Q4: What's currently there */}
+                            {q1Done && q2Done && q3Done && (
+                              <div style={{ animation: "fadeIn 0.3s ease" }}>
+                                <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px", marginTop: "14px" }}>What&apos;s currently in this room?</div>
+                                <GoldNote>The more you can tell us, the more accurate your estimate. Rough guesses are completely fine — our surveyor confirms everything in person before anything is ordered.</GoldNote>
+                                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "14px" }}>
+                                  {["Carpet", "Hard floor", "Tiles", "Vinyl", "Nothing / bare"].map(o => (
+                                    <Chip key={o} label={o} selected={config.currentFloor === o} onClick={() => setRoomConfig(room, "currentFloor", o)}/>
+                                  ))}
+                                </div>
                               </div>
-                            </div>
-                          )}
+                            )}
 
-                          {/* Q5: Subfloor — only if not "Nothing / bare" */}
-                          {q1Done && q2Done && q3Done && q4Done && config.currentFloor !== "Nothing / bare" && (
-                            <div style={{ animation: "fadeIn 0.3s ease" }}>
-                              <div style={{ fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>What's underneath?</div>
-                              <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.4)", fontStyle: "italic", marginBottom: "10px", lineHeight: 1.6 }}>
-                                Not sure? Try this: tap the floor firmly with your knuckle. A hollow sound means timber boards underneath. A solid thud means concrete. Still not sure — just pick &apos;Not sure&apos; and our surveyor will check.
+                            {/* Q5: Subfloor — only when something is there */}
+                            {q1Done && q2Done && q3Done && q4Done && config.currentFloor !== "Nothing / bare" && (
+                              <div style={{ animation: "fadeIn 0.3s ease" }}>
+                                <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px", marginTop: "14px" }}>What&apos;s the subfloor underneath?</div>
+                                <div style={{ fontFamily: s.sans, fontSize: "11px", fontStyle: "italic", color: "rgba(242,237,224,0.35)", marginBottom: "10px", lineHeight: 1.6 }}>
+                                  Quick test: knock firmly on the floor. A hollow sound = timber boards underneath. A solid thud = concrete. Takes 3 seconds and makes your estimate much more accurate.
+                                </div>
+                                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "14px" }}>
+                                  {["Concrete", "Timber / boards", "Not sure"].map(o => (
+                                    <Chip key={o} label={o} selected={config.subfloor === o} onClick={() => setRoomConfig(room, "subfloor", o)}/>
+                                  ))}
+                                </div>
                               </div>
-                              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "14px" }}>
-                                {["Concrete", "Timber / boards", "Not sure"].map(o => (
-                                  <Chip key={o} label={o} selected={config.subfloor === o} onClick={() => setRoomConfig(room, "subfloor", o)}/>
-                                ))}
-                              </div>
-                            </div>
-                          )}
+                            )}
 
-                          {/* Q6: Uplift — only if Q5 done (and not "Nothing / bare") */}
-                          {q1Done && q2Done && q3Done && q4Done && config.currentFloor !== "Nothing / bare" && q5Done && (
-                            <div style={{ animation: "fadeIn 0.3s ease" }}>
-                              <div style={{ fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Would you like us to remove and dispose of what&apos;s there?</div>
-                              <GoldNote>Uplift means we remove your existing floor covering and dispose of it responsibly — no skip hire, no heavy lifting for you, no trips to the tip. Most customers include this. We&apos;ll confirm the exact cost at survey.</GoldNote>
-                              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "14px" }}>
-                                {["Yes please", "No thanks", "Include in my quote"].map(o => (
-                                  <Chip key={o} label={o} selected={config.uplift === o} onClick={() => setRoomConfig(room, "uplift", o)}/>
-                                ))}
+                            {/* Q6: Uplift — only when something is there and Q5 answered */}
+                            {q1Done && q2Done && q3Done && q4Done && config.currentFloor !== "Nothing / bare" && q5Done && (
+                              <div style={{ animation: "fadeIn 0.3s ease" }}>
+                                <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px", marginTop: "14px" }}>Would you like us to remove what&apos;s there?</div>
+                                <GoldNote>Uplift means we remove your existing floor covering and dispose of it — no skip hire, no heavy lifting, no trips to the tip. We&apos;ll confirm the exact cost at your free survey. Most customers include this.</GoldNote>
+                                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "14px" }}>
+                                  {["Yes please", "No thanks", "Add to my quote"].map(o => (
+                                    <Chip key={o} label={o} selected={config.uplift === o} onClick={() => setRoomConfig(room, "uplift", o)}/>
+                                  ))}
+                                </div>
+                                {q6Done && (
+                                  <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.gold, animation: "fadeIn 0.4s ease" }}>
+                                    ✓ {room} — all done.
+                                  </div>
+                                )}
                               </div>
-                              {q6Done && (
-                                <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.gold, animation: "fadeIn 0.4s ease" }}>✓ {room} all done.</div>
-                              )}
-                            </div>
-                          )}
+                            )}
 
-                          {/* Completion line for "Nothing / bare" (no Q5/Q6 needed) */}
-                          {q1Done && q2Done && q3Done && q4Done && config.currentFloor === "Nothing / bare" && (
-                            <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.gold, animation: "fadeIn 0.4s ease" }}>✓ {room} all done.</div>
-                          )}
+                            {/* Completion shortcut for Nothing / bare */}
+                            {q1Done && q2Done && q3Done && q4Done && config.currentFloor === "Nothing / bare" && (
+                              <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.gold, animation: "fadeIn 0.4s ease" }}>
+                                ✓ {room} — all done.
+                              </div>
+                            )}
+
+                          </div>
                         </div>
                       );
                     })}
 
-                    {allRoomsConfigured && (
-                      <GoldBtn onClick={() => setStep(3)}>All rooms configured — continue →</GoldBtn>
-                    )}
-                    {!allRoomsConfigured && (
+                    {allRoomsConfigured ? (
+                      <GoldBtn onClick={() => setStep(3)}>Continue →</GoldBtn>
+                    ) : (
                       <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.3)", textAlign: "center", padding: "8px 0 4px", fontStyle: "italic" }}>
                         Answer the design and grade questions for each room to continue
                       </div>
