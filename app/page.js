@@ -1931,6 +1931,7 @@ export default function StrataPage() {
   const [name,             setName]             = useState("");
   const [phone,            setPhone]            = useState("");
   const [postcode,         setPostcode]         = useState("");
+  const [bespokeRequest,   setBespokeRequest]   = useState("");
   const [submitted,        setSubmitted]        = useState(false);
   const [step2Sub,         setStep2Sub]         = useState("path");
   const [flooringPath,     setFlooringPath]     = useState("know");
@@ -2440,6 +2441,13 @@ export default function StrataPage() {
             })()}
 
             <AIQuoteBlock quoteData={quoteData} />
+
+            {bespokeRequest && (
+              <div style={{ background: s.card, border: `1px solid ${s.border}`, borderRadius: "4px", padding: "14px 16px", marginTop: "16px" }}>
+                <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>Your notes</div>
+                <div style={{ fontFamily: s.sans, fontSize: "12px", color: s.dim, lineHeight: 1.6 }}>{bespokeRequest}</div>
+              </div>
+            )}
 
             <Divider />
             {[
@@ -3032,33 +3040,82 @@ export default function StrataPage() {
                         ],
                       })[roomFlooring] || [];
 
-                      const moodSwatches = {
-                        "Light & airy":    [
-                          { label: "Cream",      hex: "#F5F0E8" },
-                          { label: "Soft white", hex: "#FAF8F5" },
-                          { label: "Pale grey",  hex: "#D8D5D0" },
-                          { label: "Natural",    hex: "#E8DDD0" },
-                        ],
-                        "Warm & cosy":     [
-                          { label: "Honey",      hex: "#C4956A" },
-                          { label: "Warm brown", hex: "#8B6347" },
-                          { label: "Terracotta", hex: "#C4704F" },
-                          { label: "Soft gold",  hex: "#D4A853" },
-                        ],
-                        "Dark & dramatic": [
-                          { label: "Charcoal",   hex: "#3A3A3A" },
-                          { label: "Navy",       hex: "#1C2B4A" },
-                          { label: "Forest",     hex: "#2C4A35" },
-                          { label: "Deep plum",  hex: "#4A2040" },
-                        ],
+                      const PATTERN_DESIGNS = ["Geometric", "Herringbone", "Patterned", "Tartan", "Striped", "Pattern", "Geometric tile"];
+                      const isPatternDesign = PATTERN_DESIGNS.includes(config.design);
+
+                      const allMoodSwatches = {
+                        "Carpet": {
+                          "Light & airy":    [
+                            { label: "Soft cream", hex: "#F0EAE0" }, { label: "Oat",        hex: "#E8DDD0" },
+                            { label: "Warm sand",  hex: "#D8C8A8" }, { label: "Pale grey",  hex: "#D4D0CC" },
+                            { label: "Duck egg",   hex: "#C8DDD8" }, { label: "Blush",      hex: "#E8D0C8" },
+                          ],
+                          "Warm & cosy":     [
+                            { label: "Taupe",      hex: "#C4B49A" }, { label: "Caramel",    hex: "#C4956A" },
+                            { label: "Mocha",      hex: "#8B6347" }, { label: "Terracotta", hex: "#C4704F" },
+                            { label: "Cappuccino", hex: "#A08060" }, { label: "Warm brown", hex: "#7A5C44" },
+                          ],
+                          "Dark & dramatic": [
+                            { label: "Charcoal",   hex: "#3A3A3A" }, { label: "Navy",       hex: "#1C2B4A" },
+                            { label: "Forest",     hex: "#2C4A35" }, { label: "Sage",       hex: "#6B7F65" },
+                            { label: "Deep plum",  hex: "#4A2040" }, { label: "Slate",      hex: "#505868" },
+                          ],
+                        },
+                        "LVT": {
+                          "Light & airy":    [
+                            { label: "Natural oak",  hex: "#C8A870" }, { label: "Honey oak",    hex: "#D4A855" },
+                            { label: "Pale ash",     hex: "#D8CDB8" }, { label: "Whitewash",    hex: "#E8E0D0" },
+                            { label: "Warm stone",   hex: "#C8BEA8" }, { label: "Marble white", hex: "#F0ECE4" },
+                          ],
+                          "Warm & cosy":     [
+                            { label: "Mid oak",      hex: "#B08040" }, { label: "Warm walnut",  hex: "#8B6030" },
+                            { label: "Golden brown", hex: "#A07840" }, { label: "Greige",       hex: "#B0A090" },
+                            { label: "Warm slate",   hex: "#9A8878" }, { label: "Aged oak",     hex: "#987040" },
+                          ],
+                          "Dark & dramatic": [
+                            { label: "Smoked oak",   hex: "#605040" }, { label: "Dark walnut",  hex: "#4A3020" },
+                            { label: "Charcoal",     hex: "#3A3A3A" }, { label: "Espresso",     hex: "#2A1810" },
+                            { label: "Cool slate",   hex: "#8A9098" }, { label: "Dark grey",    hex: "#4A4A4A" },
+                          ],
+                        },
+                        "Laminate": {
+                          "Light & airy":    [
+                            { label: "White washed", hex: "#E8E0D0" }, { label: "Pale greige",  hex: "#D0C8B8" },
+                            { label: "Light ash",    hex: "#D4CCC0" }, { label: "Soft white",   hex: "#F0EDE8" },
+                          ],
+                          "Warm & cosy":     [
+                            { label: "Natural oak",  hex: "#C0904A" }, { label: "Warm oak",     hex: "#B08040" },
+                            { label: "Classic oak",  hex: "#A07030" }, { label: "Honey",        hex: "#C8943A" },
+                          ],
+                          "Dark & dramatic": [
+                            { label: "Grey smoked",  hex: "#707070" }, { label: "Dark walnut",  hex: "#4A3020" },
+                            { label: "Rich brown",   hex: "#5A3820" }, { label: "Anthracite",   hex: "#484848" },
+                          ],
+                        },
+                        "Vinyl": {
+                          "Light & airy":    [
+                            { label: "Pale stone",   hex: "#D8D0C0" }, { label: "Warm white",   hex: "#F0ECE4" },
+                            { label: "Light grey",   hex: "#C8C8C8" }, { label: "Soft beige",   hex: "#D8CCB8" },
+                          ],
+                          "Warm & cosy":     [
+                            { label: "Natural",      hex: "#C8B898" }, { label: "Mid stone",    hex: "#B0A890" },
+                            { label: "Warm grey",    hex: "#A8A098" }, { label: "Coffee",       hex: "#8A6848" },
+                          ],
+                          "Dark & dramatic": [
+                            { label: "Smoked",       hex: "#585048" }, { label: "Charcoal",     hex: "#404040" },
+                            { label: "Dark stone",   hex: "#686058" }, { label: "Slate",        hex: "#606870" },
+                          ],
+                        },
                       };
+                      const moodSwatches = allMoodSwatches[roomFlooring] || allMoodSwatches["Carpet"];
 
                       const q1Done = !!config.design;
-                      const q2Done = config.mood === "No preference" || !!config.colour;
+                      const q2Done = isPatternDesign
+                        ? !!config.colourDirection
+                        : (config.mood === "No preference" || !!config.colour);
                       const q3Done = !!config.grade;
                       const q4Done = !!config.currentFloor;
                       const q5Done = config.currentFloor === "Nothing / bare" || !!config.subfloor;
-                      const q6Done = !!config.uplift;
                       const roomComplete = q1Done && q2Done && q3Done;
 
                       return (
@@ -3134,64 +3191,159 @@ export default function StrataPage() {
                             {/* Q2: Colour direction */}
                             {q1Done && (
                               <div style={{ animation: "fadeIn 0.3s ease" }}>
-                                <FloNudge message="Not sure? Our surveyor brings a curated range based on your answers — you choose in person."/>
-                                <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px", marginTop: "14px" }}>Any colour direction in mind?</div>
-                                <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "8px" }}>
-                                  {["Light & airy", "Warm & cosy", "Dark & dramatic", "No preference"].map(m => (
-                                    <Chip key={m} label={m} selected={config.mood === m} onClick={() => setRoomConfig(room, "mood", m)}/>
-                                  ))}
-                                </div>
-                                {config.mood && config.mood !== "No preference" && (
-                                  <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginTop: "10px", animation: "fadeIn 0.3s ease" }}>
-                                    {(moodSwatches[config.mood] || []).map(sw => (
-                                      <div key={sw.label} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                                        <div
-                                          onClick={() => setRoomConfig(room, "colour", sw.label)}
-                                          style={{
-                                            width: "36px", height: "36px", borderRadius: "50%",
-                                            background: sw.hex, cursor: "pointer",
-                                            border: config.colour === sw.label ? "2px solid #c9a96e" : "2px solid transparent",
-                                            transform: config.colour === sw.label ? "scale(1.1)" : "scale(1)",
-                                            boxShadow: config.colour === sw.label ? "0 0 0 2px rgba(201,169,110,0.4)" : "none",
-                                            transition: "all 0.2s",
-                                          }}
-                                        />
-                                        <div style={{ fontFamily: s.sans, fontSize: "8px", textAlign: "center", color: "rgba(242,237,224,0.4)", marginTop: "3px" }}>{sw.label}</div>
+                                <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px", marginTop: "14px" }}>Any colour direction?</div>
+                                {isPatternDesign ? (
+                                  <>
+                                    <div style={{ fontFamily: s.sans, fontSize: "11px", fontStyle: "italic", color: "rgba(242,237,224,0.4)", marginBottom: "10px", lineHeight: 1.6 }}>
+                                      Our surveyor brings a range of colourways for this pattern — you choose in person.
+                                    </div>
+                                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "8px" }}>
+                                      {["Light tones", "Warm tones", "Dark tones", "No preference"].map(m => (
+                                        <Chip key={m} label={m} selected={config.colourDirection === m} onClick={() => setRoomConfig(room, "colourDirection", m)}/>
+                                      ))}
+                                    </div>
+                                  </>
+                                ) : (
+                                  <>
+                                    <FloNudge message="Not sure? Our surveyor brings a curated range based on your answers — you choose in person."/>
+                                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "8px" }}>
+                                      {["Light & airy", "Warm & cosy", "Dark & dramatic", "No preference"].map(m => (
+                                        <Chip key={m} label={m} selected={config.mood === m} onClick={() => setRoomConfig(room, "mood", m)}/>
+                                      ))}
+                                    </div>
+                                    {config.mood && config.mood !== "No preference" && (
+                                      <div style={{ display: "flex", flexWrap: "wrap", gap: "4px", marginTop: "10px", animation: "fadeIn 0.3s ease" }}>
+                                        {(moodSwatches[config.mood] || []).map(sw => (
+                                          <div key={sw.label} style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
+                                            <div
+                                              onClick={() => setRoomConfig(room, "colour", sw.label)}
+                                              style={{
+                                                width: "32px", height: "32px", borderRadius: "50%",
+                                                background: sw.hex, cursor: "pointer", display: "inline-block",
+                                                border: config.colour === sw.label ? "2px solid #c9a96e" : "2px solid transparent",
+                                                transform: config.colour === sw.label ? "scale(1.15)" : "scale(1)",
+                                                boxShadow: config.colour === sw.label ? "0 0 0 2px rgba(201,169,110,0.4)" : "none",
+                                                transition: "all 0.2s", margin: "4px",
+                                              }}
+                                            />
+                                            <div style={{ fontFamily: s.sans, fontSize: "8px", textAlign: "center", color: "rgba(242,237,224,0.35)", marginTop: "3px", maxWidth: "40px", wordWrap: "break-word" }}>{sw.label}</div>
+                                          </div>
+                                        ))}
                                       </div>
-                                    ))}
-                                  </div>
+                                    )}
+                                    {q2Done && (
+                                      <div style={{ fontFamily: s.sans, fontSize: "11px", fontStyle: "italic", color: "rgba(242,237,224,0.3)", marginTop: "8px", lineHeight: 1.6, animation: "fadeIn 0.3s ease" }}>
+                                        Perfect. Our surveyor will bring samples in this direction.
+                                      </div>
+                                    )}
+                                  </>
                                 )}
-                                {q2Done && (
-                                  <div style={{ fontFamily: s.sans, fontSize: "11px", fontStyle: "italic", color: "rgba(242,237,224,0.3)", marginTop: "8px", lineHeight: 1.6, animation: "fadeIn 0.3s ease" }}>
-                                    Perfect. Our surveyor will bring samples in this direction.
+                                {/* Free-text colour request — always shown once Q1 answered */}
+                                <div style={{ marginTop: "14px" }}>
+                                  <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>Have a specific colour in mind?</div>
+                                  <input
+                                    type="text"
+                                    value={config.colourRequest || ""}
+                                    onChange={e => setRoomConfig(room, "colourRequest", e.target.value)}
+                                    placeholder="e.g. Farrow & Ball Elephant's Breath, or just 'dark teal'"
+                                    style={{
+                                      background: "transparent", border: "none",
+                                      borderBottom: "1px solid rgba(242,237,224,0.2)",
+                                      color: "#f2ede0", fontFamily: "'Cormorant Garamond', serif",
+                                      fontSize: "18px", padding: "6px 0", width: "100%", outline: "none",
+                                    }}
+                                  />
+                                  <div style={{ fontFamily: s.sans, fontSize: "10px", fontStyle: "italic", color: "rgba(242,237,224,0.3)", marginTop: "4px" }}>
+                                    Our surveyor will source samples in this colour — no obligation.
                                   </div>
-                                )}
+                                </div>
                               </div>
                             )}
 
                             {/* Q3: Grade */}
                             {q1Done && q2Done && (
                               <div style={{ animation: "fadeIn 0.3s ease" }}>
-                                <FloNudge message="Mid range is where most of our customers land — and it&apos;s genuinely excellent quality."/>
+                                <FloNudge message="Mid range is where most of our customers land — and it’s genuinely excellent quality."/>
                                 <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px", marginTop: "14px" }}>What quality level are you thinking?</div>
                                 <div style={{ display: "flex", flexDirection: "column", gap: "6px", marginBottom: "14px" }}>
-                                  {[
-                                    { val: "Budget",    title: "Budget",                desc: "Does the job well. Right for rentals, kids’ rooms, and high-traffic areas. We only fit products we’d fit in our own homes." },
-                                    { val: "Mid range", title: "Mid range — most popular", desc: "The sweet spot. Great quality, wide choice, genuinely comfortable. Our surveyors carry the widest range of mid samples — this is where most people end up." },
-                                    { val: "Premium",   title: "Premium",               desc: "The best we fit. You’ll feel the difference every day. If this is a forever home or a room you spend real time in, it’s worth every penny." },
-                                  ].map(({ val, title, desc }) => (
-                                    <SelectCard key={val} selected={config.grade === val} onClick={() => {
-                                      setRoomConfig(room, "grade", val);
-                                      setFloNudgeMessage(
-                                        val === "Budget"    ? "Solid choice — we only fit products we’d fit in our own homes." :
-                                        val === "Mid range" ? "Mid range is where most people land — and it’s genuinely excellent quality." :
-                                                              "Premium is worth every penny in rooms you spend real time in."
-                                      );
-                                    }} padding="12px 14px">
-                                      <div style={{ fontFamily: s.sans, fontSize: "13px", fontWeight: 600, color: config.grade === val ? s.gold : s.text, marginBottom: "4px" }}>{title}</div>
-                                      <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, fontWeight: 300, lineHeight: 1.5 }}>{desc}</div>
-                                    </SelectCard>
-                                  ))}
+
+                                  {/* Budget */}
+                                  <SelectCard selected={config.grade === "Budget"} onClick={() => { setRoomConfig(room, "grade", "Budget"); setFloNudgeMessage("Solid choice — we only fit products we’d fit in our own homes."); }} padding="0">
+                                    <svg viewBox="0 0 200 60" width="100%" height="56" style={{ display: "block" }}>
+                                      <rect width="200" height="60" fill="#111110"/>
+                                      <rect x="4" y="48" width="192" height="8" fill="rgba(201,169,110,0.06)" stroke="#c9a96e" strokeWidth="0.7"/>
+                                      <text x="8" y="58" fontFamily="system-ui" fontSize="7" fill="rgba(201,169,110,0.4)">subfloor</text>
+                                      <rect x="4" y="43" width="192" height="5" fill="rgba(201,169,110,0.1)" stroke="#c9a96e" strokeWidth="0.7"/>
+                                      <text x="8" y="42" fontFamily="system-ui" fontSize="7" fill="rgba(201,169,110,0.4)">underlay</text>
+                                      <rect x="4" y="32" width="192" height="11" fill="rgba(201,169,110,0.15)" stroke="#c9a96e" strokeWidth="0.8"/>
+                                      <line x1="52" y1="32" x2="52" y2="43" stroke="#c9a96e" strokeWidth="0.5" opacity="0.4"/>
+                                      <line x1="100" y1="32" x2="100" y2="43" stroke="#c9a96e" strokeWidth="0.5" opacity="0.4"/>
+                                      <line x1="148" y1="32" x2="148" y2="43" stroke="#c9a96e" strokeWidth="0.5" opacity="0.4"/>
+                                      <text x="8" y="30" fontFamily="system-ui" fontSize="7" fill="rgba(201,169,110,0.4)">flooring</text>
+                                      <text x="155" y="28" fontFamily="system-ui" fontSize="7" fill="rgba(201,169,110,0.5)">budget</text>
+                                    </svg>
+                                    <div style={{ padding: "10px 14px 12px" }}>
+                                      <div style={{ fontFamily: s.sans, fontSize: "13px", fontWeight: 600, color: config.grade === "Budget" ? s.gold : s.text, marginBottom: "4px" }}>Budget</div>
+                                      <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, fontWeight: 300, lineHeight: 1.6 }}>Does the job well. Right for rentals, kids&apos; rooms, high-traffic areas. We only ever fit products we&apos;d be happy with in our own homes.</div>
+                                    </div>
+                                  </SelectCard>
+
+                                  {/* Mid range */}
+                                  <SelectCard selected={config.grade === "Mid range"} onClick={() => { setRoomConfig(room, "grade", "Mid range"); setFloNudgeMessage("Mid range is where most people land — and it’s genuinely excellent quality."); }} padding="0">
+                                    <svg viewBox="0 0 200 60" width="100%" height="56" style={{ display: "block" }}>
+                                      <rect width="200" height="60" fill="#111110"/>
+                                      <rect x="4" y="46" width="192" height="10" fill="rgba(201,169,110,0.06)" stroke="#c9a96e" strokeWidth="0.7"/>
+                                      <text x="8" y="58" fontFamily="system-ui" fontSize="7" fill="rgba(201,169,110,0.4)">subfloor</text>
+                                      <rect x="4" y="37" width="192" height="9" fill="rgba(201,169,110,0.12)" stroke="#c9a96e" strokeWidth="0.8"/>
+                                      <line x1="8" y1="39" x2="192" y2="39" stroke="rgba(201,169,110,0.2)" strokeWidth="0.5" strokeDasharray="3 3"/>
+                                      <line x1="8" y1="41" x2="192" y2="41" stroke="rgba(201,169,110,0.2)" strokeWidth="0.5" strokeDasharray="3 3"/>
+                                      <line x1="8" y1="43" x2="192" y2="43" stroke="rgba(201,169,110,0.2)" strokeWidth="0.5" strokeDasharray="3 3"/>
+                                      <text x="8" y="36" fontFamily="system-ui" fontSize="7" fill="rgba(201,169,110,0.4)">underlay</text>
+                                      <rect x="4" y="22" width="192" height="15" fill="rgba(201,169,110,0.18)" stroke="#c9a96e" strokeWidth="0.9"/>
+                                      <line x1="50" y1="22" x2="50" y2="37" stroke="#c9a96e" strokeWidth="0.5" opacity="0.5"/>
+                                      <line x1="100" y1="22" x2="100" y2="37" stroke="#c9a96e" strokeWidth="0.5" opacity="0.5"/>
+                                      <line x1="150" y1="22" x2="150" y2="37" stroke="#c9a96e" strokeWidth="0.5" opacity="0.5"/>
+                                      <line x1="8" y1="26" x2="192" y2="26" stroke="#c9a96e" strokeWidth="0.5" opacity="0.2"/>
+                                      <line x1="8" y1="30" x2="192" y2="30" stroke="#c9a96e" strokeWidth="0.5" opacity="0.2"/>
+                                      <text x="8" y="20" fontFamily="system-ui" fontSize="7" fill="rgba(201,169,110,0.4)">flooring</text>
+                                      <text x="140" y="20" fontFamily="system-ui" fontSize="7" fill="rgba(201,169,110,0.5)">mid range</text>
+                                    </svg>
+                                    <div style={{ padding: "10px 14px 12px" }}>
+                                      <div style={{ fontFamily: s.sans, fontSize: "13px", fontWeight: 600, color: config.grade === "Mid range" ? s.gold : s.text, marginBottom: "4px" }}>Mid range — most popular</div>
+                                      <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, fontWeight: 300, lineHeight: 1.6 }}>The sweet spot. Most of our customers choose this. Great quality, wide choice, genuinely comfortable. Our surveyor brings the widest range of mid samples.</div>
+                                    </div>
+                                  </SelectCard>
+
+                                  {/* Premium */}
+                                  <SelectCard selected={config.grade === "Premium"} onClick={() => { setRoomConfig(room, "grade", "Premium"); setFloNudgeMessage("Premium is worth every penny in rooms you spend real time in."); }} padding="0">
+                                    <svg viewBox="0 0 200 60" width="100%" height="56" style={{ display: "block" }}>
+                                      <rect width="200" height="60" fill="#111110"/>
+                                      <rect x="4" y="46" width="192" height="10" fill="rgba(201,169,110,0.06)" stroke="#c9a96e" strokeWidth="0.7"/>
+                                      <text x="8" y="58" fontFamily="system-ui" fontSize="7" fill="rgba(201,169,110,0.4)">subfloor</text>
+                                      <rect x="4" y="33" width="192" height="13" fill="rgba(201,169,110,0.14)" stroke="#c9a96e" strokeWidth="0.9"/>
+                                      <line x1="8" y1="35" x2="192" y2="35" stroke="rgba(201,169,110,0.25)" strokeWidth="0.6" strokeDasharray="4 2"/>
+                                      <line x1="8" y1="37" x2="192" y2="37" stroke="rgba(201,169,110,0.25)" strokeWidth="0.6" strokeDasharray="4 2"/>
+                                      <line x1="8" y1="40" x2="192" y2="40" stroke="rgba(201,169,110,0.25)" strokeWidth="0.6" strokeDasharray="4 2"/>
+                                      <line x1="8" y1="43" x2="192" y2="43" stroke="rgba(201,169,110,0.25)" strokeWidth="0.6" strokeDasharray="4 2"/>
+                                      <text x="8" y="32" fontFamily="system-ui" fontSize="7" fill="rgba(201,169,110,0.4)">underlay</text>
+                                      <rect x="4" y="14" width="192" height="19" fill="rgba(201,169,110,0.22)" stroke="#c9a96e" strokeWidth="1.1"/>
+                                      <line x1="48" y1="14" x2="48" y2="33" stroke="#c9a96e" strokeWidth="0.6" opacity="0.6"/>
+                                      <line x1="96" y1="14" x2="96" y2="33" stroke="#c9a96e" strokeWidth="0.6" opacity="0.6"/>
+                                      <line x1="144" y1="14" x2="144" y2="33" stroke="#c9a96e" strokeWidth="0.6" opacity="0.6"/>
+                                      <line x1="8" y1="18" x2="192" y2="18" stroke="#c9a96e" strokeWidth="0.6" opacity="0.25"/>
+                                      <line x1="8" y1="22" x2="192" y2="22" stroke="#c9a96e" strokeWidth="0.6" opacity="0.25"/>
+                                      <line x1="8" y1="27" x2="192" y2="27" stroke="#c9a96e" strokeWidth="0.6" opacity="0.25"/>
+                                      <line x1="4" y1="16" x2="196" y2="16" stroke="rgba(201,169,110,0.35)" strokeWidth="1"/>
+                                      <text x="8" y="12" fontFamily="system-ui" fontSize="7" fill="rgba(201,169,110,0.4)">flooring</text>
+                                      <text x="148" y="12" fontFamily="system-ui" fontSize="7" fill="rgba(201,169,110,0.5)">premium</text>
+                                      <text x="186" y="12" fontFamily="system-ui" fontSize="7" fill="#c9a96e">◆</text>
+                                    </svg>
+                                    <div style={{ padding: "10px 14px 12px" }}>
+                                      <div style={{ fontFamily: s.sans, fontSize: "13px", fontWeight: 600, color: config.grade === "Premium" ? s.gold : s.text, marginBottom: "4px" }}>Premium</div>
+                                      <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, fontWeight: 300, lineHeight: 1.6 }}>The best we fit. You&apos;ll feel the difference every single day. Worth every penny in a forever home or a room you spend real time in.</div>
+                                    </div>
+                                  </SelectCard>
+
                                 </div>
                               </div>
                             )}
@@ -3224,21 +3376,28 @@ export default function StrataPage() {
                               </div>
                             )}
 
-                            {/* Q6: Uplift — only when something is there and Q5 answered */}
+                            {/* Q6: Uplift — included as standard, info block + optional note */}
                             {q1Done && q2Done && q3Done && q4Done && config.currentFloor !== "Nothing / bare" && q5Done && (
                               <div style={{ animation: "fadeIn 0.3s ease" }}>
-                                <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px", marginTop: "14px" }}>Would you like us to remove what&apos;s there?</div>
-                                <GoldNote>Uplift means we remove your existing floor covering and dispose of it — no skip hire, no heavy lifting, no trips to the tip. We&apos;ll confirm the exact cost at your free survey. Most customers include this.</GoldNote>
+                                <div style={{ background: "rgba(201,169,110,0.06)", border: "1px solid rgba(201,169,110,0.3)", borderRadius: "4px", padding: "14px 16px", marginBottom: "12px", marginTop: "14px" }}>
+                                  <div style={{ fontFamily: s.sans, fontSize: "10px", textTransform: "uppercase", letterSpacing: "0.14em", color: s.gold }}>INCLUDED AS STANDARD</div>
+                                  <div style={{ fontFamily: s.serif, fontSize: "18px", color: "#f2ede0", marginTop: "4px" }}>We handle everything.</div>
+                                  <div style={{ fontFamily: s.sans, fontSize: "12px", color: "rgba(242,237,224,0.55)", lineHeight: 1.7, marginTop: "6px" }}>
+                                    Uplift and disposal is included in every Strata job — we remove your existing floor covering and dispose of it responsibly. No skip hire, no heavy lifting, no tip runs. Just a clean start and a spotless finish.
+                                  </div>
+                                  <div style={{ fontFamily: s.sans, fontSize: "11px", marginTop: "8px", color: s.gold }}>
+                                    Typically £3–£6 per m² · Confirmed at your free survey
+                                  </div>
+                                </div>
+                                <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>Anything we should know about what&apos;s coming up?</div>
                                 <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "14px" }}>
-                                  {["Yes please", "No thanks", "Add to my quote"].map(o => (
-                                    <Chip key={o} label={o} selected={config.uplift === o} onClick={() => setRoomConfig(room, "uplift", o)}/>
+                                  {["It's heavy / tiles", "Adhesive underneath", "All straightforward"].map(o => (
+                                    <Chip key={o} label={o} selected={config.upliftNote === o} onClick={() => setRoomConfig(room, "upliftNote", o)}/>
                                   ))}
                                 </div>
-                                {q6Done && (
-                                  <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.gold, animation: "fadeIn 0.4s ease" }}>
-                                    ✓ {room} — all done.
-                                  </div>
-                                )}
+                                <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.gold, animation: "fadeIn 0.4s ease" }}>
+                                  ✓ {room} — all done.
+                                </div>
                               </div>
                             )}
 
@@ -3366,6 +3525,29 @@ export default function StrataPage() {
                   </div>
                 </div>
 
+                {/* Bespoke request field */}
+                <div style={{ marginBottom: "20px" }}>
+                  <div style={{ fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Anything else we should know?</div>
+                  <textarea
+                    rows={3}
+                    value={bespokeRequest}
+                    onChange={e => setBespokeRequest(e.target.value)}
+                    placeholder="A specific brand or colour you've seen, underfloor heating, an awkward room, a tight deadline — anything that helps us prepare for your survey."
+                    onFocus={e => e.target.style.borderColor = "rgba(201,169,110,0.4)"}
+                    onBlur={e => e.target.style.borderColor = "#2a2a28"}
+                    style={{
+                      width: "100%", background: "#1a1a18",
+                      border: "1px solid #2a2a28", borderRadius: "3px",
+                      color: "#f2ede0", fontFamily: s.sans, fontSize: "13px",
+                      padding: "12px 14px", resize: "none", outline: "none",
+                      lineHeight: 1.6, boxSizing: "border-box", transition: "border-color 0.2s",
+                    }}
+                  />
+                  <div style={{ fontFamily: s.sans, fontSize: "10px", fontStyle: "italic", color: "rgba(242,237,224,0.3)", marginTop: "6px" }}>
+                    Completely optional. Our surveyor reads every note before they visit.
+                  </div>
+                </div>
+
                 {/* Zero commitment statement */}
                 <div style={{ fontFamily: s.sans, fontSize: "11px", fontStyle: "italic", color: "rgba(242,237,224,0.4)", textAlign: "center", marginBottom: "12px" }}>
                   The survey is completely free. No obligation whatsoever. We&apos;ll call you — no automated messages, ever.
@@ -3393,6 +3575,7 @@ export default function StrataPage() {
                       phone:            phone,
                       postcode:         postcode,
                       room_configs:     JSON.stringify(roomConfigs),
+                      bespoke_request:  bespokeRequest,
                       status:           "New",
                     }),
                   }).catch(() => {});
