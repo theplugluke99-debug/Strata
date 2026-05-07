@@ -2692,6 +2692,49 @@ export default function StrataPage() {
                         prompts.push("We're renting it out so it needs to be tough");
                         return prompts.slice(0, 6);
                       };
+
+                      const sendToFlo = async (msg) => {
+                        if (!msg.trim()) return;
+                        setInterceptLoading(true);
+                        try {
+                          const res = await fetch("/api/flo/chat", {
+                            method: "POST",
+                            headers: { "Content-Type": "application/json" },
+                            body: JSON.stringify({
+                              message: interceptPhoto ? msg + " [Customer has shared a photo of their room]" : msg,
+                              context: { rooms: expandedRooms, propertyType, task: "recommend flooring type", hasPhoto: !!interceptPhoto, selectedRooms: expandedRooms },
+                              history: [],
+                              image: interceptPhoto || null,
+                            }),
+                          });
+                          const data = await res.json();
+                          setInterceptResponse(data.response);
+                        } catch {
+                          setInterceptResponse("I'm having a moment — try choosing from the options above or come back to me in the chat.");
+                        } finally {
+                          setInterceptLoading(false);
+                        }
+                      };
+
+                      const formatFloResponse = (text) => {
+                        if (!text) return null;
+                        const lines = text.split('\n').filter(l => l.trim());
+                        return lines.map((line, i) => {
+                          if (line.startsWith('**') || (line.endsWith(':') && line.length < 60)) {
+                            return <div key={i} style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "16px", color: "#f2ede0", fontWeight: 600, marginBottom: "4px", marginTop: i > 0 ? "12px" : "0" }}>{line.replace(/\*\*/g, '')}</div>;
+                          }
+                          if (line.startsWith('-') || line.startsWith('•')) {
+                            return (
+                              <div key={i} style={{ display: "flex", gap: "8px", marginBottom: "6px", paddingLeft: "4px" }}>
+                                <span style={{ color: "#c9a96e", flexShrink: 0, marginTop: "2px" }}>◆</span>
+                                <span style={{ fontFamily: "system-ui", fontSize: "13px", color: "rgba(242,237,224,0.75)", lineHeight: 1.7, fontWeight: 300 }}>{line.replace(/^[-•]\s*/, '')}</span>
+                              </div>
+                            );
+                          }
+                          return <p key={i} style={{ fontFamily: "system-ui", fontSize: "13px", color: "rgba(242,237,224,0.75)", lineHeight: 1.8, fontWeight: 300, marginBottom: "8px", marginTop: 0 }}>{line}</p>;
+                        });
+                      };
+
                       return (
                         <div style={{ marginTop: "20px", marginBottom: "16px", padding: 0 }}>
                           {/* Flo identity */}
@@ -2709,7 +2752,12 @@ export default function StrataPage() {
                               <div style={{ fontFamily: "system-ui", fontSize: "9px", color: "rgba(242,237,224,0.25)", letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>Quick prompts — or type your own below</div>
                               <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "12px" }}>
                                 {getInterceptPrompts().map((prompt, i) => (
-                                  <button key={i} onClick={() => { setInterceptChipSelected(prompt); setInterceptInput(prompt); }}
+                                  <button key={i}
+                                    onClick={async () => {
+                                      setInterceptChipSelected(prompt);
+                                      setInterceptInput(prompt);
+                                      await sendToFlo(prompt);
+                                    }}
                                     style={{ background: interceptChipSelected === prompt ? "rgba(201,169,110,0.15)" : "transparent", border: `1px solid ${interceptChipSelected === prompt ? "#c9a96e" : "rgba(201,169,110,0.2)"}`, borderRadius: "20px", color: interceptChipSelected === prompt ? "#c9a96e" : "rgba(242,237,224,0.4)", fontFamily: "system-ui", fontSize: "11px", padding: "6px 12px", cursor: "pointer", transition: "all 0.2s", whiteSpace: "nowrap" }}>
                                     {prompt}
                                   </button>
@@ -2748,32 +2796,26 @@ export default function StrataPage() {
 
                               {/* Send button */}
                               <button
-                                onClick={async () => {
-                                  if (!interceptInput.trim()) return;
-                                  setInterceptLoading(true);
-                                  try {
-                                    const res = await fetch("/api/flo/chat", {
-                                      method: "POST",
-                                      headers: { "Content-Type": "application/json" },
-                                      body: JSON.stringify({
-                                        message: interceptPhoto ? interceptInput + " [Customer has shared a photo of their room]" : interceptInput,
-                                        context: { rooms: expandedRooms, propertyType, task: "recommend flooring type", hasPhoto: !!interceptPhoto, selectedRooms: expandedRooms },
-                                        history: [],
-                                        image: interceptPhoto || null,
-                                      }),
-                                    });
-                                    const data = await res.json();
-                                    setInterceptResponse(data.response);
-                                  } catch {
-                                    setInterceptResponse("I'm having a moment — try choosing from the options above or come back to me in the chat.");
-                                  } finally {
-                                    setInterceptLoading(false);
-                                  }
-                                }}
+                                onClick={() => sendToFlo(interceptInput)}
                                 disabled={!interceptInput.trim() || interceptLoading}
-                                style={{ background: "none", border: "none", color: interceptInput.trim() ? "#c9a96e" : "rgba(201,169,110,0.3)", fontFamily: "system-ui", fontSize: "12px", letterSpacing: "0.14em", textTransform: "uppercase", cursor: interceptInput.trim() ? "pointer" : "default", padding: "0", transition: "color 0.2s" }}
+                                style={{
+                                  background: interceptInput.trim() && !interceptLoading ? "#c9a96e" : "rgba(201,169,110,0.2)",
+                                  border: "none",
+                                  borderRadius: "3px",
+                                  color: interceptInput.trim() && !interceptLoading ? "#111110" : "rgba(201,169,110,0.4)",
+                                  fontFamily: "system-ui",
+                                  fontSize: "12px",
+                                  fontWeight: 600,
+                                  letterSpacing: "0.1em",
+                                  textTransform: "uppercase",
+                                  padding: "12px 20px",
+                                  cursor: interceptInput.trim() && !interceptLoading ? "pointer" : "default",
+                                  transition: "all 0.2s",
+                                  width: "100%",
+                                  marginTop: "8px",
+                                }}
                               >
-                                {interceptLoading ? "Thinking..." : "Ask Flo →"}
+                                {interceptLoading ? "Flo is thinking..." : "Ask Flo →"}
                               </button>
                             </div>
                           )}
@@ -2783,8 +2825,8 @@ export default function StrataPage() {
                             const detectedType = interceptTypes.find(t => interceptResponse.includes(t));
                             return (
                               <div style={{ marginLeft: "48px", marginTop: "16px" }}>
-                                <div style={{ fontFamily: "system-ui", fontSize: "13px", color: "rgba(242,237,224,0.75)", lineHeight: 1.8, fontWeight: 300, marginBottom: "16px", fontStyle: "italic" }}>
-                                  {interceptResponse}
+                                <div style={{ marginBottom: "16px" }}>
+                                  {formatFloResponse(interceptResponse)}
                                 </div>
                                 <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                                   <button
