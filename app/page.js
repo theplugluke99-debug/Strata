@@ -2192,7 +2192,7 @@ export default function StrataPage() {
         @keyframes floVoiceFade { 0%{opacity:0;transform:translateY(6px)} 15%{opacity:1;transform:translateY(0)} 80%{opacity:1} 100%{opacity:0;transform:translateY(-4px)} }
         @keyframes progressIn { from { transform:scaleX(0); } to { transform:scaleX(1); } }
         @keyframes waveform { 0%, 100% { transform: scaleY(0.3); } 50% { transform: scaleY(1); } }
-        @keyframes floPulse { 0%,100%{box-shadow:0 0 0 0 rgba(201,169,110,0.4);transform:scale(1)} 50%{box-shadow:0 0 0 6px rgba(201,169,110,0);transform:scale(1.05)} }
+        @keyframes floPulse { 0%,100%{box-shadow:0 0 0 0 rgba(201,169,110,0.3)} 50%{box-shadow:0 0 0 8px rgba(201,169,110,0)} }
         .quote-mini-visualiser svg { max-height: 180px; }
         .nav-expert-short { display: inline; }
         .nav-expert-long  { display: none; }
@@ -2645,88 +2645,84 @@ export default function StrataPage() {
                         </div>
                       );
                     })}
-                    {/* Flo intercept — chat bubble, appears after 8 seconds */}
+                    {/* Flo intercept — warm human reach-out, appears after 8 seconds */}
                     {showFloIntercept && (
-                      <div style={{ background: "#1a1a18", border: "1px solid #2a2a28", borderRadius: "4px", padding: 0, overflow: "hidden", marginTop: "16px", marginBottom: "12px" }}>
-                        {/* Header bar */}
-                        <div style={{ background: "rgba(201,169,110,0.06)", borderBottom: "1px solid #2a2a28", padding: "12px 16px", display: "flex", alignItems: "center", gap: "10px" }}>
-                          <div style={{ width: "24px", height: "24px", minWidth: "24px", borderRadius: "50%", border: "1px solid #c9a96e", background: "rgba(201,169,110,0.1)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Cormorant Garamond', serif", fontSize: "13px", fontWeight: 700, color: "#c9a96e", animation: "floPulse 2.5s ease-in-out infinite", flexShrink: 0 }}>F</div>
-                          <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#4caf82", flexShrink: 0 }}/>
-                          <Waveform active={interceptLoading}/>
-                          <div style={{ fontFamily: "system-ui", fontSize: "11px", color: "rgba(242,237,224,0.35)", fontStyle: "italic" }}>
-                            {interceptLoading ? "Flo is thinking about your rooms…" : "Flo"}
+                      <div style={{ marginTop: "20px", marginBottom: "16px", padding: 0 }}>
+                        <div style={{ display: "flex", alignItems: "flex-start", gap: "12px", marginBottom: "14px" }}>
+                          <div style={{ width: "36px", height: "36px", minWidth: "36px", borderRadius: "50%", background: "rgba(201,169,110,0.12)", border: "1px solid rgba(201,169,110,0.3)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "'Cormorant Garamond', serif", fontSize: "16px", fontWeight: 400, color: "#c9a96e", animation: "floPulse 3s ease-in-out infinite", flexShrink: 0 }}>F</div>
+                          <div>
+                            <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "18px", fontWeight: 400, color: "#f2ede0", lineHeight: 1.4, marginBottom: "4px" }}>Not sure which floor is right for you?</div>
+                            <div style={{ fontFamily: "system-ui", fontSize: "12px", color: "rgba(242,237,224,0.45)", lineHeight: 1.6, fontWeight: 300 }}>Tell me a little about the room — I&apos;ll point you in the right direction.</div>
                           </div>
                         </div>
 
-                        {/* Message + input area */}
-                        <div style={{ padding: "14px 16px" }}>
-                          {!interceptResponse && (
-                            <>
-                              {/* Flo's opening message bubble */}
-                              <div style={{ background: "rgba(201,169,110,0.06)", borderRadius: "3px", padding: "12px 14px", fontFamily: "system-ui", fontSize: "13px", color: "rgba(242,237,224,0.7)", lineHeight: 1.7, marginBottom: "12px" }}>
-                                Not sure which to pick? Tell me about the room and I&apos;ll choose for you.
-                              </div>
-                              <textarea
-                                value={interceptInput}
-                                onChange={e => setInterceptInput(e.target.value)}
-                                placeholder="e.g. It's a kitchen, we have a dog, want something easy to clean and warm..."
-                                rows={3}
-                                style={{ width: "100%", background: "#111110", border: "1px solid #2a2a28", borderRadius: "3px", color: "#f2ede0", fontFamily: "system-ui", fontSize: "16px", padding: "12px", resize: "none", outline: "none", marginBottom: "10px", lineHeight: 1.6, boxSizing: "border-box", transition: "border-color 0.2s" }}
-                                onFocus={e => { e.target.style.borderColor = "#c9a96e"; }}
-                                onBlur={e => { e.target.style.borderColor = "#2a2a28"; }}
-                              />
-                              <GoldBtn
-                                onClick={async () => {
-                                  if (!interceptInput.trim()) return;
-                                  setInterceptLoading(true);
-                                  try {
-                                    const res = await fetch("/api/flo/chat", {
-                                      method: "POST",
-                                      headers: { "Content-Type": "application/json" },
-                                      body: JSON.stringify({
-                                        message: interceptInput,
-                                        context: { rooms: expandedRooms, propertyType, task: "recommend flooring type" },
-                                        history: [],
-                                      }),
-                                    });
-                                    const data = await res.json();
-                                    setInterceptResponse(data.response || "I'd suggest LVT — it works in almost any room and is very easy to maintain.");
-                                  } catch {
-                                    setInterceptResponse("I'm having a moment — try choosing from the options above or ask me in the chat.");
-                                  } finally {
-                                    setInterceptLoading(false);
-                                  }
-                                }}
-                                disabled={!interceptInput.trim() || interceptLoading}
-                              >
-                                {interceptLoading ? "Thinking..." : "Ask Flo →"}
-                              </GoldBtn>
-                            </>
-                          )}
+                        {!interceptResponse && (
+                          <div style={{ marginLeft: "48px" }}>
+                            <textarea
+                              value={interceptInput}
+                              onChange={e => setInterceptInput(e.target.value)}
+                              placeholder="e.g. It's a busy family kitchen, we have two dogs, want something easy to clean..."
+                              rows={3}
+                              style={{ width: "100%", background: "rgba(242,237,224,0.03)", border: "none", borderBottom: "1px solid rgba(201,169,110,0.3)", borderRadius: "0", color: "#f2ede0", fontFamily: "system-ui", fontSize: "16px", padding: "8px 0", resize: "none", outline: "none", lineHeight: 1.6, marginBottom: "14px", boxSizing: "border-box" }}
+                            />
+                            <button
+                              onClick={async () => {
+                                if (!interceptInput.trim()) return;
+                                setInterceptLoading(true);
+                                try {
+                                  const res = await fetch("/api/flo/chat", {
+                                    method: "POST",
+                                    headers: { "Content-Type": "application/json" },
+                                    body: JSON.stringify({
+                                      message: interceptInput,
+                                      context: { rooms: expandedRooms, propertyType, task: "recommend flooring type" },
+                                      history: [],
+                                    }),
+                                  });
+                                  const data = await res.json();
+                                  setInterceptResponse(data.response);
+                                } catch {
+                                  setInterceptResponse("I'm having a moment — try choosing from the options above or come back to me in the chat.");
+                                } finally {
+                                  setInterceptLoading(false);
+                                }
+                              }}
+                              disabled={!interceptInput.trim() || interceptLoading}
+                              style={{ background: "none", border: "none", color: interceptInput.trim() ? "#c9a96e" : "rgba(201,169,110,0.3)", fontFamily: "system-ui", fontSize: "12px", letterSpacing: "0.14em", textTransform: "uppercase", cursor: interceptInput.trim() ? "pointer" : "default", padding: "0", transition: "color 0.2s" }}
+                            >
+                              {interceptLoading ? "Thinking..." : "Ask Flo →"}
+                            </button>
+                          </div>
+                        )}
 
-                          {interceptResponse && (
-                            <div>
-                              <div style={{ background: "rgba(201,169,110,0.06)", borderRadius: "3px", padding: "12px 14px", fontFamily: "system-ui", fontSize: "13px", color: "rgba(242,237,224,0.7)", lineHeight: 1.7, marginBottom: "12px" }}>
-                                {interceptResponse}
-                              </div>
-                              <div style={{ display: "flex", gap: "8px", flexDirection: "column" }}>
-                                <GoldBtn onClick={() => {
-                                  const types = ["Carpet", "LVT", "Laminate", "Vinyl"];
+                        {interceptResponse && (
+                          <div style={{ marginLeft: "48px", marginTop: "16px" }}>
+                            <div style={{ fontFamily: "system-ui", fontSize: "13px", color: "rgba(242,237,224,0.75)", lineHeight: 1.8, fontWeight: 300, marginBottom: "16px", fontStyle: "italic" }}>
+                              {interceptResponse}
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                              <button
+                                onClick={() => {
+                                  const types = ["Carpet", "LVT", "Herringbone", "Laminate", "Vinyl"];
                                   const match = types.find(t => interceptResponse.includes(t));
                                   if (match) { setSelectedFlooring(match); setFlooringGrade(""); }
                                   setShowFloIntercept(false);
                                   setInterceptResponse(null);
                                   setInterceptInput("");
-                                }}>
-                                  Use this recommendation →
-                                </GoldBtn>
-                                <NavBtn onClick={() => { setShowFloIntercept(false); setInterceptResponse(null); setInterceptInput(""); }}>
-                                  See all options
-                                </NavBtn>
-                              </div>
+                                }}
+                                style={{ background: "rgba(201,169,110,0.1)", border: "1px solid rgba(201,169,110,0.3)", borderRadius: "3px", color: "#c9a96e", fontFamily: "system-ui", fontSize: "12px", padding: "12px 16px", cursor: "pointer", textAlign: "left", letterSpacing: "0.06em" }}
+                              >
+                                Yes, use this recommendation →
+                              </button>
+                              <button
+                                onClick={() => { setShowFloIntercept(false); setInterceptResponse(null); setInterceptInput(""); }}
+                                style={{ background: "none", border: "none", color: "rgba(242,237,224,0.25)", fontFamily: "system-ui", fontSize: "11px", padding: "0", cursor: "pointer", textAlign: "left", letterSpacing: "0.08em" }}
+                              >
+                                I&apos;d rather choose myself
+                              </button>
                             </div>
-                          )}
-                        </div>
+                          </div>
+                        )}
                       </div>
                     )}
 
