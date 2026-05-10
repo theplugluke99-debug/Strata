@@ -1968,6 +1968,48 @@ export default function StrataPage() {
   const floInterceptTimer  = useRef(null);
   const interceptPhotoRef  = useRef(null);
 
+  // ── Lane selector state
+  const [customerType,    setCustomerType]    = useState(""); // "homeowner"|"landlord"|"commercial"|"publicSector"
+  const [laneStep,        setLaneStep]        = useState(0);
+
+  // ── Landlord lane
+  const [landlordPortfolioSize,  setLandlordPortfolioSize]  = useState("");
+  const [landlordPropertyType,   setLandlordPropertyType]   = useState("");
+  const [landlordRooms,          setLandlordRooms]          = useState([]);
+  const [landlordM2,             setLandlordM2]             = useState("");
+  const [landlordFloorCondition, setLandlordFloorCondition] = useState("");
+  const [landlordPriority,       setLandlordPriority]       = useState("");
+
+  // ── Commercial lane
+  const [commercialBusinessType, setCommercialBusinessType] = useState("");
+  const [commercialM2,           setCommercialM2]           = useState("");
+  const [commercialFootfall,     setCommercialFootfall]     = useState("");
+  const [commercialExisting,     setCommercialExisting]     = useState("");
+  const [commercialTimeline,     setCommercialTimeline]     = useState("");
+  const [commercialRequirements, setCommercialRequirements] = useState([]);
+
+  // ── Public sector lane
+  const [publicOrgType,     setPublicOrgType]     = useState("");
+  const [publicDescription, setPublicDescription] = useState("");
+  const [publicScale,       setPublicScale]       = useState("");
+  const [publicProcurement, setPublicProcurement] = useState("");
+  const [publicTimeline,    setPublicTimeline]    = useState("");
+
+  // ── Homeowner additions
+  const [moodSelections, setMoodSelections] = useState({});
+  const [practicalFlags, setPracticalFlags] = useState({});
+  const [stairType,      setStairType]      = useState("");
+  const [runnerFamily,   setRunnerFamily]   = useState("");
+  const [runnerStyle,    setRunnerStyle]    = useState("");
+
+  // ── Cross-lane contact additions
+  const [email,   setEmail]   = useState("");
+  const [company, setCompany] = useState("");
+  const [role,    setRole]    = useState("");
+
+  // ── Public sector contact gate
+  const [pubContactVisible, setPubContactVisible] = useState(false);
+
   const expandedRooms = selectedRooms.flatMap(r =>
     r === "Bedroom" ? Array.from({ length: bedroomCount }, (_, i) => bedroomCount === 1 ? "Bedroom" : `Bedroom ${i + 1}`) : [r]
   );
@@ -2053,6 +2095,33 @@ export default function StrataPage() {
       setRoomConfigs(data.roomConfigs || {});
       setPathChoice(data.pathChoice || null);
       setFlooringPath(data.flooringPath || "know");
+      if (data.customerType) setCustomerType(data.customerType);
+      if (data.laneStep)     setLaneStep(data.laneStep);
+      if (data.landlordPortfolioSize)  setLandlordPortfolioSize(data.landlordPortfolioSize);
+      if (data.landlordPropertyType)   setLandlordPropertyType(data.landlordPropertyType);
+      if (data.landlordRooms)          setLandlordRooms(data.landlordRooms);
+      if (data.landlordM2)             setLandlordM2(data.landlordM2);
+      if (data.landlordFloorCondition) setLandlordFloorCondition(data.landlordFloorCondition);
+      if (data.landlordPriority)       setLandlordPriority(data.landlordPriority);
+      if (data.commercialBusinessType) setCommercialBusinessType(data.commercialBusinessType);
+      if (data.commercialM2)           setCommercialM2(data.commercialM2);
+      if (data.commercialFootfall)     setCommercialFootfall(data.commercialFootfall);
+      if (data.commercialExisting)     setCommercialExisting(data.commercialExisting);
+      if (data.commercialTimeline)     setCommercialTimeline(data.commercialTimeline);
+      if (data.commercialRequirements) setCommercialRequirements(data.commercialRequirements);
+      if (data.publicOrgType)          setPublicOrgType(data.publicOrgType);
+      if (data.publicDescription)      setPublicDescription(data.publicDescription);
+      if (data.publicScale)            setPublicScale(data.publicScale);
+      if (data.publicProcurement)      setPublicProcurement(data.publicProcurement);
+      if (data.publicTimeline)         setPublicTimeline(data.publicTimeline);
+      if (data.moodSelections)         setMoodSelections(data.moodSelections);
+      if (data.practicalFlags)         setPracticalFlags(data.practicalFlags);
+      if (data.stairType)              setStairType(data.stairType);
+      if (data.runnerFamily)           setRunnerFamily(data.runnerFamily);
+      if (data.runnerStyle)            setRunnerStyle(data.runnerStyle);
+      if (data.email)                  setEmail(data.email);
+      if (data.company)                setCompany(data.company);
+      if (data.role)                   setRole(data.role);
       setShowWelcomeBack(true);
     } catch(e) {}
   }, []);
@@ -2081,14 +2150,24 @@ export default function StrataPage() {
 
   // ── localStorage auto-save
   useEffect(() => {
-    if (step === 0) return;
+    if (!customerType && step === 0) return;
     try {
       localStorage.setItem("strata_quote_v1", JSON.stringify({
-        data: { step, measureSubStep, step2Sub, propertyType, selectedRooms, bedroomCount, dimensions, selectedFlooring, flooringGrade, selectedPileStyle, selectedVinylStyle, currentFloor, subfloor, selectedExtras, budget, timing, serviceType, roomConfigs, pathChoice, flooringPath },
+        data: {
+          step, measureSubStep, step2Sub, propertyType, selectedRooms, bedroomCount, dimensions,
+          selectedFlooring, flooringGrade, selectedPileStyle, selectedVinylStyle, currentFloor, subfloor,
+          selectedExtras, budget, timing, serviceType, roomConfigs, pathChoice, flooringPath,
+          customerType, laneStep,
+          landlordPortfolioSize, landlordPropertyType, landlordRooms, landlordM2, landlordFloorCondition, landlordPriority,
+          commercialBusinessType, commercialM2, commercialFootfall, commercialExisting, commercialTimeline, commercialRequirements,
+          publicOrgType, publicDescription, publicScale, publicProcurement, publicTimeline,
+          moodSelections, practicalFlags, stairType, runnerFamily, runnerStyle,
+          email, company, role,
+        },
         savedAt: Date.now(),
       }));
     } catch(e) {}
-  }, [step, measureSubStep, step2Sub, propertyType, selectedRooms, bedroomCount, dimensions, selectedFlooring, flooringGrade, selectedPileStyle, selectedVinylStyle, currentFloor, subfloor, selectedExtras, budget, timing, serviceType, roomConfigs, pathChoice, flooringPath]);
+  }, [step, measureSubStep, step2Sub, propertyType, selectedRooms, bedroomCount, dimensions, selectedFlooring, flooringGrade, selectedPileStyle, selectedVinylStyle, currentFloor, subfloor, selectedExtras, budget, timing, serviceType, roomConfigs, pathChoice, flooringPath, customerType, laneStep, landlordPortfolioSize, landlordPropertyType, landlordRooms, landlordM2, landlordFloorCondition, landlordPriority, commercialBusinessType, commercialM2, commercialFootfall, commercialExisting, commercialTimeline, commercialRequirements, publicOrgType, publicDescription, publicScale, publicProcurement, publicTimeline, moodSelections, practicalFlags, stairType, runnerFamily, runnerStyle, email, company, role]);
 
   // ── localStorage clear on submit
   useEffect(() => {
@@ -2413,60 +2492,86 @@ export default function StrataPage() {
 
         {submitted ? (
           <div style={{ paddingTop: "20px" }}>
-            <FloNudge message="We'll call you within 2 hours. A real person — someone who actually knows flooring."/>
-            <div style={{ textAlign: "center", marginBottom: "28px" }}>
-              <AnimatedCheck />
-              <div style={{ fontFamily: s.serif, fontSize: "32px", fontWeight: 700, color: s.text, lineHeight: 1.05, marginBottom: "10px" }}>
-                You're in,<br /><span style={{ color: s.gold, fontStyle: "italic" }}>{name.split(" ")[0]}.</span>
+            {/* Public sector — formal confirmation */}
+            {customerType === "publicSector" ? (
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontFamily: s.sans, fontSize: "24px", color: s.gold, marginBottom: "16px" }}>◆</div>
+                <div style={{ fontFamily: s.serif, fontSize: "28px", fontWeight: 700, color: s.text, lineHeight: 1.05, marginBottom: "12px" }}>Enquiry received.</div>
+                <p style={{ fontFamily: s.sans, fontSize: "13px", color: s.dim, lineHeight: 1.85, fontWeight: 300, maxWidth: "320px", margin: "0 auto 24px" }}>
+                  We work with public sector organisations across Essex and London — framework-ready, fully insured, and experienced in social housing and public estate projects. Someone from our team will be in touch within one working day.
+                </p>
+                <div style={{ border: `1px solid ${s.gold}`, borderRadius: "4px", padding: "14px 20px", display: "inline-block", background: "rgba(201,169,110,0.06)" }}>
+                  <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.dim, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "4px" }}>Reference</div>
+                  <div style={{ fontFamily: s.serif, fontSize: "20px", color: s.gold, letterSpacing: "0.1em" }}><Typewriter text={refCode.current} delay={400} /></div>
+                </div>
               </div>
-              <p style={{ fontFamily: s.sans, fontSize: "13px", color: s.dim, lineHeight: 1.7, fontWeight: 300, maxWidth: "280px", margin: "0 auto" }}>
-                We'll call you back as soon as we can to confirm your free survey — someone who actually knows flooring will be on the other end of the phone.
-              </p>
-            </div>
-
-            {(() => {
-              const h = new Date().getHours();
-              const fmt12 = (n) => { const v = n % 24; return `${v % 12 || 12}${v >= 12 ? "pm" : "am"}`; };
-              const callWindow = h >= 17 ? "First thing tomorrow morning" : `Today between ${fmt12(h + 1)} and ${fmt12(h + 2)}`;
-              return (
-                <div style={{ border: `1px solid ${s.gold}`, borderRadius: "4px", padding: "18px 20px", marginBottom: "24px", background: "rgba(201,169,110,0.06)" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
-                    <span style={{ color: s.gold, fontSize: "13px" }}>◆</span>
-                    <div style={{ fontFamily: s.serif, fontSize: "22px", color: s.text, fontWeight: 400 }}>We&apos;ll call you within 2 hours.</div>
+            ) : (
+              /* Homeowner / Landlord / Commercial confirmation */
+              <>
+                <FloNudge message={
+                  customerType === "commercial" ? "We'll review your project and have a proposal back to you within 24 hours." :
+                  "We'll call you within 2 hours. A real person — someone who actually knows flooring."
+                }/>
+                <div style={{ textAlign: "center", marginBottom: "28px" }}>
+                  <AnimatedCheck />
+                  <div style={{ fontFamily: s.serif, fontSize: "32px", fontWeight: 700, color: s.text, lineHeight: 1.05, marginBottom: "10px" }}>
+                    {customerType === "commercial" ? <>Proposal requested,<br /><span style={{ color: s.gold, fontStyle: "italic" }}>{name.split(" ")[0]}.</span></> :
+                     <>You&apos;re in,<br /><span style={{ color: s.gold, fontStyle: "italic" }}>{name.split(" ")[0]}.</span></>}
                   </div>
-                  <div style={{ fontFamily: s.sans, fontSize: "12px", color: s.dim, marginBottom: "10px" }}>A real person — not a bot. Someone who knows flooring.</div>
-                  <div style={{ fontFamily: s.sans, fontSize: "12px", color: s.gold }}>{callWindow}</div>
+                  <p style={{ fontFamily: s.sans, fontSize: "13px", color: s.dim, lineHeight: 1.7, fontWeight: 300, maxWidth: "280px", margin: "0 auto" }}>
+                    {customerType === "commercial" ?
+                      "We'll review your project and have a full proposal back to you within 24 hours — usually faster. A real person will be in touch, not an automated email." :
+                     customerType === "landlord" ?
+                      "We'll call you back as soon as we can — someone who understands investment property flooring will be on the line." :
+                      "We'll call you back as soon as we can to confirm your free survey — someone who actually knows flooring will be on the other end of the phone."}
+                  </p>
                 </div>
-              );
-            })()}
 
-            <AIQuoteBlock quoteData={quoteData} />
+                {(customerType === "" || customerType === "homeowner") && (() => {
+                  const h = new Date().getHours();
+                  const fmt12 = (n) => { const v = n % 24; return `${v % 12 || 12}${v >= 12 ? "pm" : "am"}`; };
+                  const callWindow = h >= 17 ? "First thing tomorrow morning" : `Today between ${fmt12(h + 1)} and ${fmt12(h + 2)}`;
+                  return (
+                    <div style={{ border: `1px solid ${s.gold}`, borderRadius: "4px", padding: "18px 20px", marginBottom: "24px", background: "rgba(201,169,110,0.06)" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "6px" }}>
+                        <span style={{ color: s.gold, fontSize: "13px" }}>◆</span>
+                        <div style={{ fontFamily: s.serif, fontSize: "22px", color: s.text, fontWeight: 400 }}>We&apos;ll call you within 2 hours.</div>
+                      </div>
+                      <div style={{ fontFamily: s.sans, fontSize: "12px", color: s.dim, marginBottom: "10px" }}>A real person — not a bot. Someone who knows flooring.</div>
+                      <div style={{ fontFamily: s.sans, fontSize: "12px", color: s.gold }}>{callWindow}</div>
+                    </div>
+                  );
+                })()}
 
-            {bespokeRequest && (
-              <div style={{ background: s.card, border: `1px solid ${s.border}`, borderRadius: "4px", padding: "14px 16px", marginTop: "16px" }}>
-                <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>Your notes</div>
-                <div style={{ fontFamily: s.sans, fontSize: "12px", color: s.dim, lineHeight: 1.6 }}>{bespokeRequest}</div>
-              </div>
+                {(customerType === "" || customerType === "homeowner") && <AIQuoteBlock quoteData={quoteData} />}
+
+                {bespokeRequest && (
+                  <div style={{ background: s.card, border: `1px solid ${s.border}`, borderRadius: "4px", padding: "14px 16px", marginTop: "16px" }}>
+                    <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>Your notes</div>
+                    <div style={{ fontFamily: s.sans, fontSize: "12px", color: s.dim, lineHeight: 1.6 }}>{bespokeRequest}</div>
+                  </div>
+                )}
+
+                <Divider />
+                {(customerType === "" || customerType === "homeowner") && [
+                  "We'll call you back as soon as possible to confirm your free survey time",
+                  "Our surveyor visits with samples chosen for your rooms and budget",
+                  "Price agreed. No surprises on fitting day. Ever.",
+                ].map((t, i) => (
+                  <div key={i} style={{ display: "flex", gap: "12px", alignItems: "flex-start", marginBottom: "12px" }}>
+                    <div style={{ width: "20px", height: "20px", borderRadius: "50%", border: `1px solid ${s.gold}`, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", marginTop: "1px" }}>
+                      <span style={{ fontSize: "9px", color: s.gold, fontWeight: 600, fontFamily: s.sans }}>{i + 1}</span>
+                    </div>
+                    <div style={{ fontFamily: s.sans, fontSize: "13px", color: s.dim, lineHeight: 1.6, fontWeight: 300 }}>{t}</div>
+                  </div>
+                ))}
+
+                <div style={{ background: s.card, border: `1px solid ${s.border}`, borderRadius: "4px", padding: "16px", marginTop: "24px", textAlign: "center" }}>
+                  <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim, marginBottom: "6px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Your reference</div>
+                  <div style={{ fontFamily: s.serif, fontSize: "22px", color: s.gold, letterSpacing: "0.1em" }}><Typewriter text={refCode.current} delay={600} /></div>
+                </div>
+              </>
             )}
-
-            <Divider />
-            {[
-              "We'll call you back as soon as possible to confirm your free survey time",
-              "Our surveyor visits with samples chosen for your rooms and budget",
-              "Price agreed. No surprises on fitting day. Ever.",
-            ].map((t, i) => (
-              <div key={i} style={{ display: "flex", gap: "12px", alignItems: "flex-start", marginBottom: "12px" }}>
-                <div style={{ width: "20px", height: "20px", borderRadius: "50%", border: `1px solid ${s.gold}`, flexShrink: 0, display: "flex", alignItems: "center", justifyContent: "center", marginTop: "1px" }}>
-                  <span style={{ fontSize: "9px", color: s.gold, fontWeight: 600, fontFamily: s.sans }}>{i + 1}</span>
-                </div>
-                <div style={{ fontFamily: s.sans, fontSize: "13px", color: s.dim, lineHeight: 1.6, fontWeight: 300 }}>{t}</div>
-              </div>
-            ))}
-
-            <div style={{ background: s.card, border: `1px solid ${s.border}`, borderRadius: "4px", padding: "16px", marginTop: "24px", textAlign: "center" }}>
-              <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim, marginBottom: "6px", letterSpacing: "0.12em", textTransform: "uppercase" }}>Your reference</div>
-              <div style={{ fontFamily: s.serif, fontSize: "22px", color: s.gold, letterSpacing: "0.1em" }}><Typewriter text={refCode.current} delay={600} /></div>
-            </div>
           </div>
 
         ) : (
@@ -2475,27 +2580,101 @@ export default function StrataPage() {
               <div style={{ background: "rgba(201,169,110,0.08)", border: "1px solid rgba(201,169,110,0.25)", borderRadius: "4px", padding: "12px 16px", marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "12px" }}>
                 <div>
                   <div style={{ fontFamily: "system-ui,sans-serif", fontSize: "12px", color: "rgba(242,237,224,0.7)" }}>◆ Welcome back — your quote has been saved.</div>
-                  <div style={{ fontFamily: "system-ui,sans-serif", fontSize: "11px", color: s.dim, marginTop: "3px" }}>You were on step {step + 1} of 6.</div>
+                  <div style={{ fontFamily: "system-ui,sans-serif", fontSize: "11px", color: s.dim, marginTop: "3px" }}>
+                    {customerType === "landlord" ? `You were on the landlord quote — step ${laneStep + 1} of 5.` :
+                     customerType === "commercial" ? `You were on the commercial enquiry — step ${laneStep + 1} of 5.` :
+                     customerType === "publicSector" ? "You were on the public sector enquiry." :
+                     `You were on step ${step + 1} of 6.`}
+                  </div>
                 </div>
                 <div style={{ display: "flex", gap: "6px", flexShrink: 0 }}>
                   <button onClick={() => setShowWelcomeBack(false)} style={{ background: "#c9a96e", color: "#111", border: "none", padding: "7px 14px", fontSize: "11px", fontWeight: 600, borderRadius: "3px", cursor: "pointer", fontFamily: "system-ui,sans-serif" }}>Continue</button>
                   <button onClick={() => {
                     setStep(0); setMeasureSubStep("educate"); setStep2Sub("path"); setPropertyType(""); setSelectedRooms([]); setBedroomCount(1); setDimensions({}); setSelectedFlooring(""); setFlooringGrade(""); setSelectedPileStyle(""); setSelectedVinylStyle(""); setCurrentFloor(""); setSubfloor(""); setSelectedExtras([]); setBudget(""); setTiming(""); setServiceType(""); setRoomConfigs({}); setPathChoice(null); setFlooringPath("know"); setRecommendations(null);
+                    setCustomerType(""); setLaneStep(0); setLandlordPortfolioSize(""); setLandlordPropertyType(""); setLandlordRooms([]); setLandlordM2(""); setLandlordFloorCondition(""); setLandlordPriority(""); setCommercialBusinessType(""); setCommercialM2(""); setCommercialFootfall(""); setCommercialExisting(""); setCommercialTimeline(""); setCommercialRequirements([]); setPublicOrgType(""); setPublicDescription(""); setPublicScale(""); setPublicProcurement(""); setPublicTimeline(""); setMoodSelections({}); setPracticalFlags({}); setStairType(""); setRunnerFamily(""); setRunnerStyle(""); setEmail(""); setCompany(""); setRole("");
                     try { localStorage.removeItem("strata_quote_v1"); } catch(e) {}
                     setShowWelcomeBack(false);
                   }} style={{ background: "transparent", color: "rgba(242,237,224,0.4)", border: "1px solid #2a2a28", padding: "7px 14px", fontSize: "11px", borderRadius: "3px", cursor: "pointer", fontFamily: "system-ui,sans-serif" }}>Start fresh</button>
                 </div>
               </div>
             )}
-            <div style={{ fontFamily: s.serif, fontSize: "28px", fontWeight: 700, color: s.text, lineHeight: 1.05, marginBottom: "8px" }}>{stepTitles[step]}</div>
-            <Divider />
-            <ProgressBar current={step + 1} total={6} />
-            {currentEncouragement && (
-              <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.35)", lineHeight: 1.6, marginBottom: "16px", fontStyle: "italic" }}>{currentEncouragement}</div>
+            {/* ── LANE SELECTOR ─────────────────────────────── */}
+            {customerType === "" && (
+              <div style={{ animation: "fadeIn 0.35s ease" }}>
+                <div style={{ fontFamily: s.serif, fontSize: "28px", fontWeight: 700, color: s.text, lineHeight: 1.05, marginBottom: "4px" }}>First, tell us about your project</div>
+                <div style={{ fontFamily: s.sans, fontSize: "12px", color: "rgba(242,237,224,0.45)", marginBottom: "24px", lineHeight: 1.6 }}>We'll tailor everything to your situation — takes under 2 minutes.</div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                  {[
+                    {
+                      id: "homeowner",
+                      icon: <svg viewBox="0 0 28 28" width="28" height="28" fill="none" stroke="#c9a96e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 12L14 4l10 8v12a1 1 0 01-1 1H5a1 1 0 01-1-1V12z"/><path d="M10 25V16h8v9"/></svg>,
+                      headline: "I'm renovating my home",
+                      sub: "Bedrooms, living rooms, stairs — let's find exactly what's right for your space",
+                    },
+                    {
+                      id: "landlord",
+                      icon: <svg viewBox="0 0 28 28" width="28" height="28" fill="none" stroke="#c9a96e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="10" cy="12" r="6"/><path d="M14 15l10 8M20 20l2 2M23 17l2 2"/></svg>,
+                      headline: "I'm a landlord or letting agent",
+                      sub: "Durable, practical, tenant-ready — we know what works for investment properties",
+                    },
+                    {
+                      id: "commercial",
+                      icon: <svg viewBox="0 0 28 28" width="28" height="28" fill="none" stroke="#c9a96e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="22" height="22" rx="1"/><path d="M3 10h22M10 4v22M18 4v22"/><path d="M7 14h2M7 18h2M15 14h2M15 18h2"/></svg>,
+                      headline: "I'm fitting out a business",
+                      sub: "Offices, hospitality, retail — spec-grade flooring at scale",
+                    },
+                    {
+                      id: "publicSector",
+                      icon: <svg viewBox="0 0 28 28" width="28" height="28" fill="none" stroke="#c9a96e" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 24h20M4 12h20M14 4l10 8H4l10-8z"/><rect x="6" y="12" width="4" height="12"/><rect x="12" y="12" width="4" height="12"/><rect x="18" y="12" width="4" height="12"/></svg>,
+                      headline: "I represent a public sector organisation",
+                      sub: "Councils, housing associations, NHS — framework-ready supply and fit",
+                    },
+                  ].map(card => (
+                    <div
+                      key={card.id}
+                      onClick={() => { setCustomerType(card.id); setStep(0); setLaneStep(0); }}
+                      onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(201,169,110,0.4)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                      onMouseLeave={e => { e.currentTarget.style.borderColor = "#2a2a28"; e.currentTarget.style.transform = "translateY(0)"; }}
+                      style={{ background: "#1a1a18", border: "1px solid #2a2a28", borderRadius: "6px", padding: "24px 20px", cursor: "pointer", transition: "all 0.2s", minHeight: "44px" }}
+                    >
+                      {card.icon}
+                      <div style={{ fontFamily: s.serif, fontSize: "22px", fontWeight: 700, color: s.text, marginTop: "12px", lineHeight: 1.1 }}>{card.headline}</div>
+                      <div style={{ fontFamily: s.sans, fontSize: "12px", color: "rgba(242,237,224,0.45)", lineHeight: 1.6, marginTop: "6px" }}>{card.sub}</div>
+                      <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.gold, marginTop: "16px", textAlign: "right" }}>→</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
 
+            {/* ── ACTIVE LANE ───────────────────────────────── */}
+            {customerType !== "" && (
+              <>
+                {/* Back to project type */}
+                <button onClick={() => { setCustomerType(""); setStep(0); setLaneStep(0); }} style={{ background: "none", border: "none", cursor: "pointer", fontFamily: s.sans, fontSize: "10px", color: "rgba(242,237,224,0.3)", marginBottom: "16px", padding: 0, display: "block", letterSpacing: "0.04em" }}>← Back to project type</button>
+
+                {/* Lane-aware title */}
+                <div style={{ fontFamily: s.serif, fontSize: "28px", fontWeight: 700, color: s.text, lineHeight: 1.05, marginBottom: "8px" }}>
+                  {customerType === "homeowner" ? stepTitles[step] :
+                   customerType === "landlord" ? (["Your portfolio", "The job", "What matters most", "Our recommendation", "Your details"][laneStep] || "") :
+                   customerType === "commercial" ? (["Business type", "Project details", "Requirements", "Our spec", "Contact"][laneStep] || "") :
+                   customerType === "publicSector" ? (laneStep === 0 ? "Your organisation" : "Your project") : ""}
+                </div>
+                <Divider />
+
+                {/* Lane-aware progress bar */}
+                {customerType === "homeowner"    && <ProgressBar current={step + 1}      total={6} />}
+                {customerType === "landlord"     && <ProgressBar current={laneStep + 1}  total={5} />}
+                {customerType === "commercial"   && <ProgressBar current={laneStep + 1}  total={5} />}
+                {customerType === "publicSector" && <ProgressBar current={laneStep + 1}  total={2} />}
+
+                {/* Encouragement — homeowner only */}
+                {customerType === "homeowner" && currentEncouragement && (
+                  <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.35)", lineHeight: 1.6, marginBottom: "16px", fontStyle: "italic" }}>{currentEncouragement}</div>
+                )}
+
             {/* STEP 0 */}
-            {step === 0 && (
+            {customerType === "homeowner" && step === 0 && (
               <>
                 <Sub>First — is this a home or a commercial space?</Sub>
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "20px" }}>
@@ -2539,6 +2718,38 @@ export default function StrataPage() {
                         </div>
                       </div>
                     )}
+                    {/* Stair type selector — appears when Stairs selected */}
+                    {selectedRooms.includes("Stairs") && (
+                      <div style={{ background: s.card, border: `1px solid ${s.border}`, borderRadius: "4px", padding: "14px 16px", marginBottom: "16px", animation: "fadeIn 0.3s ease" }}>
+                        <div style={{ fontSize: "10px", color: s.gold, letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "10px" }}>What type of stair covering?</div>
+                        <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: stairType === "runner" ? "14px" : "0" }}>
+                          {["Full carpet", "Stair runner", "Landing only"].map(o => (
+                            <Chip key={o} label={o} selected={stairType === o} onClick={() => { setStairType(o); setRunnerFamily(""); setRunnerStyle(""); }}/>
+                          ))}
+                        </div>
+                        {stairType === "runner" && (
+                          <div style={{ animation: "fadeIn 0.3s ease" }}>
+                            <div style={{ fontSize: "10px", color: s.gold, letterSpacing: "0.12em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px", marginTop: "4px" }}>Runner style</div>
+                            <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
+                              {["Plain & Textural", "Striped", "Patterned"].map(f => (
+                                <button key={f} onClick={() => { setRunnerFamily(f); setRunnerStyle(""); }} style={{ background: runnerFamily === f ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${runnerFamily === f ? "#c9a96e" : "#2a2a28"}`, color: runnerFamily === f ? s.gold : s.dim, padding: "8px 12px", borderRadius: "3px", cursor: "pointer", fontFamily: s.sans, fontSize: "11px", fontWeight: runnerFamily === f ? 600 : 300, transition: "all 0.15s", minHeight: "44px" }}>{f}</button>
+                              ))}
+                            </div>
+                            {runnerFamily && (
+                              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", animation: "fadeIn 0.3s ease" }}>
+                                {({
+                                  "Plain & Textural": ["Boucle loop", "Flatweave", "Ribbed texture"],
+                                  "Striped":          ["Classic stripe", "Broad stripe", "Narrow pinstripe"],
+                                  "Patterned":        ["Geometric", "Floral", "Tartan"],
+                                }[runnerFamily] || []).map(o => (
+                                  <Chip key={o} label={o} selected={runnerStyle === o} onClick={() => setRunnerStyle(o)}/>
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
                     <GoldBtn onClick={() => { setStep(1); setMeasureSubStep("educate"); }} disabled={selectedRooms.length === 0}>Continue →</GoldBtn>
                   </>
                 )}
@@ -2546,7 +2757,7 @@ export default function StrataPage() {
             )}
 
             {/* STEP 1a */}
-            {step === 1 && measureSubStep === "educate" && (
+            {customerType === "homeowner" && step === 1 && measureSubStep === "educate" && (
               <>
                 <BackBtn onClick={() => setStep(0)}/>
                 <FloNudge message="Take your time with this — rough figures are completely fine. Our surveyor confirms everything in person."/>
@@ -2555,7 +2766,7 @@ export default function StrataPage() {
             )}
 
             {/* STEP 1b */}
-            {step === 1 && measureSubStep === "measure" && (
+            {customerType === "homeowner" && step === 1 && measureSubStep === "measure" && (
               <>
                 <BackBtn onClick={() => setMeasureSubStep("educate")}/>
                 <Sub>Enter your measurements room by room.</Sub>
@@ -2579,7 +2790,7 @@ export default function StrataPage() {
             )}
 
             {/* STEP 2 */}
-            {step === 2 && (
+            {customerType === "homeowner" && step === 2 && (
               <>
                 {/* PATH — choose how to proceed */}
                 {step2Sub === "path" && (
@@ -3141,6 +3352,49 @@ export default function StrataPage() {
                               ))}
                             </div>
 
+                            {/* Mood selector */}
+                            <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>What's the feeling you're going for?</div>
+                            <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
+                              {[
+                                { val: "calm", icon: <svg viewBox="0 0 20 20" width="20" height="20" stroke="#c9a96e" strokeWidth="1.2" fill="none"><line x1="3" y1="6" x2="17" y2="6"/><line x1="5" y1="10" x2="15" y2="10"/><line x1="7" y1="14" x2="13" y2="14"/></svg>, title: "Calm & Minimal", desc: "Clean, neutral, understated" },
+                                { val: "warm", icon: <svg viewBox="0 0 20 20" width="20" height="20" stroke="#c9a96e" strokeWidth="1.2" fill="none"><path d="M10 3 C6 6 3 8 4 13 C5 17 15 17 16 13 C17 8 14 6 10 3z"/></svg>, title: "Warm & Characterful", desc: "Rich tones, texture, personality" },
+                                { val: "bold", icon: <svg viewBox="0 0 20 20" width="20" height="20" stroke="#c9a96e" strokeWidth="1.2" fill="none"><rect x="3" y="3" width="6" height="6"/><rect x="11" y="11" width="6" height="6"/><line x1="9" y1="6" x2="11" y2="6"/><line x1="14" y1="9" x2="14" y2="11"/></svg>, title: "Bold & Considered", desc: "Pattern, contrast, statement" },
+                              ].map(m => {
+                                const sel = moodSelections[room] === m.val;
+                                return (
+                                  <div key={m.val} onClick={() => setMoodSelections(p => ({ ...p, [room]: m.val }))}
+                                    onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(201,169,110,0.3)"; e.currentTarget.style.transform = "translateY(-1px)"; }}
+                                    onMouseLeave={e => { e.currentTarget.style.borderColor = sel ? "#c9a96e" : "#2a2a28"; e.currentTarget.style.transform = "translateY(0)"; }}
+                                    style={{ width: "calc(33% - 6px)", border: `1px solid ${sel ? "#c9a96e" : "#2a2a28"}`, borderRadius: "5px", padding: "14px 10px", cursor: "pointer", textAlign: "center", background: sel ? "rgba(201,169,110,0.1)" : "transparent", transition: "all 0.18s" }}>
+                                    {m.icon}
+                                    <div style={{ fontFamily: s.serif, fontSize: "14px", fontWeight: 700, color: s.text, marginTop: "8px", lineHeight: 1.2 }}>{m.title}</div>
+                                    <div style={{ fontFamily: s.sans, fontSize: "10px", color: "rgba(242,237,224,0.4)", marginTop: "4px", lineHeight: 1.5 }}>{m.desc}</div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+
+                            {/* Practical flags */}
+                            <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>Anything we should know about this room?</div>
+                            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "14px" }}>
+                              {[
+                                { val: "pets",     label: "🐾 Pets or children" },
+                                { val: "footfall", label: "👣 Heavy footfall" },
+                                { val: "ufh",      label: "🌡️ Underfloor heating" },
+                                { val: "rental",   label: "🏠 Rental property" },
+                                { val: "barefoot", label: "🦶 Barefoot comfort priority" },
+                              ].map(f => {
+                                const flags = practicalFlags[room] || [];
+                                const sel = flags.includes(f.val);
+                                return (
+                                  <button key={f.val} onClick={() => setPracticalFlags(p => ({ ...p, [room]: sel ? flags.filter(x => x !== f.val) : [...flags, f.val] }))}
+                                    style={{ background: sel ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${sel ? "#c9a96e" : "#2a2a28"}`, color: sel ? s.gold : s.dim, padding: "8px 12px", borderRadius: "3px", cursor: "pointer", fontFamily: s.sans, fontSize: "12px", fontWeight: sel ? 600 : 300, transition: "all 0.15s", minHeight: "44px" }}>
+                                    {f.label}
+                                  </button>
+                                );
+                              })}
+                            </div>
+
                             {/* Reassurance */}
                             <div style={{ fontFamily: s.sans, fontSize: "11px", fontStyle: "italic", color: "rgba(242,237,224,0.35)", marginBottom: "12px", lineHeight: 1.6 }}>
                               None of this is final — our surveyor brings physical samples to your home. You choose in your own light.
@@ -3414,7 +3668,7 @@ export default function StrataPage() {
                     })}
 
                     {allRoomsConfigured ? (
-                      <GoldBtn onClick={() => setStep(3)}>Continue →</GoldBtn>
+                      <GoldBtn onClick={() => setStep2Sub("flo-rec")}>Continue →</GoldBtn>
                     ) : (
                       <div style={{ fontFamily: s.sans, fontSize: "11px", color: "rgba(242,237,224,0.3)", textAlign: "center", padding: "8px 0 4px", fontStyle: "italic" }}>
                         Answer the design and grade questions for each room to continue
@@ -3422,11 +3676,35 @@ export default function StrataPage() {
                     )}
                   </>
                 )}
+
+                {/* FLO REC — Good/Better/Best recommendation */}
+                {step2Sub === "flo-rec" && (
+                  <>
+                    <BackBtn onClick={() => setStep2Sub("room-config")}/>
+                    <FloNudge message="Based on everything you've told me, here's what I'd recommend."/>
+                    {expandedRooms.map(room => (
+                      <div key={room} style={{ background: "rgba(201,169,110,0.06)", border: "1px solid rgba(201,169,110,0.25)", borderRadius: "6px", padding: "16px", marginBottom: "12px" }}>
+                        <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "10px" }}>{room}</div>
+                        <Chip label="Mid range" selected style={{ marginBottom: "8px" }}/>
+                        <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, lineHeight: 1.6, margin: "8px 0 10px" }}>Good balance of durability and comfort for this room type.</div>
+                        <div style={{ display: "flex", gap: "6px" }}>
+                          <Chip label="Budget"/>
+                          <Chip label="Premium"/>
+                        </div>
+                      </div>
+                    ))}
+                    <GoldNote>None of this is final — your surveyor brings physical samples to your home. You choose in your own light, against your own walls, with no pressure.</GoldNote>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginTop: "8px" }}>
+                      <GoldBtn onClick={() => setStep(3)}>These look right — continue →</GoldBtn>
+                      <button onClick={() => setStep2Sub("room-config")} style={{ background: "transparent", border: `1px solid ${s.border}`, color: s.dim, padding: "14px", fontSize: "12px", borderRadius: "3px", cursor: "pointer", fontFamily: s.sans, letterSpacing: "0.06em" }}>Adjust my choices</button>
+                    </div>
+                  </>
+                )}
               </>
             )}
 
             {/* STEP 3 */}
-            {step === 3 && (
+            {customerType === "homeowner" && step === 3 && (
               <>
                 <BackBtn onClick={() => { setStep(2); setStep2Sub("room-config"); }}/>
                 <FloNudge message="This helps us bring exactly the right crew and materials on the day. No surprises, nothing forgotten."/>
@@ -3461,7 +3739,7 @@ export default function StrataPage() {
             )}
 
             {/* STEP 4 */}
-            {step === 4 && (
+            {customerType === "homeowner" && step === 4 && (
               <>
                 <BackBtn onClick={() => setStep(3)}/>
                 <Sub>This helps us bring the right samples and materials to your survey.</Sub>
@@ -3500,7 +3778,7 @@ export default function StrataPage() {
             )}
 
             {/* STEP 5 */}
-            {step === 5 && (
+            {customerType === "homeowner" && step === 5 && (
               <>
                 <BackBtn onClick={() => setStep(4)}/>
                 <FloNudge message="Last step. Your estimate is waiting on the other side of this."/>
@@ -3576,6 +3854,11 @@ export default function StrataPage() {
                       postcode:         postcode,
                       room_configs:     JSON.stringify(roomConfigs),
                       bespoke_request:  bespokeRequest,
+                      mood_selections:  JSON.stringify(moodSelections),
+                      practical_flags:  JSON.stringify(practicalFlags),
+                      stair_type:       stairType,
+                      runner_style:     runnerStyle ? `${runnerFamily} — ${runnerStyle}` : "",
+                      email:            email,
                       status:           "New",
                     }),
                   }).catch(() => {});
@@ -3594,12 +3877,441 @@ export default function StrataPage() {
                 </div>
               </>
             )}
+
+            {/* ════════════════════════════════════════════════
+                LANE B — LANDLORD
+                ════════════════════════════════════════════════ */}
+            {customerType === "landlord" && (
+              <>
+                {/* B0 — Portfolio */}
+                {laneStep === 0 && (
+                  <>
+                    <FloNudge message="No sales pitch. Just the right floor for the job."/>
+                    <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>How many properties are involved?</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "18px" }}>
+                      {["1 property", "2–5 properties", "6–10 properties", "10+ properties"].map(o => (
+                        <SelectCard key={o} selected={landlordPortfolioSize === o} onClick={() => setLandlordPortfolioSize(o)} padding="16px">
+                          <div style={{ fontFamily: s.sans, fontSize: "13px", fontWeight: 600, color: landlordPortfolioSize === o ? s.gold : s.text }}>{o}</div>
+                        </SelectCard>
+                      ))}
+                    </div>
+                    <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>Property type</div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "20px" }}>
+                      {["Flat / apartment", "House", "HMO", "Mixed portfolio"].map(o => (
+                        <Chip key={o} label={o} selected={landlordPropertyType === o} onClick={() => setLandlordPropertyType(o)}/>
+                      ))}
+                    </div>
+                    <GoldBtn onClick={() => setLaneStep(1)} disabled={!landlordPortfolioSize || !landlordPropertyType}>Continue →</GoldBtn>
+                  </>
+                )}
+
+                {/* B1 — The job */}
+                {laneStep === 1 && (
+                  <>
+                    <BackBtn onClick={() => setLaneStep(0)}/>
+                    <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>Which areas need flooring?</div>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "6px", marginBottom: "18px" }}>
+                      {RESIDENTIAL_ROOMS.map(r => (
+                        <Chip key={r} label={r} selected={landlordRooms.includes(r)} onClick={() => setLandlordRooms(p => p.includes(r) ? p.filter(x => x !== r) : [...p, r])}/>
+                      ))}
+                    </div>
+                    <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>Approximate total square meterage</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "18px" }}>
+                      <SelectCard selected={landlordM2 === "surveyor"} onClick={() => setLandlordM2("surveyor")} padding="16px">
+                        <div style={{ fontFamily: s.sans, fontSize: "13px", fontWeight: 600, color: landlordM2 === "surveyor" ? s.gold : s.text }}>I need a surveyor to measure</div>
+                      </SelectCard>
+                      <SelectCard selected={!!landlordM2 && landlordM2 !== "surveyor"} onClick={() => {}} padding="16px">
+                        <div style={{ fontFamily: s.sans, fontSize: "13px", fontWeight: 600, color: (!!landlordM2 && landlordM2 !== "surveyor") ? s.gold : s.text, marginBottom: "8px" }}>I know the m² — I&apos;ll enter it</div>
+                        <input
+                          type="number"
+                          placeholder="e.g. 85"
+                          value={landlordM2 !== "surveyor" ? landlordM2 : ""}
+                          onChange={e => setLandlordM2(e.target.value)}
+                          onClick={e => e.stopPropagation()}
+                          style={{ background: "transparent", border: "none", borderBottom: "1px solid rgba(242,237,224,0.2)", color: "#f2ede0", fontFamily: "'Cormorant Garamond', serif", fontSize: "22px", padding: "6px 0", width: "100%", outline: "none" }}
+                        />
+                      </SelectCard>
+                    </div>
+                    <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>Condition of existing floor</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "20px" }}>
+                      {[
+                        { val: "Good", title: "Good — just replacing like for like", desc: "Straight swap, minimal prep expected" },
+                        { val: "Poor", title: "Poor — may need prep work", desc: "Could need levelling, ply boarding, or adhesive removal — we’ll assess at survey" },
+                        { val: "Unknown", title: "Unknown", desc: "We’ll check everything at survey before ordering anything" },
+                      ].map(o => (
+                        <SelectCard key={o.val} selected={landlordFloorCondition === o.val} onClick={() => setLandlordFloorCondition(o.val)} padding="16px">
+                          <div style={{ fontFamily: s.sans, fontSize: "13px", fontWeight: 600, color: landlordFloorCondition === o.val ? s.gold : s.text, marginBottom: "4px" }}>{o.title}</div>
+                          <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, fontWeight: 300, lineHeight: 1.5 }}>{o.desc}</div>
+                        </SelectCard>
+                      ))}
+                    </div>
+                    <GoldBtn onClick={() => setLaneStep(2)} disabled={landlordRooms.length === 0 || !landlordFloorCondition}>Continue →</GoldBtn>
+                  </>
+                )}
+
+                {/* B2 — What matters most */}
+                {laneStep === 2 && (
+                  <>
+                    <BackBtn onClick={() => setLaneStep(1)}/>
+                    <FloNudge message="Most landlords land on durability — but we’ll work to whatever makes sense for your portfolio."/>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "20px" }}>
+                      {[
+                        { val: "Durability first", desc: "It needs to survive multiple tenancies without looking tired. We’ll spec accordingly." },
+                        { val: "Cost first",        desc: "Best value per square metre. We’ll find the sweet spot between price and lifespan." },
+                        { val: "Speed first",       desc: "I need this done fast. We’ll prioritise availability and turnaround." },
+                        { val: "All three — full package", desc: "Durable, cost-effective, and delivered on time. Our surveyor will work to all three." },
+                      ].map(o => (
+                        <SelectCard key={o.val} selected={landlordPriority === o.val} onClick={() => setLandlordPriority(o.val)} padding="18px 16px">
+                          <div style={{ fontFamily: s.sans, fontSize: "13px", fontWeight: 600, color: landlordPriority === o.val ? s.gold : s.text, marginBottom: "4px" }}>{o.val}</div>
+                          <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, fontWeight: 300, lineHeight: 1.5 }}>{o.desc}</div>
+                        </SelectCard>
+                      ))}
+                    </div>
+                    <GoldBtn onClick={() => setLaneStep(3)} disabled={!landlordPriority}>Get my recommendation →</GoldBtn>
+                  </>
+                )}
+
+                {/* B3 — Flo recommendation */}
+                {laneStep === 3 && (
+                  <>
+                    <BackBtn onClick={() => setLaneStep(2)}/>
+                    <FloNudge message="Here’s what I’d spec for your properties."/>
+                    {landlordRooms.map(room => (
+                      <div key={room} style={{ background: "rgba(201,169,110,0.06)", border: "1px solid rgba(201,169,110,0.2)", borderRadius: "4px", padding: "16px", marginBottom: "10px" }}>
+                        <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>{room}</div>
+                        <Chip label="Mid LVT" selected style={{ marginBottom: "8px" }}/>
+                        <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, lineHeight: 1.6, marginTop: "8px" }}>Durable, waterproof, and easy to replace individual planks if damaged.</div>
+                      </div>
+                    ))}
+                    {landlordM2 === "surveyor" ? (
+                      <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, fontStyle: "italic", marginBottom: "16px" }}>Surveyor to confirm — estimate available after visit.</div>
+                    ) : (landlordM2 && parseFloat(landlordM2) > 0) ? (
+                      <div style={{ background: "rgba(201,169,110,0.07)", border: "1px solid rgba(201,169,110,0.2)", borderRadius: "3px", padding: "12px 16px", marginBottom: "16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase" }}>Rough estimate</div>
+                        <div style={{ fontFamily: s.serif, fontSize: "20px", color: s.gold }}>
+                          {(() => { const e = calculateLiveEstimate({ m2: parseFloat(landlordM2), selectedFlooring: "LVT", flooringGrade: "Mid", selectedExtras: [] }); return `£${e.low.toLocaleString("en-GB")} – £${e.high.toLocaleString("en-GB")}`; })()}
+                        </div>
+                      </div>
+                    ) : null}
+                    {(landlordPortfolioSize === "6–10 properties" || landlordPortfolioSize === "10+ properties") && (
+                      <GoldNote>For larger portfolios we offer framework pricing and dedicated account management. Mention this when we call.</GoldNote>
+                    )}
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                      <GoldBtn onClick={() => setLaneStep(4)}>Get a full quote →</GoldBtn>
+                      <button onClick={() => setLaneStep(4)} style={{ background: "transparent", border: `1px solid ${s.border}`, color: s.dim, padding: "14px", fontSize: "12px", borderRadius: "3px", cursor: "pointer", fontFamily: s.sans, letterSpacing: "0.06em" }}>Talk to us about your portfolio →</button>
+                    </div>
+                  </>
+                )}
+
+                {/* B4 — Contact */}
+                {laneStep === 4 && (
+                  <>
+                    <BackBtn onClick={() => setLaneStep(3)}/>
+                    <FloNudge message="Last step — then we’ll be in touch."/>
+                    <div style={{ marginBottom: "18px" }}>
+                      <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.16em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Your name</div>
+                      <input className="inp" type="text" placeholder="First and last name" value={name} onChange={e => setName(e.target.value)}/>
+                    </div>
+                    <div style={{ marginBottom: "18px" }}>
+                      <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.16em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Phone number</div>
+                      <input className="inp" type="tel" placeholder="07700 900000" value={phone} onChange={e => setPhone(e.target.value)}/>
+                    </div>
+                    <div style={{ marginBottom: "18px" }}>
+                      <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.16em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Email address</div>
+                      <input className="inp" type="email" placeholder="you@example.com" value={email} onChange={e => setEmail(e.target.value)}/>
+                      {email && !(email.includes("@") && email.includes(".")) && <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.gold, marginTop: "6px" }}>Please enter a valid email address</div>}
+                    </div>
+                    <div style={{ marginBottom: "20px" }}>
+                      <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.16em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Postcode</div>
+                      <input className="inp" type="text" placeholder="SW1A 1AA" value={postcode} onChange={e => setPostcode(e.target.value)}/>
+                      {postcode && !postcodeValid && <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.gold, marginTop: "6px" }}>Please enter a valid UK postcode</div>}
+                    </div>
+                    <div style={{ marginBottom: "20px" }}>
+                      <div style={{ fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Anything else we should know?</div>
+                      <textarea rows={3} value={bespokeRequest} onChange={e => setBespokeRequest(e.target.value)}
+                        placeholder="Specific brands, tight timelines, access restrictions, letting agent contact details — anything useful."
+                        onFocus={e => e.target.style.borderColor = "rgba(201,169,110,0.4)"}
+                        onBlur={e => e.target.style.borderColor = "#2a2a28"}
+                        style={{ width: "100%", background: "#1a1a18", border: "1px solid #2a2a28", borderRadius: "3px", color: "#f2ede0", fontFamily: s.sans, fontSize: "13px", padding: "12px 14px", resize: "none", outline: "none", lineHeight: 1.6, boxSizing: "border-box", transition: "border-color 0.2s" }}
+                      />
+                      <div style={{ fontFamily: s.sans, fontSize: "10px", fontStyle: "italic", color: "rgba(242,237,224,0.3)", marginTop: "6px" }}>Completely optional. Our surveyor reads every note before they visit.</div>
+                    </div>
+                    <GoldBtn
+                      disabled={!nameValid || !phoneValid || !postcodeValid || !(email.includes("@") && email.includes("."))}
+                      onClick={() => {
+                        setSubmitted(true);
+                        fetch("/api/submit", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({
+                          reference_number: refCode.current, customer_type: "landlord",
+                          portfolio_size: landlordPortfolioSize, property_type: landlordPropertyType,
+                          landlord_rooms: landlordRooms.join(", "), landlord_m2: landlordM2,
+                          floor_condition: landlordFloorCondition, priority: landlordPriority,
+                          name, phone, postcode, email, bespoke_request: bespokeRequest, status: "New — Landlord",
+                        }) }).catch(() => {});
+                      }}
+                    >Request my quote →</GoldBtn>
+                  </>
+                )}
+              </>
+            )}
+
+            {/* ════════════════════════════════════════════════
+                LANE C — COMMERCIAL
+                ════════════════════════════════════════════════ */}
+            {customerType === "commercial" && (
+              <>
+                {/* C0 — Business type */}
+                {laneStep === 0 && (
+                  <>
+                    <FloNudge message="Commercial flooring is spec-driven — tell us your environment and we’ll recommend the right product category."/>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "20px" }}>
+                      {["Office", "Hospitality", "Healthcare", "Retail", "Education", "Gym or Leisure", "Industrial / Warehouse", "Other"].map(o => (
+                        <div key={o} onClick={() => setCommercialBusinessType(o)}
+                          onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(201,169,110,0.4)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+                          onMouseLeave={e => { e.currentTarget.style.borderColor = commercialBusinessType === o ? "#c9a96e" : "#2a2a28"; e.currentTarget.style.transform = "translateY(0)"; }}
+                          style={{ background: commercialBusinessType === o ? "rgba(201,169,110,0.08)" : "#1a1a18", border: `1px solid ${commercialBusinessType === o ? "#c9a96e" : "#2a2a28"}`, borderRadius: "6px", padding: "18px 14px", cursor: "pointer", transition: "all 0.2s" }}>
+                          <div style={{ fontFamily: s.sans, fontSize: "13px", fontWeight: 600, color: commercialBusinessType === o ? s.gold : s.text }}>{o}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <GoldBtn onClick={() => setLaneStep(1)} disabled={!commercialBusinessType}>Continue →</GoldBtn>
+                  </>
+                )}
+
+                {/* C1 — Project details */}
+                {laneStep === 1 && (
+                  <>
+                    <BackBtn onClick={() => setLaneStep(0)}/>
+                    <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>Approximate square meterage</div>
+                    <div style={{ display: "flex", gap: "8px", marginBottom: "18px", flexWrap: "wrap" }}>
+                      {["Under 200m²", "200–1,000m²", "Over 1,000m²"].map(o => (
+                        <SelectCard key={o} selected={commercialM2 === o} onClick={() => setCommercialM2(o)} padding="14px 10px">
+                          <div style={{ fontFamily: s.sans, fontSize: "12px", fontWeight: 600, color: commercialM2 === o ? s.gold : s.text, textAlign: "center" }}>{o}</div>
+                        </SelectCard>
+                      ))}
+                    </div>
+                    <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>Footfall level</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "18px" }}>
+                      {[
+                        { val: "Low",    desc: "Office, back of house, private areas" },
+                        { val: "Medium", desc: "Reception, retail, customer-facing areas" },
+                        { val: "High",   desc: "Main entrance, public thoroughfare, heavy daily use" },
+                      ].map(o => (
+                        <SelectCard key={o.val} selected={commercialFootfall === o.val} onClick={() => setCommercialFootfall(o.val)} padding="14px 16px">
+                          <div style={{ fontFamily: s.sans, fontSize: "13px", fontWeight: 600, color: commercialFootfall === o.val ? s.gold : s.text, marginBottom: "3px" }}>{o.val}</div>
+                          <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, fontWeight: 300 }}>{o.desc}</div>
+                        </SelectCard>
+                      ))}
+                    </div>
+                    <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>Current flooring situation</div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "18px" }}>
+                      {["Full replacement", "Partial replacement", "New build / fit-out"].map(o => (
+                        <Chip key={o} label={o} selected={commercialExisting === o} onClick={() => setCommercialExisting(o)}/>
+                      ))}
+                    </div>
+                    <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>Project timeline</div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "20px" }}>
+                      {["ASAP", "Within 1 month", "1–3 months", "Planning stage"].map(o => (
+                        <Chip key={o} label={o} selected={commercialTimeline === o} onClick={() => setCommercialTimeline(o)}/>
+                      ))}
+                    </div>
+                    <GoldBtn onClick={() => setLaneStep(2)} disabled={!commercialM2 || !commercialFootfall || !commercialExisting}>Continue →</GoldBtn>
+                  </>
+                )}
+
+                {/* C2 — Requirements */}
+                {laneStep === 2 && (
+                  <>
+                    <BackBtn onClick={() => setLaneStep(1)}/>
+                    <FloNudge message="Commercial specs often need documented performance ratings. Tell us what applies and we’ll make sure our proposal covers it."/>
+                    <GoldNote>Select all that apply — or skip if none are relevant.</GoldNote>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "24px" }}>
+                      {["Slip resistance rating (R-value)", "Fire rating required", "Acoustic performance", "Warranty documentation", "Installation out of hours", "DDA / accessibility compliance"].map(o => {
+                        const sel = commercialRequirements.includes(o);
+                        return (
+                          <button key={o} onClick={() => setCommercialRequirements(p => sel ? p.filter(x => x !== o) : [...p, o])}
+                            style={{ background: sel ? "rgba(201,169,110,0.12)" : "transparent", border: `1px solid ${sel ? "#c9a96e" : "#2a2a28"}`, color: sel ? s.gold : s.dim, padding: "10px 14px", borderRadius: "3px", cursor: "pointer", fontFamily: s.sans, fontSize: "12px", fontWeight: sel ? 600 : 300, transition: "all 0.15s", minHeight: "44px" }}>
+                            {sel ? "✓ " : ""}{o}
+                          </button>
+                        );
+                      })}
+                    </div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                      <GoldBtn onClick={() => setLaneStep(3)}>Get a proposal →</GoldBtn>
+                      <button onClick={() => setLaneStep(3)} style={{ background: "transparent", border: `1px solid ${s.border}`, color: s.dim, padding: "14px", fontSize: "12px", borderRadius: "3px", cursor: "pointer", fontFamily: s.sans, letterSpacing: "0.06em" }}>Skip — none apply →</button>
+                    </div>
+                  </>
+                )}
+
+                {/* C3 — Spec recommendation */}
+                {laneStep === 3 && (
+                  <>
+                    <BackBtn onClick={() => setLaneStep(2)}/>
+                    <FloNudge message={`Here’s what I’d specify for a ${commercialBusinessType} environment.`}/>
+                    <div style={{ background: "rgba(201,169,110,0.06)", border: "1px solid rgba(201,169,110,0.2)", borderRadius: "4px", padding: "20px", marginBottom: "16px" }}>
+                      <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>Recommended category</div>
+                      <div style={{ fontFamily: s.serif, fontSize: "20px", color: s.text, marginBottom: "10px" }}>Heavy duty LVT or carpet tile</div>
+                      <div style={{ fontFamily: s.sans, fontSize: "12px", color: s.dim, lineHeight: 1.7 }}>
+                        For a {commercialFootfall?.toLowerCase()} footfall {commercialBusinessType?.toLowerCase()} environment we&apos;d typically specify a commercial-grade LVT with 0.7mm+ wear layer, or carpet tile for acoustic performance. Final product confirmed at site visit.
+                      </div>
+                      {commercialRequirements.length > 0 && (
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginTop: "12px" }}>
+                          {commercialRequirements.map(r => <Chip key={r} label={r} selected style={{ fontSize: "10px" }}/>)}
+                        </div>
+                      )}
+                      <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.dim, fontStyle: "italic", marginTop: "14px", lineHeight: 1.6 }}>
+                        Commercial projects are individually quoted. We&apos;ll have a full proposal to you within 24 hours of your enquiry.
+                      </div>
+                    </div>
+                    <GoldBtn onClick={() => setLaneStep(4)}>Request a commercial proposal →</GoldBtn>
+                  </>
+                )}
+
+                {/* C4 — Contact */}
+                {laneStep === 4 && (
+                  <>
+                    <BackBtn onClick={() => setLaneStep(3)}/>
+                    {[
+                      { label: "Your name",     placeholder: "First and last name", value: name,    setter: setName,    type: "text" },
+                      { label: "Company name",  placeholder: "Your company",        value: company, setter: setCompany, type: "text" },
+                      { label: "Your role",     placeholder: "Job title",           value: role,    setter: setRole,    type: "text" },
+                      { label: "Email address", placeholder: "you@example.com",     value: email,   setter: setEmail,   type: "email" },
+                      { label: "Phone number",  placeholder: "07700 900000",        value: phone,   setter: setPhone,   type: "tel" },
+                      { label: "Postcode",      placeholder: "SW1A 1AA",            value: postcode,setter: setPostcode,type: "text" },
+                    ].map(f => (
+                      <div key={f.label} style={{ marginBottom: "18px" }}>
+                        <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.16em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>{f.label}</div>
+                        <input className="inp" type={f.type} placeholder={f.placeholder} value={f.value} onChange={e => f.setter(e.target.value)}/>
+                        {f.type === "email" && f.value && !(f.value.includes("@") && f.value.includes(".")) && <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.gold, marginTop: "6px" }}>Please enter a valid email address</div>}
+                        {f.label === "Postcode" && f.value && !postcodeValid && <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.gold, marginTop: "6px" }}>Please enter a valid UK postcode</div>}
+                      </div>
+                    ))}
+                    <div style={{ marginBottom: "20px" }}>
+                      <div style={{ fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>Anything else we should know?</div>
+                      <textarea rows={3} value={bespokeRequest} onChange={e => setBespokeRequest(e.target.value)}
+                        placeholder="Specific product specs, existing drawings or plans, access restrictions, health and safety requirements."
+                        onFocus={e => e.target.style.borderColor = "rgba(201,169,110,0.4)"}
+                        onBlur={e => e.target.style.borderColor = "#2a2a28"}
+                        style={{ width: "100%", background: "#1a1a18", border: "1px solid #2a2a28", borderRadius: "3px", color: "#f2ede0", fontFamily: s.sans, fontSize: "13px", padding: "12px 14px", resize: "none", outline: "none", lineHeight: 1.6, boxSizing: "border-box", transition: "border-color 0.2s" }}
+                      />
+                    </div>
+                    <GoldBtn
+                      disabled={!nameValid || !phoneValid || !postcodeValid || !(email.includes("@") && email.includes(".")) || company.trim().length < 2}
+                      onClick={() => {
+                        setSubmitted(true);
+                        fetch("/api/submit", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({
+                          reference_number: refCode.current, customer_type: "commercial",
+                          business_type: commercialBusinessType, commercial_m2: commercialM2,
+                          footfall: commercialFootfall, existing_floor: commercialExisting,
+                          timeline: commercialTimeline, requirements: commercialRequirements.join(", "),
+                          name, phone, postcode, email, company, role, bespoke_request: bespokeRequest, status: "New — Commercial",
+                        }) }).catch(() => {});
+                      }}
+                    >Submit enquiry →</GoldBtn>
+                  </>
+                )}
+              </>
+            )}
+
+            {/* ════════════════════════════════════════════════
+                LANE D — PUBLIC SECTOR
+                ════════════════════════════════════════════════ */}
+            {customerType === "publicSector" && (
+              <>
+                {/* D0 — Organisation type */}
+                {laneStep === 0 && (
+                  <>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "8px", marginBottom: "20px" }}>
+                      {["Local council", "Housing association", "NHS / healthcare", "Education", "Emergency services", "Other public sector"].map(o => (
+                        <SelectCard key={o} selected={publicOrgType === o} onClick={() => setPublicOrgType(o)} padding="16px">
+                          <div style={{ fontFamily: s.sans, fontSize: "13px", fontWeight: 600, color: publicOrgType === o ? s.gold : s.text }}>{o}</div>
+                        </SelectCard>
+                      ))}
+                    </div>
+                    <GoldBtn onClick={() => setLaneStep(1)} disabled={!publicOrgType}>Continue →</GoldBtn>
+                  </>
+                )}
+
+                {/* D1 — Project overview + inline contact */}
+                {laneStep === 1 && (
+                  <>
+                    <BackBtn onClick={() => setLaneStep(0)}/>
+                    <FloNudge message="We work with public sector organisations across the UK — framework-ready, fully insured, experienced in social housing and public estate."/>
+                    <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "6px" }}>Brief project description</div>
+                    <textarea
+                      rows={3} maxLength={300}
+                      value={publicDescription} onChange={e => setPublicDescription(e.target.value)}
+                      placeholder="e.g. Refurbishment of 12 social housing units in Essex — hallways, living rooms and bedrooms in each"
+                      onFocus={e => e.target.style.borderColor = "rgba(201,169,110,0.4)"}
+                      onBlur={e => e.target.style.borderColor = "#2a2a28"}
+                      style={{ width: "100%", background: "#1a1a18", border: "1px solid #2a2a28", borderRadius: "3px", color: "#f2ede0", fontFamily: s.sans, fontSize: "13px", padding: "12px 14px", resize: "none", outline: "none", lineHeight: 1.6, boxSizing: "border-box", transition: "border-color 0.2s", marginBottom: "4px" }}
+                    />
+                    <div style={{ fontFamily: s.sans, fontSize: "10px", color: s.dim, textAlign: "right", marginBottom: "16px" }}>{publicDescription.length} / 300</div>
+                    <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>Scale of project</div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "16px" }}>
+                      {["Single property", "Multiple properties (2–20)", "Large estate (20+)", "Ongoing framework contract"].map(o => (
+                        <Chip key={o} label={o} selected={publicScale === o} onClick={() => setPublicScale(o)}/>
+                      ))}
+                    </div>
+                    <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>Procurement route</div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "16px" }}>
+                      {["Direct award", "Existing framework", "Open tender", "Not yet decided"].map(o => (
+                        <Chip key={o} label={o} selected={publicProcurement === o} onClick={() => setPublicProcurement(o)}/>
+                      ))}
+                    </div>
+                    <div style={{ fontFamily: s.sans, fontSize: "9px", color: s.gold, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: "8px" }}>Indicative timeline</div>
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: "8px", marginBottom: "20px" }}>
+                      {["Within 3 months", "3–6 months", "6–12 months", "Planning stage"].map(o => (
+                        <Chip key={o} label={o} selected={publicTimeline === o} onClick={() => setPublicTimeline(o)}/>
+                      ))}
+                    </div>
+
+                    {!pubContactVisible ? (
+                      <GoldBtn onClick={() => setPubContactVisible(true)} disabled={!publicDescription.trim() || !publicScale}>Continue →</GoldBtn>
+                    ) : (
+                      <div style={{ animation: "fadeIn 0.3s ease" }}>
+                        <Divider />
+                        <div style={{ fontFamily: s.serif, fontSize: "18px", color: s.text, marginBottom: "16px" }}>Your contact details</div>
+                        {[
+                          { label: "Your name",            placeholder: "First and last name", value: name,    setter: setName,    type: "text" },
+                          { label: "Email address",        placeholder: "you@example.com",     value: email,   setter: setEmail,   type: "email" },
+                          { label: "Phone number",         placeholder: "07700 900000",        value: phone,   setter: setPhone,   type: "tel" },
+                          { label: "Organisation name",    placeholder: "e.g. Essex County Council", value: company, setter: setCompany, type: "text" },
+                          { label: "Your role",            placeholder: "Job title",           value: role,    setter: setRole,    type: "text" },
+                          { label: "Postcode (site)",      placeholder: "SW1A 1AA",            value: postcode,setter: setPostcode,type: "text" },
+                        ].map(f => (
+                          <div key={f.label} style={{ marginBottom: "16px" }}>
+                            <div style={{ fontSize: "9px", color: "rgba(242,237,224,0.3)", letterSpacing: "0.16em", textTransform: "uppercase", fontFamily: s.sans, marginBottom: "8px" }}>{f.label}</div>
+                            <input className="inp" type={f.type} placeholder={f.placeholder} value={f.value} onChange={e => f.setter(e.target.value)}/>
+                            {f.type === "email" && f.value && !(f.value.includes("@") && f.value.includes(".")) && <div style={{ fontFamily: s.sans, fontSize: "11px", color: s.gold, marginTop: "6px" }}>Please enter a valid email address</div>}
+                          </div>
+                        ))}
+                        <GoldBtn
+                          disabled={!nameValid || !(email.includes("@") && email.includes(".")) || !phoneValid}
+                          onClick={() => {
+                            setSubmitted(true);
+                            fetch("/api/submit", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({
+                              reference_number: refCode.current, customer_type: "publicSector",
+                              org_type: publicOrgType, description: publicDescription,
+                              scale: publicScale, procurement: publicProcurement, timeline: publicTimeline,
+                              name, email, phone, postcode, company, role, status: "New — Public Sector",
+                            }) }).catch(() => {});
+                          }}
+                        >Submit enquiry →</GoldBtn>
+                      </div>
+                    )}
+                  </>
+                )}
+              </>
+            )}
+
+              </>
+            )}
           </>
         )}
       </section>
 
       {/* LIVE ESTIMATE BAR — only after dimensions entered */}
-      {!submitted && allMeasurementsValid && totalGrossM2 > 0 && liveEstimate.low > 0 && (
+      {!submitted && allMeasurementsValid && totalGrossM2 > 0 && liveEstimate.low > 0 && (customerType === "" || customerType === "homeowner" || customerType === "landlord") && (
         <>
           {/* Tap-away overlay */}
           {estimateExpanded && (
