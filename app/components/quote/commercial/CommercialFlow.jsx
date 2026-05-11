@@ -39,7 +39,7 @@ function ChipRow({ options, value, onSelect, multi = false }) {
               border: `1px solid ${active ? GOLD : BORDER}`,
               borderRadius: 8, padding: "10px 18px",
               color: active ? TEXT : MUTED,
-              fontFamily: "var(--font-outfit)", fontSize: 14,
+              fontFamily: "system-ui, sans-serif", fontSize: 14,
               fontWeight: active ? 600 : 400, cursor: "pointer", transition: "all 0.15s",
             }}
           >
@@ -87,7 +87,7 @@ function FloProposalStep({ onBack, onSubmit }) {
 
   const inputStyle = {
     background: SURFACE2, border: `1px solid ${BORDER}`, borderRadius: 8,
-    color: TEXT, fontFamily: "var(--font-outfit)", fontSize: 15, padding: "13px 16px",
+    color: TEXT, fontFamily: "system-ui, sans-serif", fontSize: 15, padding: "13px 16px",
     width: "100%", outline: "none",
   };
 
@@ -104,24 +104,24 @@ function FloProposalStep({ onBack, onSubmit }) {
               <path d="M2 14C2 11 4.7 9 8 9C11.3 9 14 11 14 14" stroke={GOLD} strokeWidth="1.2" strokeLinecap="round"/>
             </svg>
           </div>
-          <span style={{ color: GOLD, fontFamily: "var(--font-outfit)", fontSize: 12, fontWeight: 600 }}>Flo</span>
+          <span style={{ color: GOLD, fontFamily: "system-ui, sans-serif", fontSize: 12, fontWeight: 600 }}>Flo</span>
         </div>
 
-        <h2 style={{ fontFamily: "var(--font-cormorant)", fontWeight: 300, fontSize: "clamp(22px,4vw,34px)", color: TEXT, margin: "0 0 8px" }}>
+        <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 300, fontSize: "clamp(22px,4vw,34px)", color: TEXT, margin: "0 0 8px" }}>
           Your commercial proposal
         </h2>
-        <p style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 13, margin: "0 0 24px", lineHeight: 1.6 }}>
+        <p style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 13, margin: "0 0 24px", lineHeight: 1.6 }}>
           Commercial projects are individually quoted. We'll have a full proposal to you within 24 hours.
         </p>
 
         {loading ? (
-          <div style={{ padding: "40px 0", textAlign: "center", color: GOLD, fontFamily: "var(--font-outfit)", fontSize: 13 }}>
+          <div style={{ padding: "40px 0", textAlign: "center", color: GOLD, fontFamily: "system-ui, sans-serif", fontSize: 13 }}>
             Flo is reviewing your brief…
           </div>
         ) : (
           cm.floProposal && (
             <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 12, padding: "20px 24px", marginBottom: 28 }}>
-              <p style={{ color: TEXT, fontFamily: "var(--font-outfit)", fontSize: 14, lineHeight: 1.7, margin: 0 }}>
+              <p style={{ color: TEXT, fontFamily: "system-ui, sans-serif", fontSize: 14, lineHeight: 1.7, margin: 0 }}>
                 {cm.floProposal.text ?? cm.floProposal.summary ?? JSON.stringify(cm.floProposal)}
               </p>
             </div>
@@ -129,7 +129,7 @@ function FloProposalStep({ onBack, onSubmit }) {
         )}
 
         {/* Contact form */}
-        <div style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 16 }}>Your details</div>
+        <div style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 16 }}>Your details</div>
         <div style={{ display: "flex", flexDirection: "column", gap: 12, marginBottom: 24 }}>
           {[
             { key: "name",    placeholder: "Your name" },
@@ -197,15 +197,15 @@ export default function CommercialFlow({ onBackToLanes }) {
 
   if (step === 99) return (
     <div style={{ minHeight: "100dvh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 32, textAlign: "center" }}>
-      <h2 style={{ fontFamily: "var(--font-cormorant)", fontWeight: 300, fontSize: 36, color: "#f2ede0", margin: "0 0 12px" }}>Proposal incoming</h2>
-      <p style={{ fontFamily: "var(--font-outfit)", fontSize: 15, color: "rgba(242,237,224,0.5)", maxWidth: 380, lineHeight: 1.7, margin: 0 }}>
+      <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 300, fontSize: 36, color: "#f2ede0", margin: "0 0 12px" }}>Proposal incoming</h2>
+      <p style={{ fontFamily: "system-ui, sans-serif", fontSize: 15, color: "rgba(242,237,224,0.5)", maxWidth: 380, lineHeight: 1.7, margin: 0 }}>
         We'll have a full commercial proposal with you within 24 hours.
       </p>
     </div>
   );
 
   const sectionLabel = (label) => (
-    <div style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 14 }}>{label}</div>
+    <div style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 14 }}>{label}</div>
   );
 
   // ── Step 0: Business type ─────────────────────────────────────────
@@ -217,8 +217,8 @@ export default function CommercialFlow({ onBackToLanes }) {
         <div style={{ width: 52 }} />
       </div>
       <div style={{ flex: 1, maxWidth: 640, margin: "0 auto", width: "100%", padding: "32px 24px" }}>
-        <h2 style={{ fontFamily: "var(--font-cormorant)", fontWeight: 300, fontSize: "clamp(26px,5vw,40px)", color: TEXT, margin: "0 0 8px" }}>What type of business?</h2>
-        <p style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 14, margin: "0 0 28px" }}>This shapes the specification Flo recommends.</p>
+        <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 300, fontSize: "clamp(26px,5vw,40px)", color: TEXT, margin: "0 0 8px" }}>What type of business?</h2>
+        <p style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 14, margin: "0 0 28px" }}>This shapes the specification Flo recommends.</p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, marginBottom: 32 }}>
           {BUSINESS_TYPES.map((b) => (
             <button key={b} onClick={() => update({ businessType: b })} style={{
@@ -226,7 +226,7 @@ export default function CommercialFlow({ onBackToLanes }) {
               border: `1px solid ${cm.businessType === b ? GOLD : BORDER}`,
               borderRadius: 12, padding: "18px 16px", cursor: "pointer",
               color: cm.businessType === b ? TEXT : MUTED,
-              fontFamily: "var(--font-outfit)", fontWeight: cm.businessType === b ? 600 : 400, fontSize: 15, transition: "all 0.2s",
+              fontFamily: "system-ui, sans-serif", fontWeight: cm.businessType === b ? 600 : 400, fontSize: 15, transition: "all 0.2s",
             }}>{b}</button>
           ))}
         </div>
@@ -246,14 +246,14 @@ export default function CommercialFlow({ onBackToLanes }) {
         <div style={{ width: 52 }} />
       </div>
       <div style={{ flex: 1, maxWidth: 640, margin: "0 auto", width: "100%", padding: "32px 24px" }}>
-        <h2 style={{ fontFamily: "var(--font-cormorant)", fontWeight: 300, fontSize: "clamp(26px,5vw,40px)", color: TEXT, margin: "0 0 32px" }}>Project details</h2>
+        <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 300, fontSize: "clamp(26px,5vw,40px)", color: TEXT, margin: "0 0 32px" }}>Project details</h2>
         {sectionLabel("Approximate square meterage")}
         <input
           type="number"
           placeholder="e.g. 450"
           value={cm.squareMeterage}
           onChange={(e) => update({ squareMeterage: e.target.value })}
-          style={{ background: SURFACE2, border: `1px solid ${BORDER}`, borderRadius: 10, color: TEXT, fontFamily: "var(--font-outfit)", fontSize: 22, fontWeight: 500, padding: "16px 20px", width: "100%", outline: "none", marginBottom: 28 }}
+          style={{ background: SURFACE2, border: `1px solid ${BORDER}`, borderRadius: 10, color: TEXT, fontFamily: "system-ui, sans-serif", fontSize: 22, fontWeight: 500, padding: "16px 20px", width: "100%", outline: "none", marginBottom: 28 }}
         />
         {sectionLabel("Footfall level")}
         <div style={{ marginBottom: 28 }}><ChipRow options={FOOTFALL} value={cm.footfallLevel} onSelect={(v) => update({ footfallLevel: v })} /></div>
@@ -277,8 +277,8 @@ export default function CommercialFlow({ onBackToLanes }) {
         <div style={{ width: 52 }} />
       </div>
       <div style={{ flex: 1, maxWidth: 640, margin: "0 auto", width: "100%", padding: "32px 24px" }}>
-        <h2 style={{ fontFamily: "var(--font-cormorant)", fontWeight: 300, fontSize: "clamp(26px,5vw,40px)", color: TEXT, margin: "0 0 8px" }}>Any specific requirements?</h2>
-        <p style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 14, margin: "0 0 28px" }}>Select all that apply.</p>
+        <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 300, fontSize: "clamp(26px,5vw,40px)", color: TEXT, margin: "0 0 8px" }}>Any specific requirements?</h2>
+        <p style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 14, margin: "0 0 28px" }}>Select all that apply.</p>
         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 32 }}>
           {REQUIREMENTS.map((r) => {
             const active = cm.requirements.includes(r.id);
@@ -293,7 +293,7 @@ export default function CommercialFlow({ onBackToLanes }) {
                 <div style={{ width: 20, height: 20, borderRadius: 6, border: `1.5px solid ${active ? GOLD : BORDER}`, background: active ? GOLD : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                   {active && <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2.5 6L5 8.5L9.5 3.5" stroke="#111110" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg>}
                 </div>
-                <span style={{ color: active ? TEXT : MUTED, fontFamily: "var(--font-outfit)", fontSize: 14 }}>{r.label}</span>
+                <span style={{ color: active ? TEXT : MUTED, fontFamily: "system-ui, sans-serif", fontSize: 14 }}>{r.label}</span>
               </button>
             );
           })}

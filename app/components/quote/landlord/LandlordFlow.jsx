@@ -28,8 +28,8 @@ function OptionCard({ label, desc, active, onClick }) {
       background: active ? GOLD_DIM : SURFACE, border: `1px solid ${active ? GOLD : BORDER}`,
       borderRadius: 12, padding: "18px 22px", cursor: "pointer", textAlign: "left", transition: "all 0.2s", marginBottom: 10,
     }}>
-      <div style={{ color: TEXT, fontFamily: "var(--font-outfit)", fontWeight: 600, fontSize: 15, marginBottom: desc ? 4 : 0 }}>{label}</div>
-      {desc && <div style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 13 }}>{desc}</div>}
+      <div style={{ color: TEXT, fontFamily: "system-ui, sans-serif", fontWeight: 600, fontSize: 15, marginBottom: desc ? 4 : 0 }}>{label}</div>
+      {desc && <div style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 13 }}>{desc}</div>}
     </button>
   );
 }
@@ -68,26 +68,26 @@ function FloRecStep({ onBack, onSubmit, portfolioSize }) {
               <path d="M2.5 15.5C2.5 12 5.5 10 9 10C12.5 10 15.5 12 15.5 15.5" stroke={GOLD} strokeWidth="1.3" strokeLinecap="round"/>
             </svg>
           </div>
-          <div style={{ color: GOLD, fontFamily: "var(--font-outfit)", fontSize: 12, fontWeight: 600 }}>Flo</div>
+          <div style={{ color: GOLD, fontFamily: "system-ui, sans-serif", fontSize: 12, fontWeight: 600 }}>Flo</div>
         </div>
-        <h2 style={{ fontFamily: "var(--font-cormorant)", fontWeight: 300, fontSize: "clamp(22px,4vw,34px)", color: TEXT, margin: "0 0 28px" }}>
+        <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 300, fontSize: "clamp(22px,4vw,34px)", color: TEXT, margin: "0 0 28px" }}>
           Spec recommendation for your portfolio
         </h2>
 
         {loading && (
           <div style={{ padding: "40px 0", textAlign: "center" }}>
-            <div style={{ color: GOLD, fontFamily: "var(--font-outfit)", fontSize: 13 }}>Flo is putting together your spec…</div>
+            <div style={{ color: GOLD, fontFamily: "system-ui, sans-serif", fontSize: 13 }}>Flo is putting together your spec…</div>
           </div>
         )}
-        {error && <div style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 13, marginBottom: 20 }}>{error}</div>}
+        {error && <div style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 13, marginBottom: 20 }}>{error}</div>}
 
         {floRecommendations && floRecommendations.map((rec, i) => (
           <div key={i} style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 12, padding: "18px 22px", marginBottom: 12 }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-              <span style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em" }}>{rec.room}</span>
-              <span style={{ background: GOLD_DIM, color: GOLD, border: `1px solid ${GOLD_BORDER}`, borderRadius: 20, padding: "3px 10px", fontFamily: "var(--font-outfit)", fontSize: 11, fontWeight: 600 }}>{rec.recommended_tier}</span>
+              <span style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em" }}>{rec.room}</span>
+              <span style={{ background: GOLD_DIM, color: GOLD, border: `1px solid ${GOLD_BORDER}`, borderRadius: 20, padding: "3px 10px", fontFamily: "system-ui, sans-serif", fontSize: 11, fontWeight: 600 }}>{rec.recommended_tier}</span>
             </div>
-            <p style={{ color: TEXT, fontFamily: "var(--font-outfit)", fontSize: 14, lineHeight: 1.6, margin: 0 }}>{rec.reason}</p>
+            <p style={{ color: TEXT, fontFamily: "system-ui, sans-serif", fontSize: 14, lineHeight: 1.6, margin: 0 }}>{rec.reason}</p>
           </div>
         ))}
 
@@ -153,8 +153,8 @@ export default function LandlordFlow({ onBackToLanes }) {
   };
 
   if (step === 99) return <div style={{ minHeight: "100dvh", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", padding: 32, textAlign: "center" }}>
-    <h2 style={{ fontFamily: "var(--font-cormorant)", fontWeight: 300, fontSize: 36, color: "#f2ede0", margin: "0 0 12px" }}>We're on it</h2>
-    <p style={{ fontFamily: "var(--font-outfit)", fontSize: 15, color: "rgba(242,237,224,0.5)", maxWidth: 360, lineHeight: 1.7, margin: 0 }}>We'll be in touch shortly with your full quote.</p>
+    <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 300, fontSize: 36, color: "#f2ede0", margin: "0 0 12px" }}>We're on it</h2>
+    <p style={{ fontFamily: "system-ui, sans-serif", fontSize: 15, color: "rgba(242,237,224,0.5)", maxWidth: 360, lineHeight: 1.7, margin: 0 }}>We'll be in touch shortly with your full quote.</p>
   </div>;
 
   // ── Step 0: Portfolio ────────────────────────────────────────────
@@ -166,8 +166,8 @@ export default function LandlordFlow({ onBackToLanes }) {
         <div style={{ width: 52 }} />
       </div>
       <div style={{ flex: 1, maxWidth: 640, margin: "0 auto", width: "100%", padding: "32px 24px" }}>
-        <h2 style={{ fontFamily: "var(--font-cormorant)", fontWeight: 300, fontSize: "clamp(26px,5vw,40px)", color: TEXT, margin: "0 0 8px" }}>Your portfolio</h2>
-        <p style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 14, margin: "0 0 32px" }}>How many properties are involved?</p>
+        <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 300, fontSize: "clamp(26px,5vw,40px)", color: TEXT, margin: "0 0 8px" }}>Your portfolio</h2>
+        <p style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 14, margin: "0 0 32px" }}>How many properties are involved?</p>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, marginBottom: 32 }}>
           {PORTFOLIO_SIZES.map((s) => (
             <button key={s} onClick={() => update({ portfolioSize: s })} style={{
@@ -175,18 +175,18 @@ export default function LandlordFlow({ onBackToLanes }) {
               border: `1px solid ${ll.portfolioSize === s ? GOLD : BORDER}`,
               borderRadius: 12, padding: "20px 16px", cursor: "pointer",
               color: ll.portfolioSize === s ? TEXT : MUTED,
-              fontFamily: "var(--font-outfit)", fontWeight: 600, fontSize: 18, transition: "all 0.2s",
+              fontFamily: "system-ui, sans-serif", fontWeight: 600, fontSize: 18, transition: "all 0.2s",
             }}>{s}</button>
           ))}
         </div>
-        <div style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 14 }}>Property type</div>
+        <div style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 14 }}>Property type</div>
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 32 }}>
           {PROPERTY_TYPES.map((t) => (
             <button key={t} onClick={() => update({ propertyType: t })} style={{
               background: ll.propertyType === t ? GOLD_DIM : SURFACE,
               border: `1px solid ${ll.propertyType === t ? GOLD : BORDER}`,
               borderRadius: 8, padding: "10px 18px", cursor: "pointer",
-              color: ll.propertyType === t ? TEXT : MUTED, fontFamily: "var(--font-outfit)", fontSize: 14, transition: "all 0.2s",
+              color: ll.propertyType === t ? TEXT : MUTED, fontFamily: "system-ui, sans-serif", fontSize: 14, transition: "all 0.2s",
             }}>{t}</button>
           ))}
         </div>
@@ -213,8 +213,8 @@ export default function LandlordFlow({ onBackToLanes }) {
           <div style={{ flex: 1, maxWidth: 640, margin: "0 auto", width: "100%", padding: "32px 24px" }}>
             {!showRoomConfig || currentRoom < 0 ? (
               <>
-                <h2 style={{ fontFamily: "var(--font-cormorant)", fontWeight: 300, fontSize: "clamp(26px,5vw,40px)", color: TEXT, margin: "0 0 8px" }}>Which rooms?</h2>
-                <p style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 14, margin: "0 0 24px" }}>Select all that need flooring.</p>
+                <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 300, fontSize: "clamp(26px,5vw,40px)", color: TEXT, margin: "0 0 8px" }}>Which rooms?</h2>
+                <p style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 14, margin: "0 0 24px" }}>Select all that need flooring.</p>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10, marginBottom: 24 }}>
                   {ROOM_LIST.map((r) => {
                     const active = ll.selectedRooms.includes(r);
@@ -222,12 +222,12 @@ export default function LandlordFlow({ onBackToLanes }) {
                       <button key={r} onClick={() => handleRoomSelect(r)} style={{
                         background: active ? GOLD_DIM : SURFACE, border: `1px solid ${active ? GOLD : BORDER}`,
                         borderRadius: 10, padding: "16px 18px", cursor: "pointer", textAlign: "left", transition: "all 0.2s",
-                        color: active ? TEXT : MUTED, fontFamily: "var(--font-outfit)", fontSize: 14, fontWeight: active ? 600 : 400,
+                        color: active ? TEXT : MUTED, fontFamily: "system-ui, sans-serif", fontSize: 14, fontWeight: active ? 600 : 400,
                       }}>{r}</button>
                     );
                   })}
                 </div>
-                <div style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 14 }}>Existing floor condition</div>
+                <div style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 14 }}>Existing floor condition</div>
                 {FLOOR_CONDITIONS.map((c) => (
                   <OptionCard key={c.id} label={c.label} active={ll.floorCondition === c.id} onClick={() => update({ floorCondition: c.id })} />
                 ))}
@@ -237,10 +237,10 @@ export default function LandlordFlow({ onBackToLanes }) {
               </>
             ) : (
               <>
-                <div style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>
+                <div style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.1em", marginBottom: 8 }}>
                   Room {currentRoom + 1} of {ll.selectedRooms.length} — {roomName}
                 </div>
-                <h2 style={{ fontFamily: "var(--font-cormorant)", fontWeight: 300, fontSize: "clamp(24px,4vw,36px)", color: TEXT, margin: "0 0 24px" }}>How big is this room?</h2>
+                <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 300, fontSize: "clamp(24px,4vw,36px)", color: TEXT, margin: "0 0 24px" }}>How big is this room?</h2>
                 <MeasuringTool
                   roomName={roomName}
                   value={ll.rooms[roomName]?.dimensions}
@@ -273,8 +273,8 @@ export default function LandlordFlow({ onBackToLanes }) {
         <div style={{ width: 52 }} />
       </div>
       <div style={{ flex: 1, maxWidth: 640, margin: "0 auto", width: "100%", padding: "32px 24px" }}>
-        <h2 style={{ fontFamily: "var(--font-cormorant)", fontWeight: 300, fontSize: "clamp(26px,5vw,40px)", color: TEXT, margin: "0 0 8px" }}>What matters most?</h2>
-        <p style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 14, margin: "0 0 28px" }}>This shapes the spec Flo recommends.</p>
+        <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 300, fontSize: "clamp(26px,5vw,40px)", color: TEXT, margin: "0 0 8px" }}>What matters most?</h2>
+        <p style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 14, margin: "0 0 28px" }}>This shapes the spec Flo recommends.</p>
         <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 32 }}>
           {PRIORITIES.map((p) => (
             <OptionCard key={p.id} label={p.label} desc={p.desc} active={ll.priority === p.id} onClick={() => update({ priority: p.id })} />

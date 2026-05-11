@@ -13,7 +13,7 @@ export default function BackButton({ onClick, style = {} }) {
         alignItems: "center",
         gap: 8,
         color: MUTED,
-        fontFamily: "var(--font-outfit)",
+        fontFamily: "system-ui, sans-serif",
         fontSize: 13,
         padding: "8px 0",
         transition: "color 0.15s ease",

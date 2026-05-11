@@ -16,28 +16,28 @@ function RoomCard({ rec }) {
     <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 14, overflow: "hidden", marginBottom: 16 }}>
       <div style={{ padding: "20px 24px 0" }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-          <div style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+          <div style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase" }}>
             {rec.room}
           </div>
-          <div style={{ background: tier.bg, border: `1px solid ${tier.color}30`, borderRadius: 20, padding: "4px 12px", color: tier.color, fontFamily: "var(--font-outfit)", fontSize: 12, fontWeight: 600 }}>
+          <div style={{ background: tier.bg, border: `1px solid ${tier.color}30`, borderRadius: 20, padding: "4px 12px", color: tier.color, fontFamily: "system-ui, sans-serif", fontSize: 12, fontWeight: 600 }}>
             {tier.label}
           </div>
         </div>
-        <p style={{ color: TEXT, fontFamily: "var(--font-outfit)", fontSize: 15, lineHeight: 1.6, margin: "0 0 16px" }}>
+        <p style={{ color: TEXT, fontFamily: "system-ui, sans-serif", fontSize: 15, lineHeight: 1.6, margin: "0 0 16px" }}>
           {rec.reason}
         </p>
       </div>
       <div style={{ padding: "12px 24px 20px", borderTop: `1px solid ${BORDER}`, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
         {rec.good_note && (
           <div style={{ padding: "10px 14px", background: SURFACE2, borderRadius: 8 }}>
-            <div style={{ color: TIER_STYLE.Good.color, fontFamily: "var(--font-outfit)", fontSize: 11, fontWeight: 600, marginBottom: 4 }}>Good</div>
-            <div style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 12, lineHeight: 1.4 }}>{rec.good_note}</div>
+            <div style={{ color: TIER_STYLE.Good.color, fontFamily: "system-ui, sans-serif", fontSize: 11, fontWeight: 600, marginBottom: 4 }}>Good</div>
+            <div style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 12, lineHeight: 1.4 }}>{rec.good_note}</div>
           </div>
         )}
         {rec.best_note && (
           <div style={{ padding: "10px 14px", background: SURFACE2, borderRadius: 8 }}>
-            <div style={{ color: TIER_STYLE.Best.color, fontFamily: "var(--font-outfit)", fontSize: 11, fontWeight: 600, marginBottom: 4 }}>Best</div>
-            <div style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 12, lineHeight: 1.4 }}>{rec.best_note}</div>
+            <div style={{ color: TIER_STYLE.Best.color, fontFamily: "system-ui, sans-serif", fontSize: 11, fontWeight: 600, marginBottom: 4 }}>Best</div>
+            <div style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 12, lineHeight: 1.4 }}>{rec.best_note}</div>
           </div>
         )}
       </div>
@@ -94,8 +94,8 @@ export default function FloRecommendation({ onBack, onSubmit }) {
             </svg>
           </div>
           <div>
-            <div style={{ color: GOLD, fontFamily: "var(--font-outfit)", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>Flo</div>
-            <h2 style={{ fontFamily: "var(--font-cormorant)", fontWeight: 300, fontSize: "clamp(22px,4vw,34px)", color: TEXT, margin: 0, lineHeight: 1.2 }}>
+            <div style={{ color: GOLD, fontFamily: "system-ui, sans-serif", fontSize: 12, fontWeight: 600, marginBottom: 4 }}>Flo</div>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 300, fontSize: "clamp(22px,4vw,34px)", color: TEXT, margin: 0, lineHeight: 1.2 }}>
               Here's what I'd recommend
             </h2>
           </div>
@@ -103,7 +103,7 @@ export default function FloRecommendation({ onBack, onSubmit }) {
 
         {loading && (
           <div style={{ textAlign: "center", padding: "60px 0" }}>
-            <div style={{ color: GOLD, fontFamily: "var(--font-outfit)", fontSize: 13, marginBottom: 12, letterSpacing: "0.08em" }}>
+            <div style={{ color: GOLD, fontFamily: "system-ui, sans-serif", fontSize: 13, marginBottom: 12, letterSpacing: "0.08em" }}>
               Flo is reviewing your rooms…
             </div>
             <div style={{ display: "flex", gap: 6, justifyContent: "center" }}>
@@ -115,7 +115,7 @@ export default function FloRecommendation({ onBack, onSubmit }) {
         )}
 
         {error && (
-          <div style={{ background: "rgba(255,100,100,0.08)", border: "1px solid rgba(255,100,100,0.2)", borderRadius: 10, padding: "16px 20px", marginBottom: 24, color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 13 }}>
+          <div style={{ background: "rgba(255,100,100,0.08)", border: "1px solid rgba(255,100,100,0.2)", borderRadius: 10, padding: "16px 20px", marginBottom: 24, color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 13 }}>
             {error}
           </div>
         )}
@@ -126,7 +126,7 @@ export default function FloRecommendation({ onBack, onSubmit }) {
 
         {floRecommendations && (
           <>
-            <p style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 13, lineHeight: 1.7, margin: "8px 0 32px", fontStyle: "italic", textAlign: "center" }}>
+            <p style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 13, lineHeight: 1.7, margin: "8px 0 32px", fontStyle: "italic", textAlign: "center" }}>
               None of this is final — your surveyor brings physical samples to your home. You choose in your own light.
             </p>
 
@@ -134,13 +134,13 @@ export default function FloRecommendation({ onBack, onSubmit }) {
             {estimate && (
               <div style={{ background: GOLD_DIM, border: `1px solid ${GOLD_BORDER}`, borderRadius: 14, padding: "20px 24px", marginBottom: 28, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
                 <div>
-                  <div style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 6 }}>Estimated total</div>
-                  <div style={{ color: TEXT, fontFamily: "var(--font-outfit)", fontWeight: 700, fontSize: 24 }}>
+                  <div style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 6 }}>Estimated total</div>
+                  <div style={{ color: TEXT, fontFamily: "system-ui, sans-serif", fontWeight: 700, fontSize: 24 }}>
                     £{estimate.low.toLocaleString()}
                     <span style={{ color: MUTED, fontWeight: 400, fontSize: 16 }}> – £{estimate.high.toLocaleString()}</span>
                   </div>
                 </div>
-                <div style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 11, textAlign: "right", lineHeight: 1.6 }}>
+                <div style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 11, textAlign: "right", lineHeight: 1.6 }}>
                   Confirmed at<br />home survey
                 </div>
               </div>
@@ -164,7 +164,7 @@ export default function FloRecommendation({ onBack, onSubmit }) {
               </button>
             </div>
 
-            <p style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 12, textAlign: "center", marginTop: 20, lineHeight: 1.6 }}>
+            <p style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 12, textAlign: "center", marginTop: 20, lineHeight: 1.6 }}>
               Already know exactly what you want?{" "}
               <span style={{ color: GOLD }}>We can source and fit almost anything — just get in touch.</span>
             </p>

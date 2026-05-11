@@ -25,7 +25,7 @@ function Message({ msg }) {
         borderRadius: isUser ? "16px 16px 4px 16px" : "16px 16px 16px 4px",
         padding: "12px 16px",
         color: TEXT,
-        fontFamily: "var(--font-outfit)",
+        fontFamily: "system-ui, sans-serif",
         fontSize: 14,
         lineHeight: 1.65,
       }}>
@@ -133,8 +133,8 @@ export default function PublicSectorChat({ onBackToLanes }) {
           <path d="M5 12L9.5 16.5L19 7" stroke={GOLD} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </div>
-      <h2 style={{ fontFamily: "var(--font-cormorant)", fontWeight: 300, fontSize: 36, color: TEXT, margin: "0 0 12px" }}>Proposal submitted</h2>
-      <p style={{ fontFamily: "var(--font-outfit)", fontSize: 15, color: MUTED, maxWidth: 380, lineHeight: 1.7, margin: 0 }}>
+      <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 300, fontSize: 36, color: TEXT, margin: "0 0 12px" }}>Proposal submitted</h2>
+      <p style={{ fontFamily: "system-ui, sans-serif", fontSize: 15, color: MUTED, maxWidth: 380, lineHeight: 1.7, margin: 0 }}>
         Our team has been notified and will be in touch shortly. Thank you.
       </p>
     </div>
@@ -153,8 +153,8 @@ export default function PublicSectorChat({ onBackToLanes }) {
             </svg>
           </div>
           <div>
-            <div style={{ color: TEXT, fontFamily: "var(--font-outfit)", fontSize: 14, fontWeight: 600 }}>Flo</div>
-            <div style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 11 }}>Strata's project advisor</div>
+            <div style={{ color: TEXT, fontFamily: "system-ui, sans-serif", fontSize: 14, fontWeight: 600 }}>Flo</div>
+            <div style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 11 }}>Strata's project advisor</div>
           </div>
         </div>
         <div style={{ width: 52 }} />
@@ -183,7 +183,7 @@ export default function PublicSectorChat({ onBackToLanes }) {
         {/* Contact form appears when Flo is ready */}
         {showContactForm && !submitted && (
           <div style={{ background: SURFACE, border: `1px solid ${BORDER}`, borderRadius: 14, padding: "20px 24px", margin: "16px 0" }}>
-            <div style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 16 }}>
+            <div style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 16 }}>
               Your details
             </div>
             {[
@@ -200,7 +200,7 @@ export default function PublicSectorChat({ onBackToLanes }) {
                 onChange={(e) => setContact(c => ({ ...c, [key]: e.target.value }))}
                 style={{
                   background: SURFACE2, border: `1px solid ${BORDER}`, borderRadius: 8,
-                  color: TEXT, fontFamily: "var(--font-outfit)", fontSize: 14, padding: "12px 16px",
+                  color: TEXT, fontFamily: "system-ui, sans-serif", fontSize: 14, padding: "12px 16px",
                   width: "100%", outline: "none", marginBottom: 10,
                 }}
               />
@@ -228,7 +228,7 @@ export default function PublicSectorChat({ onBackToLanes }) {
             onKeyDown={handleKeyDown}
             style={{
               flex: 1, background: SURFACE2, border: `1px solid ${BORDER}`, borderRadius: 12,
-              color: TEXT, fontFamily: "var(--font-outfit)", fontSize: 14, padding: "12px 16px",
+              color: TEXT, fontFamily: "system-ui, sans-serif", fontSize: 14, padding: "12px 16px",
               outline: "none", resize: "none", maxHeight: 120, overflowY: "auto", lineHeight: 1.5,
             }}
           />

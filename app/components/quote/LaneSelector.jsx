@@ -69,12 +69,12 @@ export default function LaneSelector() {
       padding: "40px 24px",
     }}>
       {/* Wordmark */}
-      <div style={{ marginBottom: 12, color: GOLD, fontFamily: "var(--font-cormorant)", fontSize: 13, letterSpacing: "0.25em", textTransform: "uppercase" }}>
+      <div style={{ marginBottom: 12, color: GOLD, fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: 13, letterSpacing: "0.25em", textTransform: "uppercase" }}>
         Strata
       </div>
 
       <h1 style={{
-        fontFamily: "var(--font-cormorant)",
+        fontFamily: "'Cormorant Garamond', Georgia, serif",
         fontWeight: 300,
         fontSize: "clamp(28px, 5vw, 48px)",
         color: TEXT,
@@ -84,7 +84,7 @@ export default function LaneSelector() {
       }}>
         Tell us about your project
       </h1>
-      <p style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 15, textAlign: "center", margin: "0 0 48px", maxWidth: 420 }}>
+      <p style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 15, textAlign: "center", margin: "0 0 48px", maxWidth: 420 }}>
         We'll tailor everything to your situation.
       </p>
 
@@ -119,14 +119,14 @@ export default function LaneSelector() {
           >
             <div>{lane.icon}</div>
             <div>
-              <div style={{ fontFamily: "var(--font-outfit)", fontWeight: 600, fontSize: 17, color: TEXT, marginBottom: 6 }}>
+              <div style={{ fontFamily: "system-ui, sans-serif", fontWeight: 600, fontSize: 17, color: TEXT, marginBottom: 6 }}>
                 {lane.title}
               </div>
-              <div style={{ fontFamily: "var(--font-outfit)", fontSize: 13, color: MUTED, lineHeight: 1.5 }}>
+              <div style={{ fontFamily: "system-ui, sans-serif", fontSize: 13, color: MUTED, lineHeight: 1.5 }}>
                 {lane.subtitle}
               </div>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 6, color: GOLD, fontFamily: "var(--font-outfit)", fontSize: 13 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, color: GOLD, fontFamily: "system-ui, sans-serif", fontSize: 13 }}>
               Get started
               <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
                 <path d="M3 7H11M8 4L11 7L8 10" stroke={GOLD} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -136,7 +136,7 @@ export default function LaneSelector() {
         ))}
       </div>
 
-      <p style={{ marginTop: 48, color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 12, textAlign: "center" }}>
+      <p style={{ marginTop: 48, color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 12, textAlign: "center" }}>
         Already know exactly what you want?{" "}
         <span style={{ color: GOLD, cursor: "pointer" }}>Get in touch</span>
       </p>

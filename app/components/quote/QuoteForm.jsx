@@ -14,7 +14,7 @@ export default function QuoteForm() {
   const back = () => setCustomerType(null);
 
   return (
-    <div style={{ background: BG, minHeight: "100dvh", fontFamily: "var(--font-outfit)" }}>
+    <div style={{ background: BG, minHeight: "100dvh", fontFamily: "system-ui, sans-serif" }}>
       {!customerType && <LaneSelector />}
       {customerType === "homeowner"    && <HomeownerFlow    onBackToLanes={back} />}
       {customerType === "landlord"     && <LandlordFlow     onBackToLanes={back} />}

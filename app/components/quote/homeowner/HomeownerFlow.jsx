@@ -129,10 +129,10 @@ function ConfirmationScreen() {
           <path d="M5 12L9.5 16.5L19 7" stroke="#8aaa88" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
       </div>
-      <h2 style={{ fontFamily: "var(--font-cormorant)", fontWeight: 300, fontSize: 36, color: "#f2ede0", margin: "0 0 12px" }}>
+      <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 300, fontSize: 36, color: "#f2ede0", margin: "0 0 12px" }}>
         We're on it
       </h2>
-      <p style={{ fontFamily: "var(--font-outfit)", fontSize: 15, color: "rgba(242,237,224,0.5)", maxWidth: 380, lineHeight: 1.7, margin: 0 }}>
+      <p style={{ fontFamily: "system-ui, sans-serif", fontSize: 15, color: "rgba(242,237,224,0.5)", maxWidth: 380, lineHeight: 1.7, margin: 0 }}>
         We'll be in touch shortly to arrange next steps. Keep an eye on your phone.
       </p>
     </div>

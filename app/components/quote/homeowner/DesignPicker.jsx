@@ -192,11 +192,11 @@ export default function DesignPicker({ flooringType, value = {}, onChange }) {
                   </div>
                 ) : null}
                 <div style={{ padding: "10px 10px 12px" }}>
-                  <div style={{ color: active ? TEXT : MUTED, fontFamily: "var(--font-outfit)", fontSize: 12, fontWeight: active ? 600 : 400, marginBottom: d.desc ? 3 : 0 }}>
+                  <div style={{ color: active ? TEXT : MUTED, fontFamily: "system-ui, sans-serif", fontSize: 12, fontWeight: active ? 600 : 400, marginBottom: d.desc ? 3 : 0 }}>
                     {d.label}
                   </div>
                   {d.desc && (
-                    <div style={{ color: "rgba(242,237,224,0.3)", fontFamily: "var(--font-outfit)", fontSize: 10, lineHeight: 1.4 }}>
+                    <div style={{ color: "rgba(242,237,224,0.3)", fontFamily: "system-ui, sans-serif", fontSize: 10, lineHeight: 1.4 }}>
                       {d.desc}
                     </div>
                   )}
@@ -210,7 +210,7 @@ export default function DesignPicker({ flooringType, value = {}, onChange }) {
       {/* Colour swatches */}
       {colours.length > 0 && (
         <div style={{ marginTop: 24 }}>
-          <div style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 14 }}>
+          <div style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 14 }}>
             Colour
           </div>
           <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
@@ -240,7 +240,7 @@ export default function DesignPicker({ flooringType, value = {}, onChange }) {
                     boxShadow: active ? `0 0 0 2px rgba(201,169,110,0.3)` : "none",
                     transition: "all 0.2s",
                   }} />
-                  <span style={{ color: active ? TEXT : MUTED, fontFamily: "var(--font-outfit)", fontSize: 11, textAlign: "center", maxWidth: 52, lineHeight: 1.3 }}>
+                  <span style={{ color: active ? TEXT : MUTED, fontFamily: "system-ui, sans-serif", fontSize: 11, textAlign: "center", maxWidth: 52, lineHeight: 1.3 }}>
                     {c.name}
                   </span>
                 </button>
