@@ -86,9 +86,18 @@ export default function RoomConfig({ roomName, roomIndex, totalRooms, onBack, on
     if (currentStep === "mood")    return !!room.mood;
     if (currentStep === "flags")   return true; // optional
     if (currentStep === "measure") return !!(room.dimensions?.area > 0 || isSkipSurvey);
-    if (currentStep === "design")  return !!(room.design);
+    if (currentStep === "design")  return !!(room.design && room.colour);
     if (currentStep === "stairs")  return !!(room.stairsType);
     return true;
+  })();
+
+  const helperText = canAdvance ? null : (() => {
+    if (currentStep === "flooring") return "Choose a flooring type to continue";
+    if (currentStep === "mood")    return "Pick a mood so Flo can tailor the recommendation";
+    if (currentStep === "measure") return "Enter room dimensions, or skip to survey";
+    if (currentStep === "design")  return room.design ? "Pick a colour preference to continue" : "Select a design style to continue";
+    if (currentStep === "stairs")  return "Choose how you'd like the stairs done";
+    return null;
   })();
 
   return (
@@ -97,7 +106,7 @@ export default function RoomConfig({ roomName, roomIndex, totalRooms, onBack, on
       <div style={{ padding: "20px 24px 0", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <BackButton onClick={goBack} />
         <div style={{ textAlign: "center" }}>
-          <div style={{ color: GOLD, fontFamily: "var(--font-outfit)", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 4 }}>
+          <div style={{ color: GOLD, fontFamily: "system-ui, sans-serif", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 4 }}>
             Room {roomIndex + 1} of {totalRooms}
           </div>
           {/* Sub-step dots */}
@@ -112,14 +121,14 @@ export default function RoomConfig({ roomName, roomIndex, totalRooms, onBack, on
 
       <div style={{ flex: 1, maxWidth: 640, margin: "0 auto", width: "100%", padding: "28px 24px 24px" }}>
         {/* Room name */}
-        <div style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8 }}>
+        <div style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8 }}>
           {roomName}
         </div>
 
         {/* ── Flooring Type ── */}
         {currentStep === "flooring" && (
           <>
-            <h2 style={{ fontFamily: "var(--font-cormorant)", fontWeight: 300, fontSize: "clamp(24px,4vw,36px)", color: TEXT, margin: "0 0 28px", lineHeight: 1.2 }}>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 300, fontSize: "clamp(24px,4vw,36px)", color: TEXT, margin: "0 0 28px", lineHeight: 1.2 }}>
               What type of flooring?
             </h2>
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 12 }}>
@@ -143,7 +152,7 @@ export default function RoomConfig({ roomName, roomIndex, totalRooms, onBack, on
                       <img src={ft.img} alt={ft.id} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
                     </div>
                     <div style={{ padding: "12px 14px", textAlign: "left", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                      <span style={{ color: active ? TEXT : MUTED, fontFamily: "var(--font-outfit)", fontWeight: active ? 600 : 400, fontSize: 14 }}>{ft.id}</span>
+                      <span style={{ color: active ? TEXT : MUTED, fontFamily: "system-ui, sans-serif", fontWeight: active ? 600 : 400, fontSize: 14 }}>{ft.id}</span>
                       {active && <div style={{ width: 8, height: 8, borderRadius: "50%", background: GOLD }} />}
                     </div>
                   </button>
@@ -156,10 +165,10 @@ export default function RoomConfig({ roomName, roomIndex, totalRooms, onBack, on
         {/* ── Mood ── */}
         {currentStep === "mood" && (
           <>
-            <h2 style={{ fontFamily: "var(--font-cormorant)", fontWeight: 300, fontSize: "clamp(24px,4vw,36px)", color: TEXT, margin: "0 0 8px", lineHeight: 1.2 }}>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 300, fontSize: "clamp(24px,4vw,36px)", color: TEXT, margin: "0 0 8px", lineHeight: 1.2 }}>
               What's the feel you're after?
             </h2>
-            <p style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 14, margin: "0 0 28px" }}>
+            <p style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 14, margin: "0 0 28px" }}>
               This shapes Flo's recommendation for this room.
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -179,10 +188,10 @@ export default function RoomConfig({ roomName, roomIndex, totalRooms, onBack, on
                       transition: "all 0.25s",
                     }}
                   >
-                    <div style={{ color: TEXT, fontFamily: "var(--font-outfit)", fontWeight: 600, fontSize: 16, marginBottom: 6 }}>
+                    <div style={{ color: TEXT, fontFamily: "system-ui, sans-serif", fontWeight: 600, fontSize: 16, marginBottom: 6 }}>
                       {mood.label}
                     </div>
-                    <div style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 13 }}>
+                    <div style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 13 }}>
                       {mood.desc}
                     </div>
                   </button>
@@ -195,10 +204,10 @@ export default function RoomConfig({ roomName, roomIndex, totalRooms, onBack, on
         {/* ── Practical Flags ── */}
         {currentStep === "flags" && (
           <>
-            <h2 style={{ fontFamily: "var(--font-cormorant)", fontWeight: 300, fontSize: "clamp(24px,4vw,36px)", color: TEXT, margin: "0 0 8px", lineHeight: 1.2 }}>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 300, fontSize: "clamp(24px,4vw,36px)", color: TEXT, margin: "0 0 8px", lineHeight: 1.2 }}>
               Anything we should know?
             </h2>
-            <p style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 14, margin: "0 0 28px" }}>
+            <p style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 14, margin: "0 0 28px" }}>
               Select all that apply. Helps Flo give you the right spec.
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -237,7 +246,7 @@ export default function RoomConfig({ roomName, roomIndex, totalRooms, onBack, on
                         </svg>
                       )}
                     </div>
-                    <span style={{ color: active ? TEXT : MUTED, fontFamily: "var(--font-outfit)", fontSize: 14 }}>
+                    <span style={{ color: active ? TEXT : MUTED, fontFamily: "system-ui, sans-serif", fontSize: 14 }}>
                       {flag.label}
                     </span>
                   </button>
@@ -250,10 +259,10 @@ export default function RoomConfig({ roomName, roomIndex, totalRooms, onBack, on
         {/* ── Measuring ── */}
         {currentStep === "measure" && (
           <>
-            <h2 style={{ fontFamily: "var(--font-cormorant)", fontWeight: 300, fontSize: "clamp(24px,4vw,36px)", color: TEXT, margin: "0 0 8px", lineHeight: 1.2 }}>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 300, fontSize: "clamp(24px,4vw,36px)", color: TEXT, margin: "0 0 8px", lineHeight: 1.2 }}>
               How big is the room?
             </h2>
-            <p style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 14, margin: "0 0 28px" }}>
+            <p style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 14, margin: "0 0 28px" }}>
               We'll add 10% for wastage automatically.
             </p>
             <MeasuringTool
@@ -267,10 +276,10 @@ export default function RoomConfig({ roomName, roomIndex, totalRooms, onBack, on
         {/* ── Design & Colour ── */}
         {currentStep === "design" && (
           <>
-            <h2 style={{ fontFamily: "var(--font-cormorant)", fontWeight: 300, fontSize: "clamp(24px,4vw,36px)", color: TEXT, margin: "0 0 8px", lineHeight: 1.2 }}>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 300, fontSize: "clamp(24px,4vw,36px)", color: TEXT, margin: "0 0 8px", lineHeight: 1.2 }}>
               Any preference on the look?
             </h2>
-            <p style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 14, margin: "0 0 24px" }}>
+            <p style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 14, margin: "0 0 24px" }}>
               Your surveyor will bring physical samples. This just guides Flo.
             </p>
             <DesignPicker
@@ -284,7 +293,7 @@ export default function RoomConfig({ roomName, roomIndex, totalRooms, onBack, on
         {/* ── Stairs ── */}
         {currentStep === "stairs" && (
           <>
-            <h2 style={{ fontFamily: "var(--font-cormorant)", fontWeight: 300, fontSize: "clamp(24px,4vw,36px)", color: TEXT, margin: "0 0 28px", lineHeight: 1.2 }}>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 300, fontSize: "clamp(24px,4vw,36px)", color: TEXT, margin: "0 0 28px", lineHeight: 1.2 }}>
               How would you like the stairs done?
             </h2>
             <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 28 }}>
@@ -304,8 +313,8 @@ export default function RoomConfig({ roomName, roomIndex, totalRooms, onBack, on
                       transition: "all 0.2s",
                     }}
                   >
-                    <div style={{ color: TEXT, fontFamily: "var(--font-outfit)", fontWeight: 600, fontSize: 15, marginBottom: 4 }}>{st.label}</div>
-                    <div style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 13 }}>{st.desc}</div>
+                    <div style={{ color: TEXT, fontFamily: "system-ui, sans-serif", fontWeight: 600, fontSize: 15, marginBottom: 4 }}>{st.label}</div>
+                    <div style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 13 }}>{st.desc}</div>
                   </button>
                 );
               })}
@@ -314,12 +323,12 @@ export default function RoomConfig({ roomName, roomIndex, totalRooms, onBack, on
             {/* Runner style selector */}
             {room.stairsType === "runner" && (
               <div>
-                <div style={{ color: MUTED, fontFamily: "var(--font-outfit)", fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 16 }}>
+                <div style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 11, letterSpacing: "0.08em", textTransform: "uppercase", marginBottom: 16 }}>
                   Runner style
                 </div>
                 {RUNNER_FAMILIES.map((family) => (
                   <div key={family.family} style={{ marginBottom: 20 }}>
-                    <div style={{ color: TEXT, fontFamily: "var(--font-outfit)", fontSize: 13, fontWeight: 500, marginBottom: 10 }}>
+                    <div style={{ color: TEXT, fontFamily: "system-ui, sans-serif", fontSize: 13, fontWeight: 500, marginBottom: 10 }}>
                       {family.family}
                     </div>
                     <div style={{ display: "flex", gap: 8 }}>
@@ -336,7 +345,7 @@ export default function RoomConfig({ roomName, roomIndex, totalRooms, onBack, on
                               padding: "10px 14px",
                               cursor: "pointer",
                               color: active ? TEXT : MUTED,
-                              fontFamily: "var(--font-outfit)",
+                              fontFamily: "system-ui, sans-serif",
                               fontSize: 12,
                               fontWeight: active ? 600 : 400,
                               transition: "all 0.15s",
@@ -364,12 +373,18 @@ export default function RoomConfig({ roomName, roomIndex, totalRooms, onBack, on
               width: "100%",
               padding: "16px",
               fontSize: 16,
+              fontFamily: "system-ui, sans-serif",
               opacity: canAdvance ? 1 : 0.35,
               cursor: canAdvance ? "pointer" : "default",
             }}
           >
-            {subStep < steps.length - 1 ? "Continue →" : subStep === steps.length - 1 && roomIndex < totalRooms - 1 ? `Next: configure ${state.homeowner.selectedRooms[roomIndex + 1]} →` : "See Flo's recommendation →"}
+            {subStep < steps.length - 1 ? "Continue →" : roomIndex < totalRooms - 1 ? `Next: configure ${state.homeowner.selectedRooms[roomIndex + 1]} →` : "See Flo's recommendation →"}
           </button>
+          {helperText && (
+            <p style={{ color: MUTED, fontFamily: "system-ui, sans-serif", fontSize: 13, textAlign: "center", margin: "10px 0 0" }}>
+              {helperText}
+            </p>
+          )}
         </div>
       </div>
     </div>
