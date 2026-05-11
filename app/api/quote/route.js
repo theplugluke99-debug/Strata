@@ -150,4 +150,4 @@ export async function POST(request) {
     console.error("Strata quote error:", err);
     return Response.json({ success: false, error: "Estimate unavailable" }, { status: 500 });
   }
-}
+}1
