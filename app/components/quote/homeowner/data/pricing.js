@@ -1,8 +1,11 @@
-// Pricing constants extracted from QuoteFormProvider.jsx (computeEstimate) and MeasuringTool.jsx.
+// Pricing constants for the homeowner estimate calculator.
 // All prices are per m², supply and fit.
 
 export const WASTAGE_RATES = {
-  default: 1.1, // 10% added to raw floor area for cuts and joins
+  Carpet:   0.12,
+  LVT:      0.12,
+  Laminate: 0.12,
+  Vinyl:    0.15,
 };
 
 export const PRICE_RANGES = {

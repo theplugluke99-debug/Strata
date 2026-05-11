@@ -1,5 +1,6 @@
 "use client";
 import { createContext, useContext, useReducer, useCallback } from "react";
+import { PRICE_RANGES } from "./homeowner/data/pricing";
 
 const initialRoom = () => ({
   flooringType: null,
@@ -194,20 +195,12 @@ export function useQuoteForm() {
 }
 
 // ── Pricing (client-side estimate) ─────────────────────────────────────────
-const RATE = {
-  Carpet:   { low: 22, high: 38 },
-  LVT:      { low: 30, high: 52 },
-  Laminate: { low: 22, high: 40 },
-  Vinyl:    { low: 18, high: 35 },
-  default:  { low: 22, high: 40 },
-};
-
 export function computeEstimate(rooms) {
   let low = 0, high = 0;
   Object.values(rooms).forEach((r) => {
     const area = r.dimensions?.area ?? 0;
     if (area <= 0) return;
-    const rate = RATE[r.flooringType] ?? RATE.default;
+    const rate = PRICE_RANGES[r.flooringType] ?? PRICE_RANGES.default;
     low  += area * rate.low;
     high += area * rate.high;
   });

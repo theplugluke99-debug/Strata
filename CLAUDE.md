@@ -28,11 +28,54 @@ NEVER use var(--font-outfit) or var(--font-cormorant) — always use the literal
 ## File size rule
 Max 300 lines per file. If a file exceeds this, split it.
 
+## Directory structure — components/quote/
+```
+shared/
+  BackButton.jsx       — back chevron button
+  ProgressDots.jsx     — step indicator dots
+  EstimateBar.jsx      — live price estimate footer
+  MeasuringTool.jsx    — room dimension inputs + skip toggle
+  Chip.jsx             — reusable chip/toggle button
+  GoldBtn.jsx          — gold CTA button with optional helper text
+  GoldNote.jsx         — gold left-border note with diamond icon
+  FloNudge.jsx         — Flo avatar + italic serif message
+  SectionLabel.jsx     — 9px uppercase gold label
+  Divider.jsx          — 32px gold divider bar
+homeowner/
+  HomeownerFlow.jsx    — step orchestrator (steps 0/1/2/99)
+  RoomSelector.jsx     — room grid + bedroom stepper
+  RoomConfig.jsx       — per-room sub-step router (<150 lines)
+  DesignPicker.jsx     — design card + colour swatch picker
+  FloRecommendation.jsx — Good/Better/Best recommendation tiles
+  MeasureGuide.jsx     — collapsible measuring education panel
+  data/
+    rooms.js           — RESIDENTIAL_ROOMS (array), ROOM_ICONS (object), BedroomIcon
+    designs.js         — DESIGNS[flooringType] = [{id, label, desc, svg|img}]
+    colours.js         — COLOURS[designId] = [{hex, name}]
+    pricing.js         — WASTAGE_RATES (per-type), PRICE_RANGES (per-type)
+    floorings.js       — FLOORING_TYPES [{name, image, description, tag}]
+  steps/
+    FlooringTypeStep.jsx  — flooring type card selection
+    GradeStep.jsx         — mood/atmosphere selector
+    CurrentFloorStep.jsx  — practical flags (pets, UFH, etc.)
+    DimensionsStep.jsx    — MeasuringTool wrapper
+    DesignStep.jsx        — DesignPicker wrapper
+    StairsStep.jsx        — stairs type + runner style
+landlord/
+  LandlordFlow.jsx     — 4-step landlord flow
+commercial/
+  CommercialFlow.jsx   — 4-step commercial flow
+publicsector/
+  PublicSectorChat.jsx — Flo chat with contact form submission
+```
+
 ## Component rules
 - Shared UI: components/quote/shared/
 - Static data: components/quote/homeowner/data/
+- Step components: components/quote/homeowner/steps/
 - Never define data arrays inside component files
 - Never redefine shared components inline — always import
+- RoomConfig.jsx must stay under 150 lines — add sub-steps as new step files
 
 ## Image rules
 - All flooring photos: Next.js Image component with priority prop
